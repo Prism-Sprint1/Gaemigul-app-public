@@ -24,5 +24,8 @@
   "python.analysis.extraPaths": [
     "${workspaceFolder}/backend/src"
   ],
-  "python.terminal.activateEnvironment": true
+  "python.terminal.activateEnvironment": true,
+  "[python]": {
+    "editor.formatOnSave": false
+  }
 }
