@@ -19,5 +19,13 @@
   },
   "[css]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "python.defaultInterpreterPath": "${workspaceFolder}/backend/.venv/bin/python",
+  "python.analysis.extraPaths": [
+    "${workspaceFolder}/backend/src"
+  ],
+  "python.terminal.activateEnvironment": true,
+  "[python]": {
+    "editor.formatOnSave": false
   }
 }
