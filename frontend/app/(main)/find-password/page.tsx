@@ -32,10 +32,16 @@ export default function FindPasswordPage() {
   }
 
   return (
-    <AuthCard title="비밀번호 찾기" description="아이디와 가입하신 이메일을 입력해주세요." icon={KeyRound}>
+    <AuthCard
+      title="비밀번호 찾기"
+      description="아이디와 가입하신 이메일을 입력해주세요."
+      icon={KeyRound}
+    >
       {message ? (
         <div className="flex flex-col gap-4">
-          <p className="rounded-lg bg-emerald-50 px-4 py-3 text-sm text-emerald-700">{message}</p>
+          <p className="rounded-lg bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+            {message}
+          </p>
           <Link href="/login">
             <Button className="h-10 w-full">로그인으로 돌아가기</Button>
           </Link>
@@ -56,13 +62,17 @@ export default function FindPasswordPage() {
             value={email}
             onChange={(event) => setEmail(event.target.value)}
             autoComplete="email"
-            placeholder="가입할 때 쓰신 이메일"
+            placeholder="가입하신 이메일"
             required
           />
 
           {error && <p className="text-sm text-red-500">{error}</p>}
 
-          <Button type="submit" disabled={submitting} className="mt-2 h-10 w-full">
+          <Button
+            type="submit"
+            disabled={submitting}
+            className="mt-2 h-10 w-full"
+          >
             {submitting ? "전송 중..." : "임시 비밀번호 전송"}
           </Button>
         </form>

@@ -12,7 +12,6 @@ import { getPromotionSuggestion, respondToPromotionSuggestion } from "@/lib/api/
 import { getCalendarEvents } from "@/lib/api/calendar"
 import { getHeatmap } from "@/lib/api/heatmap"
 import { getTimelineDay } from "@/lib/api/timeline"
-import { formatChange } from "@/lib/heatmap-layout"
 import { cn } from "@/lib/utils"
 import { toNewsItem, type NewsItem } from "@/app/(main)/calendar/news-data"
 import type { PromotionSuggestion } from "@/lib/types/AuthType"
@@ -55,13 +54,9 @@ const TRADING_SECTOR_SLOTS = new Set(["09:30", "12:00", "14:00", "15:30"])
 
 /** 히트맵 1위 섹터를 채팅 말풍선 문구로 바꾼다 */
 function topSectorMessage(topSector: NonNullable<HeatmapResponse["top_sector"]>): ReactNode {
-  const rate = topSector.change_rate
-  const direction = rate == null || rate === 0 ? "보합" : rate > 0 ? "상승" : "하락"
   return (
     <>
-      지금 개미들이 가장 많이 몰린 단물 섹터는 <strong>{topSector.name}</strong>이에요! 시가총액
-      가중 등락률 {formatChange(rate)}로 {direction} 중이고, 거래량 비중은 전체의{" "}
-      {topSector.volume_share.toFixed(1)}%예요.
+      지금 개미들이 가장 많이 몰린 단물 섹터는 <strong>{topSector.name}</strong>이에요!
     </>
   )
 }
@@ -108,7 +103,7 @@ function slotToGroup(
       tone,
       linkHref: "/heatmap",
       anchorId: slot.slot_key,
-      linkLabel: "단물 지도에서 보기",
+      linkLabel: "섹터별 히트맵 보러가기",
       content: topSectorMessage(topSector),
     })
   }
@@ -244,7 +239,7 @@ function calendarToGroup(events: NewsItem[] | null): WhisperGroup | null {
         tone: "info",
         linkHref: "/calendar",
         anchorId: "calendar-0900",
-        linkLabel: "비축 캘린더에서 보기",
+        linkLabel: "이벤트 일정 보러가기",
         content,
       },
     ],
@@ -489,11 +484,25 @@ function MessageBubble({
 /**
  * "불개미 대장" 챗 - 모든 페이지 우측 하단에 뜨는 플로팅 버튼/패널.
  * 데스크톱·모바일 구분 없이 같은 토글 방식을 쓴다(전에는 데스크톱에서 홈페이지에만 항상 펼쳐진
- * 인라인 패널이었다). 열려 있을 때도 배경을 어둡게 하거나 블러 처리하지 않는다 - 페이지 콘텐츠가
- * 그대로 보인 채 패널만 오버레이된다.
+ * 인라인 패널이었다). 패널은 열릴 때마다 살짝 통통 튀는 느낌의 등장 애니메이션(animate-panel-in,
+ * globals.css)을 탄다. 데스크톱에서는 패널이 콘텐츠 위에 그대로 오버레이되지만, 모바일(sm 미만)에서는
+ * 패널 뒤 화면을 블러 처리하는 백드롭을 함께 띄운다.
  */
 export default function WhisperChat() {
   const [isOpen, setIsOpen] = useState(false)
+  // 패널·백드롭을 실제로 DOM에 그릴지 여부 - isOpen이 false로 바뀌어도 바로 떼지 않고,
+  // 닫히는 애니메이션(animate-panel-out, globals.css)이 끝날 때까지는 계속 그려서 등장
+  // 애니메이션의 역순이 보이게 한다. 애니메이션이 끝나면 handlePanelAnimationEnd에서 내려간다.
+  const [isPanelMounted, setIsPanelMounted] = useState(false)
+
+  useEffect(() => {
+    if (isOpen) setIsPanelMounted(true)
+  }, [isOpen])
+
+  const handlePanelAnimationEnd = () => {
+    if (!isOpen) setIsPanelMounted(false)
+  }
+
   const { slots, loadError } = useTodayTimeline()
   const topSector = useTodayHeatmapTopSector()
   const { events: calendarEvents, revealed: calendarRevealed } = useTodayCalendarBriefing()
@@ -566,10 +575,25 @@ export default function WhisperChat() {
 
   return (
     <>
+      {/* 모바일 전용 백드롭 블러 - 패널이 마운트돼 있는 동안(열려 있거나, 닫히는 애니메이션 중)만,
+          sm 이상에서는 띄우지 않는다. isOpen이 아니면 닫히는 중이므로 클릭을 가로채지 않게 한다. */}
+      {isPanelMounted && (
+        <div
+          aria-hidden
+          onClick={() => setIsOpen(false)}
+          className={cn(
+            "fixed inset-0 z-40 bg-black/20 backdrop-blur-sm sm:hidden",
+            isOpen ? "animate-backdrop-in" : "animate-backdrop-out pointer-events-none"
+          )}
+        />
+      )}
+
       <div
+        onAnimationEnd={handlePanelAnimationEnd}
         className={cn(
           "fixed inset-x-4 bottom-24 z-50 flex h-[70vh] flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-xl sm:inset-x-auto sm:right-4 sm:w-96",
-          !isOpen && "hidden"
+          isOpen ? "animate-panel-in" : "animate-panel-out",
+          !isPanelMounted && "hidden"
         )}
       >
         <div className="flex items-center justify-between gap-3 border-b border-border bg-card px-4 py-3.5">

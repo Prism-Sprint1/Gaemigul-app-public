@@ -196,6 +196,68 @@
   animation: chat-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
+/* 대장 챗 패널 등장 애니메이션 - 부드럽게 올라오면서 끝에 아주 살짝 튕기는 느낌을 준다
+   (cubic-bezier가 100% 지점을 살짝 넘겼다가 되돌아오는 back-ease 곡선이라 자체적으로 통통 튐이 생긴다) */
+@keyframes panel-in {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.94);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-panel-in {
+  animation: panel-in 0.42s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* 닫힐 때 애니메이션 - panel-in과 animation-name이 같으면(direction만 reverse) 이미 끝난
+   애니메이션으로 취급돼 재생이 다시 트리거되지 않는 브라우저가 있어, 대신 keyframes 자체를
+   panel-in의 역순으로 별도 정의한다(이름이 달라져야 클래스 전환 시 새 애니메이션이 확실히 시작됨) */
+@keyframes panel-out {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.94);
+  }
+}
+
+.animate-panel-out {
+  animation: panel-out 0.42s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* 대장 챗 모바일 백드롭 - 페이드인만 살짝 준다 */
+@keyframes backdrop-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes backdrop-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.animate-backdrop-in {
+  animation: backdrop-in 0.3s ease-out both;
+}
+
+.animate-backdrop-out {
+  animation: backdrop-out 0.3s ease-out both;
+}
+
 /* 브리핑 섹션 강조색 - 배지 배경(--briefing-accent)은 원래 진한 톤 그대로 두고,
    카드 위 글자색으로 쓰이는 곳만 다크모드 전용 밝은 짝(--briefing-accent-dark)으로 바꾼다 */
 .text-briefing-accent {
