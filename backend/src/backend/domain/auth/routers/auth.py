@@ -41,7 +41,7 @@ _SESSION_COOKIE_NAME = get_settings().session_cookie_name
 
 # 아이디/비밀번호 찾기는 계정 존재 여부와 무관하게 항상 이 메시지만 응답한다(문서 3-4 보안 메모 참고)
 _FIND_ID_MESSAGE = "입력하신 이메일로 아이디를 전송했습니다."
-_RESET_PASSWORD_MESSAGE = "입력하신 정보가 일치하면 이메일로 임시 비밀번호를 전송했습니다."
+_RESET_PASSWORD_MESSAGE = "입력하신 이메일로 임시 비밀번호를 전송했습니다."
 
 
 def _to_response(user: AuthUser) -> CurrentUserResponse:

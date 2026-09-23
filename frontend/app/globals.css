@@ -205,6 +205,12 @@
   color: var(--briefing-accent-dark, var(--briefing-accent));
 }
 
-button{
+button {
   cursor: pointer;
+}
+
+@media all and (max-width: 768px) {
+  body {
+    overflow-x: hidden;
+  }
 }
