@@ -139,6 +139,7 @@ function BriefingPageContent() {
               <BriefingLede
                 lead={content.lead}
                 points={content.todayBriefPoints}
+                reviewMessage={content.reviewMessage}
               />
 
               <div className="flex gap-5">
@@ -148,6 +149,7 @@ function BriefingPageContent() {
                       key={article.id}
                       id={id}
                       article={article}
+                      reviewMessage={content.reviewMessage}
                     />
                   ))}
 

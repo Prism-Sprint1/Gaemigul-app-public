@@ -3,8 +3,9 @@ import type {
   BriefingContent,
   BriefingStatCard,
   BriefingStatTone,
+  BriefingTakeawayPoint,
 } from "@/lib/types/BriefingType"
-import type { ApiReportResponse } from "@/lib/types/ReportType"
+import type { ApiReportPointItem, ApiReportResponse } from "@/lib/types/ReportType"
 
 // 백엔드 섹션 순번(seq)이 뜻하는 바는 고정이다 (backend/domain/timeline/Claude.md '보고서 설계' 참고).
 const SECTION_EYEBROW: Record<number, string> = {
@@ -139,6 +140,16 @@ function buildCorrelationChart(report: ApiReportResponse) {
   }
 }
 
+/** 백엔드의 섹션 핵심 요약 한 줄(ApiReportPointItem)을 화면이 쓰는 객체로 바꾼다.
+ * sectionSeq를 같이 받는 건 point.seq만으로는 섹션이 다른 point끼리 id가 겹칠 수 있어서다. */
+function toTakeawayPoint(sectionSeq: number, point: ApiReportPointItem): BriefingTakeawayPoint {
+  return {
+    id: `${sectionSeq}-${point.seq}`,
+    text: point.body,
+    isChecking: point.review_status === "checking",
+  }
+}
+
 function buildArticles(report: ApiReportResponse): BriefingArticle[] {
   return report.sections.map((section) => ({
     id: `article-0${section.seq}`,
@@ -155,7 +166,7 @@ function buildArticles(report: ApiReportResponse): BriefingArticle[] {
           : undefined,
     correlationChart:
       section.seq === 2 ? buildCorrelationChart(report) : undefined,
-    takeaways: section.points,
+    takeaways: section.points.map((point) => toTakeawayPoint(section.seq, point)),
   }))
 }
 
@@ -174,8 +185,11 @@ export function mapReportToBriefingContent(
     lead: report.summary ?? "요약을 준비 중이에요.",
     mainImageUrl: report.main_image_url,
     todayBriefPoints: report.sections
-      .map((section) => section.points[0])
-      .filter((point): point is string => Boolean(point)),
+      .map((section) =>
+        section.points[0] ? toTakeawayPoint(section.seq, section.points[0]) : null
+      )
+      .filter((point): point is BriefingTakeawayPoint => point !== null),
+    reviewMessage: report.review_message,
     article: buildArticles(report),
     noviceSummary: {
       quote: report.conclusion

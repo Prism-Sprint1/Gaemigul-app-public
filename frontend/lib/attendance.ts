@@ -24,12 +24,13 @@ export function formatSlotKey(slotKey: string): string {
 }
 
 // 방문 슬롯 수(0~8) -> 색 톤 5단계. "흙색 계열 그라데이션 (굴을 파 들어가는 느낌)"
+// 실제 값은 globals.css의 --attendance-* 변수(라이트/다크 각각 정의)를 따른다
 const INTENSITY_COLORS = [
-  "#f3ede1", // 0/8 - 겉흙(미방문)
-  "#e2c393", // 1-2/8
-  "#c69a5f", // 3-4/8
-  "#96652f", // 5-6/8
-  "#5c3a1e", // 7-8/8 - 깊이 판 굴
+  "var(--attendance-0)", // 0/8 - 겉흙(미방문)
+  "var(--attendance-1)", // 1-2/8
+  "var(--attendance-2)", // 3-4/8
+  "var(--attendance-3)", // 5-6/8
+  "var(--attendance-4)", // 7-8/8 - 깊이 판 굴
 ]
 
 export function colorForVisitedCount(count: number): string {
@@ -40,9 +41,9 @@ export function colorForVisitedCount(count: number): string {
   return INTENSITY_COLORS[4]
 }
 
-// 주말(장 없음) 칸 - 회색 줄무늬
+// 주말(장 없음) 칸 - 회색 줄무늬 (다크모드는 --attendance-weekend-* 변수가 더 어두운 톤으로 바뀐다)
 export const WEEKEND_STRIPE_BACKGROUND =
-  "repeating-linear-gradient(45deg, #e5e7eb, #e5e7eb 3px, #f3f4f6 3px, #f3f4f6 6px)"
+  "repeating-linear-gradient(45deg, var(--attendance-weekend-a), var(--attendance-weekend-a) 3px, var(--attendance-weekend-b) 3px, var(--attendance-weekend-b) 6px)"
 
 /** 해당 연도를 일요일 시작 주 단위 그리드로 만든다(GitHub 컨트리뷰션 그래프와 같은 방식) -
  * 1주 = 7일, 첫/마지막 주는 그 해 밖 날짜로 채워 정렬만 맞추고 렌더링에서 제외한다 */

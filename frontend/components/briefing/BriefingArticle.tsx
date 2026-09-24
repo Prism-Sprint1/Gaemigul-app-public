@@ -13,9 +13,11 @@ type BriefingArticleProps = {
   /** 0-based 순서. 강조 색상을 순환 선택하는 데 사용한다. */
   id: number
   article: BriefingArticleType
+  /** takeaways 중 "확인 중" 배지에 붙일 안내 문구 */
+  reviewMessage?: string
 }
 
-export default function BriefingArticle({ id, article }: BriefingArticleProps) {
+export default function BriefingArticle({ id, article, reviewMessage }: BriefingArticleProps) {
   const accentColor = getBriefingAccentColor(id)
   const accentTextDarkColor = getBriefingAccentTextDarkColor(id)
   const accentStyle = {
@@ -57,6 +59,7 @@ export default function BriefingArticle({ id, article }: BriefingArticleProps) {
         items={article.takeaways}
         color={accentColor}
         darkColor={accentTextDarkColor}
+        reviewMessage={reviewMessage}
       />
     </article>
   )

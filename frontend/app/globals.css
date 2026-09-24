@@ -154,6 +154,15 @@
   --heatmap-accent: #ff6b84;
   --heatmap-accent-hover: #ff8a9c;
   --decrease: #60a5fa;
+  /* 굴 파기 기록(출석 히트맵) - 라이트 모드의 옅은 흙색은 어두운 카드 배경 위에서 붕 떠 보이므로,
+     어두운 배경에 가까운 톤에서 시작해 많이 팔수록(더 많이 방문할수록) 금빛에 가깝게 밝아지도록 잡는다 */
+  --attendance-0: #2b241d;
+  --attendance-1: #5a3c1f;
+  --attendance-2: #8a5a26;
+  --attendance-3: #c1852f;
+  --attendance-4: #f2b544;
+  --attendance-weekend-a: #3f3f46;
+  --attendance-weekend-b: #27272a;
 }
 
 /* 다크모드 임시 보정 - 아직 라이트 전용(bg-white)인 기존 카드들(홈 대시보드, 타임라인,

@@ -51,12 +51,21 @@ export type ApiReportListResponse = {
   weeks: ApiReportWeekGroup[]
 }
 
+/** 섹션 핵심 요약 한 줄 (백엔드 ReportPointItem, backend/domain/timeline/schemas/report.py) */
+export type ApiReportPointItem = {
+  seq: number
+  body: string
+  /** "ok" | "checking" - checking이면 아직 검수 중이라는 뜻(문구는 ApiReportResponse.review_message) */
+  review_status: string
+}
+
 export type ApiReportSection = {
   seq: number
   title: string | null
   description: string | null
   image_url: string | null
-  points: string[]
+  /** 핵심 요약 3개 */
+  points: ApiReportPointItem[]
 }
 
 export type ApiReportQuarter = {
@@ -95,6 +104,8 @@ export type ApiReportResponse = {
   title: string | null
   summary: string | null
   main_image_url: string | null
+  /** review_status가 "checking"인 문구에 띄울 안내 문구 (문구마다 같다) */
+  review_message: string
   sections: ApiReportSection[]
   foreign_net_buy: number | null
   foreign_badge: string | null

@@ -15,7 +15,9 @@ import {
 
 // GitHub 스타일과 같이 월/수/금만 라벨을 붙인다(일~토 7행 중 1,3,5번째)
 const WEEKDAY_ROW_LABELS = ["", "월", "", "수", "", "금", ""]
-const CELL_SIZE = 11
+const CELL_SIZE = 13
+// 실제 칸 사이 간격(gap-[3px])과 값을 맞춰야 한다 - 아래 COLUMN_WIDTH로 월 라벨 위치를 계산할 때 쓰는데,
+// 여기서만 바꾸고 JSX의 gap-[3px]들을 안 바꾸면 라벨이 실제 칸 위치와 어긋난다
 const CELL_GAP = 3
 const COLUMN_WIDTH = CELL_SIZE + CELL_GAP
 
