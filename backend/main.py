@@ -241,7 +241,6 @@ def _register_newsletter_job() -> None:
     )
 
 
-
 # 히트맵 작업 등록. HEATMAP_ENABLED가 false면 등록하지 않는다
 def _register_heatmap_job() -> None:
     if not get_settings().heatmap_enabled:
@@ -253,7 +252,6 @@ def _register_heatmap_job() -> None:
         id="heatmap",
         next_run_time=datetime.now(_KST),
     )
-
 
 
 # 캘린더 재수집 작업 (FOMC·FRED·DART). 발표 뒤 수치 정정(revision)을 따라가려고 주기적으로 다시 받아 upsert한다
@@ -332,7 +330,7 @@ app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],        
+    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000", "https://gaemigul-app.vercel.app"],
     allow_methods=["GET", "POST", "PATCH", "DELETE"],
     allow_headers=["*"],
     allow_credentials=True,
