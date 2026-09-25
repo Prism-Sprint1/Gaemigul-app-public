@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.domain.auth.models.auth import AuthGradeSurvey, AuthUser, GradePromotionSuggestion
 from backend.domain.auth.schemas.auth import ChangePasswordRequest, GradeSurveyRequest, LoginRequest, SignupRequest
-from backend.domain.auth.services import email_service, grade_service, password_service, quiz_service
+from backend.domain.auth.services import email_service, email_templates, grade_service, password_service, quiz_service
 
 
 class AuthError(Exception):
@@ -69,7 +69,17 @@ async def login(session: AsyncSession, data: LoginRequest) -> AuthUser:
 async def find_id(session: AsyncSession, email: str) -> None:
     user = await _get_by_email(session, email)
     if user is not None:
-        email_service.send_email(user.email, "[개미굴] 아이디 안내", f"가입하신 아이디는 {user.username} 입니다.")
+        html_body = email_templates.render_account_email_html(
+            heading="아이디를 찾으셨나요?",
+            intro="가입하신 아이디는 아래와 같아요.",
+            highlight=email_templates.render_highlight_card("아이디", user.username),
+        )
+        email_service.send_email(
+            user.email,
+            "[개미굴] 아이디 안내",
+            f"가입하신 아이디는 {user.username} 입니다.",
+            html_body,
+        )
 
 
 # 3-5 비밀번호 찾기 - username+email이 일치하는 계정에만 임시 비밀번호를 발급한다.
@@ -83,7 +93,18 @@ async def reset_password(session: AsyncSession, username: str, email: str) -> No
     user.password_hash = password_service.hash_password(temp_password)
     user.must_change_password = True
     await session.commit()
-    email_service.send_email(user.email, "[개미굴] 임시 비밀번호 안내", f"임시 비밀번호는 {temp_password} 입니다. 로그인 후 바로 변경해주세요.")
+
+    html_body = email_templates.render_account_email_html(
+        heading="임시 비밀번호가 발급됐어요",
+        intro="아래 임시 비밀번호로 로그인한 뒤 꼭 새 비밀번호로 바꿔주세요.",
+        highlight=email_templates.render_highlight_card("임시 비밀번호", temp_password),
+    )
+    email_service.send_email(
+        user.email,
+        "[개미굴] 임시 비밀번호 안내",
+        f"임시 비밀번호는 {temp_password} 입니다. 로그인 후 바로 변경해주세요.",
+        html_body,
+    )
 
 
 # 3-7 비밀번호 변경 페이지의 1단계(현재 비밀번호 확인) - 새 비밀번호 입력칸을 보여주기 전에
