@@ -24,7 +24,8 @@ def send_email(to: str, subject: str, body: str, html_body: str | None = None) -
     settings = get_settings()
 
     if not (settings.smtp_host and settings.smtp_user and settings.smtp_password):
-        logger.info("[이메일 발송 스텁] SMTP 설정 없음 - to=%s subject=%s body=%s", to, subject, body)
+        # 아이디·임시 비밀번호가 포함될 수 있으므로 메일 본문은 로그에 남기지 않는다.
+        logger.info("[이메일 발송 스텁] SMTP 설정 없음 - to=%s subject=%s", to, subject)
         return False
 
     if html_body:
