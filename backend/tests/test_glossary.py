@@ -92,6 +92,15 @@ class GlossarySeedTests(unittest.TestCase):
         self.assertTrue(any("difficulty" in error for error in errors))
         self.assertTrue(any("연관 태그" in error for error in errors))
 
+    def test_validation_catches_one_way_related_terms(self):
+        rows = [
+            {"term": "A", "difficulty": "애기 개미", "category": CATEGORIES[0], "related_terms": "B"},
+            {"term": "B", "difficulty": "애기 개미", "category": CATEGORIES[0], "related_terms": ""},
+        ]
+        errors = seed_glossary_terms.validate_seed_terms(rows)
+
+        self.assertTrue(any("한쪽만 연결됨" in error for error in errors))
+
 
 if __name__ == "__main__":
     unittest.main()
