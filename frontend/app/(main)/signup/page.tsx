@@ -9,10 +9,13 @@ import { AuthCard } from "@/components/auth/AuthCard"
 import { AuthTextField } from "@/components/auth/AuthTextField"
 import { useAuth } from "@/components/common"
 import { Button, Checkbox } from "@/components/ui"
-import { extractErrorMessage, signup } from "@/lib/api/auth"
+import {
+  extractErrorMessage,
+  NICKNAME_MAX_LENGTH,
+  signup,
+} from "@/lib/api/auth"
 
 const PASSWORD_HINT = "8자 이상, 영문과 숫자를 모두 포함해주세요."
-const NICKNAME_MAX_LENGTH = 8
 
 export default function SignupPage() {
   const router = useRouter()
@@ -70,14 +73,22 @@ export default function SignupPage() {
 
   if (signupComplete) {
     return (
-      <AuthCard title="회원가입" description="가입이 완료됐어요." icon={UserPlus}>
+      <AuthCard
+        title="회원가입"
+        description="가입이 완료됐어요."
+        icon={UserPlus}
+      >
         <div className="flex flex-col items-center gap-4 py-4 text-center">
           <p className="text-sm leading-relaxed text-muted-foreground">
             회원가입이 완료됐어요!
             <br />
-            다음은 <strong className="text-foreground">등급 진단 퀴즈</strong>예요.
+            다음은 <strong className="text-foreground">등급 진단 퀴즈</strong>
+            예요.
           </p>
-          <Button className="h-10 w-full max-w-xs" onClick={() => router.push("/onboarding/grade-quiz")}>
+          <Button
+            className="h-10 w-full max-w-xs"
+            onClick={() => router.push("/onboarding/grade-quiz")}
+          >
             등급 진단 퀴즈 풀러 가기
           </Button>
         </div>
@@ -86,7 +97,11 @@ export default function SignupPage() {
   }
 
   return (
-    <AuthCard title="회원가입" description="개미굴에서 쓸 정보를 입력해주세요." icon={UserPlus}>
+    <AuthCard
+      title="회원가입"
+      description="개미굴에서 쓸 정보를 입력해주세요."
+      icon={UserPlus}
+    >
       <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
         <AuthTextField
           label="이메일"
@@ -140,7 +155,11 @@ export default function SignupPage() {
               required
             />
             <span>
-              <Link href="/privacy-policy" className="underline hover:text-point" target="_blank">
+              <Link
+                href="/privacy-policy"
+                className="underline hover:text-point"
+                target="_blank"
+              >
                 개인정보 처리방침
               </Link>
               에 동의합니다. (필수)
@@ -149,15 +168,30 @@ export default function SignupPage() {
           <label className="flex items-center gap-2 text-sm text-foreground">
             <Checkbox
               checked={newsletterOptIn}
-              onCheckedChange={(checked) => setNewsletterOptIn(checked === true)}
+              onCheckedChange={(checked) =>
+                setNewsletterOptIn(checked === true)
+              }
             />
-            <span>개미레터(뉴스레터) 수신에 동의합니다. (선택)</span>
+            <span>
+              <Link
+                href="/newsletter-consent"
+                className="underline hover:text-point"
+                target="_blank"
+              >
+                개미레터(뉴스레터) 수신
+              </Link>
+              에 동의합니다. (선택)
+            </span>
           </label>
         </div>
 
         {error && <p className="text-sm text-red-500">{error}</p>}
 
-        <Button type="submit" disabled={submitting} className="mt-2 h-10 w-full">
+        <Button
+          type="submit"
+          disabled={submitting}
+          className="mt-2 h-10 w-full"
+        >
           {submitting ? "가입 중..." : "다음: 등급 진단 퀴즈"}
         </Button>
 

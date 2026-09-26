@@ -5,15 +5,20 @@
 import axios from "axios"
 
 import { apiClient } from "@/lib/api/client"
-import type { ApiGlossaryTerm } from "@/lib/types/GlossaryType"
+import type { ApiGlossaryTerm, GlossaryCategory } from "@/lib/types/GlossaryType"
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL?.trim() || "http://localhost:8000"
 const GLOSSARY_TERMS_URL = `${API_BASE_URL.replace(/\/$/, "")}/glossary/terms`
 
-/** GET /glossary/terms — 용어 사전 전체 목록. 검색·톤 전환은 프런트에서 처리한다 */
-export async function getGlossaryTerms(): Promise<ApiGlossaryTerm[]> {
-  const response = await axios.get<ApiGlossaryTerm[]>(GLOSSARY_TERMS_URL)
+/** GET /glossary/terms?category= — 용어 사전 목록. category를 빼면 전체.
+ * 용어사전 페이지는 전체를 받아 검색·톤 전환·카테고리 필터를 프런트에서 처리한다 */
+export async function getGlossaryTerms(
+  category?: GlossaryCategory
+): Promise<ApiGlossaryTerm[]> {
+  const response = await axios.get<ApiGlossaryTerm[]>(GLOSSARY_TERMS_URL, {
+    params: category ? { category } : undefined,
+  })
   return response.data
 }
 

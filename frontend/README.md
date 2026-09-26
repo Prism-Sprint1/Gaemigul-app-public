@@ -93,7 +93,7 @@ npm run dev                     # http://localhost:3000
 | `indicator.ts` | `GET /timeline/indicators` | 상단 지표 바(marquee) |
 | `market.ts` | `GET /market/vix`, `sentiment`, `exchange-rate?period=today\|5d\|1m`, `investor-flow`, `trading-value-distribution` (캐시가 없으면 503) | 홈 대시보드 카드 |
 | `calendar.ts` | `GET /calendar/events?year=&month=` | 캘린더, 홈 일정 카드, 대장 챗 |
-| `glossary.ts` | `GET /glossary/terms`, `POST /glossary/terms/{id}/view`, `GET /glossary/favorites`, `POST /glossary/terms/{id}/favorite` | 용어 사전, 타임라인 용어 툴팁, 마이페이지 |
+| `glossary.ts` | `GET /glossary/terms?category=`(생략 시 전체), `POST /glossary/terms/{id}/view`, `GET /glossary/favorites`, `POST /glossary/terms/{id}/favorite` | 용어 사전, 타임라인 용어 툴팁, 홈 "오늘의 한 입", 마이페이지 |
 | `heatmap.ts` | `GET /heatmap?market=&period=`, `GET /heatmap/news?market=&period=` (fetch, `AbortSignal`) | 히트맵, 대장 챗 |
 | `attendance.ts` | `POST /attendance/visit`, `GET /attendance/heatmap?year=` | 타임라인 방문 기록, 마이페이지 "굴 파기 기록" |
 

@@ -2,12 +2,18 @@
 # 회원가입/로그인/아이디 찾기/비밀번호 찾기/비밀번호 변경 로직.
 # 세션 발급·쿠키는 session_service, 등급 분류는 grade_service, 해싱은 password_service에 맡긴다.
 
+from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.domain.auth.models.auth import AuthGradeSurvey, AuthUser, GradePromotionSuggestion
 from backend.domain.auth.schemas.auth import ChangePasswordRequest, GradeSurveyRequest, LoginRequest, SignupRequest
 from backend.domain.auth.services import email_service, email_templates, grade_service, password_service, quiz_service
+
+
+_KST = ZoneInfo("Asia/Seoul")
 
 
 class AuthError(Exception):
@@ -126,6 +132,39 @@ async def withdraw(session: AsyncSession, user: AuthUser) -> None:
 # 마이페이지 뉴스레터 수신 동의 토글
 async def set_newsletter_opt_in(session: AsyncSession, user: AuthUser, opt_in: bool) -> None:
     user.newsletter_opt_in = opt_in
+    await session.commit()
+
+
+# 닉네임은 마지막 변경 뒤 이 기간이 지나야 다시 바꿀 수 있다. 바꾸면 이용약관 제5조 문구도 같이 고친다
+NICKNAME_CHANGE_INTERVAL = timedelta(days=14)
+
+
+def _now_kst() -> datetime:
+    return datetime.now(_KST).replace(tzinfo=None)
+
+
+# 닉네임을 다시 바꿀 수 있는 시각. 한 번도 안 바꿨거나 기간이 지났으면 None(지금 바로 가능)
+def nickname_changeable_at(user: AuthUser, now: datetime | None = None) -> datetime | None:
+    if user.nickname_changed_at is None:
+        return None
+    available_at = user.nickname_changed_at + NICKNAME_CHANGE_INTERVAL
+    return available_at if available_at > (now or _now_kst()) else None
+
+
+# 마이페이지 닉네임 변경. nickname은 스키마에서 공백 제거·길이 검사를 마친 값이다
+async def change_nickname(session: AsyncSession, user: AuthUser, nickname: str) -> None:
+    if nickname == user.nickname:
+        raise AuthError("지금 쓰고 있는 닉네임과 같아요.")
+
+    available_at = nickname_changeable_at(user)
+    if available_at is not None:
+        raise AuthError(
+            f"닉네임은 {NICKNAME_CHANGE_INTERVAL.days}일에 한 번 바꿀 수 있어요. "
+            f"{available_at:%Y-%m-%d %H:%M}부터 다시 바꿀 수 있어요."
+        )
+
+    user.nickname = nickname
+    user.nickname_changed_at = _now_kst()
     await session.commit()
 
 

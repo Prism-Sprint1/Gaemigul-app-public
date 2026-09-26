@@ -56,7 +56,7 @@ export function DayDetailDialog({
   return (
     <Dialog.Root open={!!popup} onOpenChange={(open) => !open && onClose()}>
       <Dialog.Portal>
-        <Dialog.Backdrop className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm" />
+        <Dialog.Backdrop className="fixed inset-0 z-50 bg-black/40" />
         <Dialog.Popup className="fixed top-1/2 left-1/2 z-50 flex max-h-[85vh] w-[calc(100vw-2rem)] max-w-120 -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-xl border bg-card shadow-lg">
           {popup && (
             <DayDetailBody group={popup.group} initialId={popup.itemId} />

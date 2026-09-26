@@ -1,14 +1,15 @@
 # glossary_term.py
-# "개미 용어 사전" 페이지 API. timeline 도메인의 GET /timeline/glossary(하드코딩 dict)와는
-# 별개 엔드포인트다 - "오늘의 개미 용어 한 입"은 계속 그쪽을 쓴다.
+# "개미 용어 사전" 페이지 API. timeline 도메인의 GET /timeline/glossary(하드코딩 dict, 레거시)와는
+# 별개 엔드포인트다. 프런트의 용어사전 페이지·타임라인 호버 툴팁·홈 "오늘의 한 입"은 모두 이쪽을 쓴다.
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.core.database import get_db
 from backend.domain.auth.dependencies import get_current_user
 from backend.domain.auth.models.auth import AuthUser
 from backend.domain.auth.services import promotion_service
+from backend.domain.glossary.models.glossary_term import CATEGORIES
 from backend.domain.glossary.schemas.glossary_term import (
     GlossaryFavoriteToggleResponse,
     GlossaryTermResponse,
@@ -19,10 +20,16 @@ from backend.domain.glossary.services import glossary_favorite_service, glossary
 router = APIRouter(prefix="/glossary", tags=["glossary"])
 
 
-# GET /glossary/terms - 용어 사전 전체 목록. 검색·난이도 톤 전환은 프런트에서 처리한다
+# GET /glossary/terms?category= - 용어 사전 목록. category를 빼면 전체. 검색·난이도 톤 전환은 프런트에서 처리한다
+# category는 CATEGORIES 중 하나여야 한다(아니면 422) - 오타로 빈 목록이 조용히 내려가는 걸 막는다
 @router.get("/terms", response_model=list[GlossaryTermResponse])
-async def get_glossary_terms(session: AsyncSession = Depends(get_db)) -> list[GlossaryTermResponse]:
-    return await glossary_term_service.list_terms(session)
+async def get_glossary_terms(
+    category: str | None = Query(default=None, description=f"용어 카테고리: {', '.join(CATEGORIES)}"),
+    session: AsyncSession = Depends(get_db),
+) -> list[GlossaryTermResponse]:
+    if category is not None and category not in CATEGORIES:
+        raise HTTPException(status_code=422, detail=f"category는 {', '.join(CATEGORIES)} 중 하나여야 합니다.")
+    return await glossary_term_service.list_terms(session, category)
 
 
 # GET /glossary/favorites - 로그인한 유저가 즐겨찾은 용어 전체(마이페이지 "즐겨찾는 용어" 목록용)

@@ -10,6 +10,7 @@ class GlossaryTermResponse(BaseModel):
     id: int
     term: str
     difficulty: str  # "애기 개미" / "청년 개미" / "고참 개미"
+    category: str | None  # models.glossary_term.CATEGORIES 중 하나. 컬럼 추가 전 데이터면 null
     easy_description: str
     mid_description: str
     hard_description: str

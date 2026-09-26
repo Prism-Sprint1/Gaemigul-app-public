@@ -12,7 +12,7 @@ from backend.domain.glossary.schemas.glossary_term import GlossaryTermResponse
 
 
 # related_terms(쉼표 구분 문자열) -> 태그 목록. timeline_service의 beginner_guide.tags 파싱과 동일한 방식
-def _parse_related_terms(raw: str | None) -> list[str]:
+def parse_related_terms(raw: str | None) -> list[str]:
     return [tag.strip() for tag in (raw or "").split(",") if tag.strip()]
 
 
@@ -21,10 +21,11 @@ def to_response(term: GlossaryTerm) -> GlossaryTermResponse:
         id=term.id,
         term=term.term,
         difficulty=term.difficulty,
+        category=term.category,
         easy_description=term.easy_description,
         mid_description=term.mid_description,
         hard_description=term.hard_description,
-        related_terms=_parse_related_terms(term.related_terms),
+        related_terms=parse_related_terms(term.related_terms),
     )
 
 
@@ -37,6 +38,7 @@ async def _upsert_term(session: AsyncSession, row: dict) -> GlossaryTerm:
         session.add(existing)
 
     existing.difficulty = row["difficulty"]
+    existing.category = row.get("category")
     existing.easy_description = row["easy_description"]
     existing.mid_description = row["mid_description"]
     existing.hard_description = row["hard_description"]
@@ -55,8 +57,12 @@ async def upsert_terms(rows: list[dict]) -> list[GlossaryTerm]:
         return terms
 
 
-# GET /glossary/terms용 - 전체 목록. 용어 검색·톤 전환은 지금은 전부 프런트에서 처리하므로
-# 여기서는 필터링 없이 전부 내려준다. term 기준 정렬(가나다 순)
-async def list_terms(session: AsyncSession) -> list[GlossaryTermResponse]:
-    rows = await session.scalars(select(GlossaryTerm).order_by(GlossaryTerm.term))
+# GET /glossary/terms용 - 전체 목록. term 기준 정렬(가나다 순). category를 주면 그 카테고리만.
+# 용어사전 페이지는 전체를 받아 검색·톤 전환·카테고리 필터를 프런트에서 처리한다(타임라인 툴팁 등도
+# 전체 목록이 필요해서). category 파라미터는 다른 화면이 일부만 필요할 때를 위한 것
+async def list_terms(session: AsyncSession, category: str | None = None) -> list[GlossaryTermResponse]:
+    query = select(GlossaryTerm).order_by(GlossaryTerm.term)
+    if category is not None:
+        query = query.where(GlossaryTerm.category == category)
+    rows = await session.scalars(query)
     return [to_response(row) for row in rows]

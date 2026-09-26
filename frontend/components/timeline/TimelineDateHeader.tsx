@@ -178,10 +178,6 @@ export default function TimelineDateHeader({
                 )
               })}
             </div>
-
-            <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">
-              데이터가 있는 날짜만 선택할 수 있어요.
-            </p>
           </Popover.Popup>
         </Popover.Positioner>
       </Popover.Portal>

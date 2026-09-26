@@ -12,5 +12,17 @@ export { default as IndexCard } from "./index-card"
 export { default as WhisperChat } from "./WhisperChat"
 export { AuthProvider, useAuth } from "./auth/AuthContext"
 export { ConfirmDialog } from "./ConfirmDialog"
+export { LoginRequiredDialog } from "./LoginRequiredDialog"
+export { ScrollTopButton } from "./ScrollTopButton"
 export { default as StaticPage } from "./StaticPage"
+export {
+  ContactEmail,
+  CONTACT_EMAIL,
+  LegalCards,
+  LegalList,
+  LegalNotice,
+  LegalSection,
+  LegalTable,
+  LegalText,
+} from "./LegalContent"
 export { WithdrawReasonDialog } from "./WithdrawReasonDialog"

@@ -14,6 +14,19 @@ WITHDRAWAL_REASON_OPTIONS = ("서비스를 잘 안 쓰게 돼서", "원하는 �
 
 _PASSWORD_MIN_LENGTH = 8
 
+# 닉네임 최대 길이. 프런트 회원가입·마이페이지의 NICKNAME_MAX_LENGTH와 같은 값이어야 한다
+NICKNAME_MAX_LENGTH = 8
+
+
+# 닉네임 규칙: 앞뒤 공백 제거 후 1~NICKNAME_MAX_LENGTH자. 회원가입과 닉네임 변경이 같이 쓴다
+def _validate_nickname(value: str) -> str:
+    nickname = value.strip()
+    if not nickname:
+        raise ValueError("닉네임을 입력해주세요.")
+    if len(nickname) > NICKNAME_MAX_LENGTH:
+        raise ValueError(f"닉네임은 최대 {NICKNAME_MAX_LENGTH}자까지 가능합니다.")
+    return nickname
+
 
 # 비밀번호 규칙: 최소 8자 + 영문/숫자 포함 (팀 확인 사항 - 2번 답변)
 def _validate_password_strength(value: str) -> str:
@@ -41,6 +54,11 @@ class SignupRequest(BaseModel):
     @classmethod
     def _check_password_strength(cls, value: str) -> str:
         return _validate_password_strength(value)
+
+    @field_validator("nickname")
+    @classmethod
+    def _check_nickname(cls, value: str) -> str:
+        return _validate_nickname(value)
 
     @model_validator(mode="after")
     def _check_password_match(self) -> "SignupRequest":
@@ -115,8 +133,13 @@ class PromotionSuggestionResponse(BaseModel):
 
 
 class ActivityStatsResponse(BaseModel):
-    attendance_days: int
-    distinct_terms_viewed: int
+    attendance_days: int  # 최근 attendance_window_days일 중 출석한 날 수
+    distinct_terms_viewed: int  # 지금까지 열람한 서로 다른 용어 수
+    attendance_window_days: int
+    # 다음 등급으로 승급 제안을 받기 위한 기준 (promotion_service.PROMOTION_RULES). 최고 등급이면 셋 다 None
+    next_grade: str | None
+    required_attendance_days: int | None
+    required_distinct_terms: int | None
 
 
 class PromotionRespondRequest(BaseModel):
@@ -145,10 +168,21 @@ class CurrentUserResponse(BaseModel):
     must_change_password: bool
     newsletter_opt_in: bool
     created_at: str  # YYYY-MM-DD - 마이페이지 가입일 표시용
+    # 닉네임을 다시 바꿀 수 있는 시각(한국 시간, "YYYY-MM-DDTHH:MM"). 지금 바로 바꿀 수 있으면 None
+    nickname_changeable_at: str | None
 
 
 class NewsletterOptInRequest(BaseModel):
     opt_in: bool
+
+
+class ChangeNicknameRequest(BaseModel):
+    nickname: str
+
+    @field_validator("nickname")
+    @classmethod
+    def _check_nickname(cls, value: str) -> str:
+        return _validate_nickname(value)
 
 
 class MessageResponse(BaseModel):

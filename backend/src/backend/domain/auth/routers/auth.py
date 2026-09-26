@@ -10,6 +10,7 @@ from backend.domain.auth.dependencies import get_current_user
 from backend.domain.auth.models.auth import AuthUser
 from backend.domain.auth.schemas.auth import (
     ActivityStatsResponse,
+    ChangeNicknameRequest,
     ChangePasswordRequest,
     CurrentUserResponse,
     FindIdRequest,
@@ -54,6 +55,11 @@ def _to_response(user: AuthUser) -> CurrentUserResponse:
         must_change_password=user.must_change_password,
         newsletter_opt_in=user.newsletter_opt_in,
         created_at=user.created_at.date().isoformat(),
+        nickname_changeable_at=(
+            available_at.isoformat(timespec="minutes")
+            if (available_at := auth_service.nickname_changeable_at(user))
+            else None
+        ),
     )
 
 
@@ -169,6 +175,20 @@ async def set_newsletter_opt_in(
     return _to_response(current_user)
 
 
+# PATCH /auth/nickname - 마이페이지 닉네임 변경. 14일에 한 번만 가능하고, 막히면 400과 다시 바꿀 수 있는 시각을 알려준다
+@router.patch("/nickname", response_model=CurrentUserResponse)
+async def change_nickname(
+    data: ChangeNicknameRequest,
+    current_user: AuthUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> CurrentUserResponse:
+    try:
+        await auth_service.change_nickname(db, current_user, data.nickname)
+    except auth_service.AuthError as error:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=error.message) from error
+    return _to_response(current_user)
+
+
 @router.post("/grade-survey", response_model=GradeResponse)
 async def grade_survey(
     data: GradeSurveyRequest,
@@ -207,7 +227,16 @@ async def get_activity_stats(
 ) -> ActivityStatsResponse:
     attendance_days = await promotion_service.count_recent_attendance_days(db, current_user.id)
     distinct_terms = await promotion_service.count_distinct_terms_viewed(db, current_user.id)
-    return ActivityStatsResponse(attendance_days=attendance_days, distinct_terms_viewed=distinct_terms)
+    # 마이페이지가 "다음 등급까지 얼마나 남았는지" 보여줄 수 있게 승급 기준도 같이 내려준다
+    rule = promotion_service.PROMOTION_RULES.get(current_user.grade)
+    return ActivityStatsResponse(
+        attendance_days=attendance_days,
+        distinct_terms_viewed=distinct_terms,
+        attendance_window_days=promotion_service.ATTENDANCE_WINDOW_DAYS,
+        next_grade=rule["next_grade"] if rule else None,
+        required_attendance_days=rule["min_attendance_days"] if rule else None,
+        required_distinct_terms=rule["min_distinct_terms"] if rule else None,
+    )
 
 
 # GET /auth/promotion-suggestion - 활동 데이터 기반으로 대기 중인 승급 제안이 있으면 반환(없으면 null)

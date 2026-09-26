@@ -40,6 +40,11 @@ class AuthUser(Base):
     username: Mapped[str] = mapped_column(String(50))
     nickname: Mapped[str] = mapped_column(String(50))
 
+    # 마지막으로 닉네임을 바꾼 시각(한국 시간). 14일에 한 번만 바꿀 수 있다(auth_service.change_nickname).
+    # 가입 후 한 번도 안 바꿨으면 None - 첫 변경은 바로 할 수 있다.
+    # 기존 테이블에 나중에 추가한 칼럼이라 scripts/add_nickname_changed_at_column.py로 추가한다
+    nickname_changed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=False), default=None)
+
     # bcrypt 해시. 임시 비밀번호 발급 시에도 이 칼럼을 그대로 덮어쓴다(별도 temp 칼럼 없음)
     password_hash: Mapped[str] = mapped_column(String(255))
 

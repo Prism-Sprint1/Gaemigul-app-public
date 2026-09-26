@@ -15,7 +15,8 @@ export async function getTimelineDay(date?: string): Promise<ApiTimelineSlot[]> 
   return response.data
 }
 
-/** GET /timeline/glossary — 용어 사전 {용어: 설명}. 본문 호버 툴팁에 쓴다. */
+/** GET /timeline/glossary — 백엔드 하드코딩 용어 사전 {용어: 설명}. 레거시 - 지금 화면에서는 부르지 않고
+ * (타임라인 툴팁·홈 "오늘의 한 입" 모두 GET /glossary/terms로 이전), 용어 확장 작업 전까지 지우지 않고 남겨 둔다. */
 export async function getTimelineGlossary(): Promise<Record<string, string>> {
   const response = await axios.get<Record<string, string>>(
     `${TIMELINE_URL}/glossary`

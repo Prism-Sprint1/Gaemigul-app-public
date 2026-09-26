@@ -1,6 +1,6 @@
 "use client"
 
-import { Header, Footer, Sidebar, WhisperChat } from "@/components/common"
+import { Header, Footer, ScrollTopButton, Sidebar, WhisperChat } from "@/components/common"
 import ReportSidebar from "@/components/home/reportSidebar/ReportSidebar"
 import { usePathname } from "next/navigation"
 
@@ -24,6 +24,7 @@ export default function MainLayout({
         <ReportSidebar />
       </div>
       <WhisperChat />
+      <ScrollTopButton />
     </>
   )
 }

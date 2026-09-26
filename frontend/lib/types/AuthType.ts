@@ -11,6 +11,18 @@ export type CurrentUser = {
   must_change_password: boolean
   newsletter_opt_in: boolean
   created_at: string // YYYY-MM-DD
+  // 닉네임을 다시 바꿀 수 있는 시각(한국 시간 "YYYY-MM-DDTHH:MM"). 지금 바로 바꿀 수 있으면 null
+  nickname_changeable_at: string | null
+}
+
+// GET /auth/activity-stats - 마이페이지 "다음 등급까지" 진행 상황. 최고 등급이면 next_grade·required_* 가 null
+export type ActivityStats = {
+  attendance_days: number // 최근 attendance_window_days일 중 출석한 날
+  distinct_terms_viewed: number // 지금까지 열람한 서로 다른 용어 수
+  attendance_window_days: number
+  next_grade: string | null
+  required_attendance_days: number | null
+  required_distinct_terms: number | null
 }
 
 // {문항 id: 고른 선택지 인덱스} - backend quiz_service.score()가 채점

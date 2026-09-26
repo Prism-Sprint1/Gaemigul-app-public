@@ -76,15 +76,25 @@ def _format_event_date(published_at: str) -> str:
     return f"{parsed.month}/{parsed.day}({weekday_kr[parsed.weekday()]})"
 
 
+# 메일 맨 아래 수신 안내. 수신 동의를 받아 보내는 메일이라 언제든 끌 수 있는 방법을 함께 알린다
+# (개미레터 수신 동의 안내 페이지 /newsletter-consent와 문구를 맞춘다)
+def _opt_out_text(site_url: str) -> str:
+    return (
+        "이 메일은 개미레터 수신에 동의하신 분께 보내드려요. "
+        f"더 이상 받지 않으려면 마이페이지에서 '개미레터 수신'을 꺼주세요: {site_url}/mypage"
+    )
+
+
 def _build_text_body(nickname: str, events: list[_WeekEvent], site_url: str) -> str:
     if not events:
-        return f"{nickname}님, {_NO_EVENTS_MESSAGE}\n\n개미굴에서 오늘의 시장도 확인해보세요: {site_url}"
-
-    events_text = ", ".join(event.title for event in events)
-    return (
-        f"{nickname}님, 이번주는 {events_text} 행사가 예정되어 있습니다. "
-        f"자세한 내용은 개미굴에서 확인해보세요.\n\n{site_url}"
-    )
+        body = f"{nickname}님, {_NO_EVENTS_MESSAGE}\n\n개미굴에서 오늘의 시장도 확인해보세요: {site_url}"
+    else:
+        events_text = ", ".join(event.title for event in events)
+        body = (
+            f"{nickname}님, 이번주는 {events_text} 행사가 예정되어 있습니다. "
+            f"자세한 내용은 개미굴에서 확인해보세요.\n\n{site_url}"
+        )
+    return f"{body}\n\n---\n{_opt_out_text(site_url)}"
 
 
 def _esc(value: str) -> str:
@@ -134,6 +144,7 @@ def _render_event_cards_html(events: list[_WeekEvent]) -> str:
 
 def _render_html_body(nickname: str, events: list[_WeekEvent], site_url: str) -> str:
     calendar_url = f"{site_url}/calendar"
+    mypage_url = f"{site_url}/mypage"
 
     if events:
         intro = "이번주는 아래 일정이 예정되어 있어요. 미리 챙겨보세요!"
@@ -193,6 +204,12 @@ def _render_html_body(nickname: str, events: list[_WeekEvent], site_url: str) ->
 
             <tr>
               <td style="padding:20px 24px;border-top:1px solid {_BORDER};background-color:{_CARD_BG};">
+                <p style="margin:0 0 8px 0;font-size:11px;line-height:1.6;color:{_TEXT_MUTED};">
+                  이 메일은 개미레터 수신에 동의하신 분께 보내드려요.
+                  더 이상 받지 않으려면
+                  <a href="{mypage_url}" style="color:{_TEXT_MUTED};text-decoration:underline;">마이페이지</a>에서
+                  '개미레터 수신'을 꺼주세요.
+                </p>
                 <p style="margin:0;font-size:11px;color:{_TEXT_MUTED};">
                   © 2026 Anthill. All rights reserved.
                 </p>

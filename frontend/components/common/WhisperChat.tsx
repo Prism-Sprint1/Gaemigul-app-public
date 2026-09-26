@@ -506,7 +506,7 @@ export default function WhisperChat() {
   const { slots, loadError } = useTodayTimeline()
   const topSector = useTodayHeatmapTopSector()
   const { events: calendarEvents, revealed: calendarRevealed } = useTodayCalendarBriefing()
-  const { status: authStatus, user, refresh: refreshAuth } = useAuth()
+  const { status: authStatus, refresh: refreshAuth } = useAuth()
   const { suggestion, refetch: refetchSuggestion } = usePromotionSuggestion(authStatus === "authenticated")
   const [respondingSuggestion, setRespondingSuggestion] = useState(false)
 
@@ -582,7 +582,7 @@ export default function WhisperChat() {
           aria-hidden
           onClick={() => setIsOpen(false)}
           className={cn(
-            "fixed inset-0 z-40 bg-black/20 backdrop-blur-sm sm:hidden",
+            "fixed inset-0 z-40 bg-black/40 sm:hidden",
             isOpen ? "animate-backdrop-in" : "animate-backdrop-out pointer-events-none"
           )}
         />
@@ -591,7 +591,8 @@ export default function WhisperChat() {
       <div
         onAnimationEnd={handlePanelAnimationEnd}
         className={cn(
-          "fixed inset-x-4 bottom-24 z-50 flex h-[70vh] flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-xl sm:inset-x-auto sm:right-4 sm:w-96",
+          // 토글 버튼(bottom-20, 56px) 바로 위에 뜬다. 화면이 낮으면 위로 넘치지 않게 높이를 줄인다
+          "fixed inset-x-4 bottom-38 z-50 flex h-[min(70vh,calc(100svh-12rem))] flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-xl sm:inset-x-auto sm:right-4 sm:w-96",
           isOpen ? "animate-panel-in" : "animate-panel-out",
           !isPanelMounted && "hidden"
         )}
@@ -634,12 +635,6 @@ export default function WhisperChat() {
           ref={scrollRef}
           className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto bg-muted px-4 py-5"
         >
-          {authStatus === "authenticated" && user && (
-            <p className="text-xs font-medium text-foreground">
-              {user.nickname}님, 오늘은 이런 신호들이 있었어요.
-            </p>
-          )}
-
           {suggestion && (
             <PromotionSuggestionCard
               suggestion={suggestion}
@@ -692,12 +687,13 @@ export default function WhisperChat() {
         </div>
       </div>
 
-      {/* 모든 페이지 우측 하단 플로팅 토글 버튼 - 데스크톱·모바일 공통 */}
+      {/* 모든 페이지 우측 하단 플로팅 토글 버튼 - 데스크톱·모바일 공통.
+          바로 아래(bottom-4)에 같은 크기의 ScrollTopButton이 있어 그 위(bottom-4 + 56px + 간격 8px)에 둔다 */}
       <button
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
         aria-label={isOpen ? "대장 챗 닫기" : "대장 챗 열기"}
-        className="cursor-pointer fixed right-3 bottom-4 z-50 flex size-14 items-center justify-center rounded-full bg-point text-white shadow-lg transition-transform active:scale-95"
+        className="cursor-pointer fixed right-3 bottom-20 z-50 flex size-14 items-center justify-center rounded-full bg-point text-white shadow-lg transition-transform active:scale-95"
       >
         {isOpen ? (
           <X size={24} />

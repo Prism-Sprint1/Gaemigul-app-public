@@ -1,7 +1,7 @@
 "use client"
 
 import { Suspense, useEffect, useMemo, useState } from "react"
-import { useSearchParams } from "next/navigation"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
 
 import {
   BriefingArticle,
@@ -44,6 +44,8 @@ async function resolveDefaultTarget(): Promise<ReportTarget | null> {
 }
 
 function BriefingPageContent() {
+  const router = useRouter()
+  const pathname = usePathname()
   const searchParams = useSearchParams()
   const queryType = searchParams.get("type")
   const queryDate = searchParams.get("date")
@@ -54,15 +56,30 @@ function BriefingPageContent() {
 
   useEffect(() => {
     let cancelled = false
+    // URL을 바꾸러 가는 중이면 다음 effect가 불러올 때까지 로딩 표시를 유지한다
+    let redirecting = false
 
     const load = async () => {
       setIsLoading(true)
       setIsEmpty(false)
 
-      const target: ReportTarget | null =
-        queryType === "daily" || queryType === "weekly"
-          ? { type: queryType, date: queryDate ?? "" }
-          : await resolveDefaultTarget()
+      const hasQueryTarget = queryType === "daily" || queryType === "weekly"
+      const target: ReportTarget | null = hasQueryTarget
+        ? { type: queryType, date: queryDate ?? "" }
+        : await resolveDefaultTarget()
+
+      // 탭 등으로 쿼리 없이 /briefing에 들어온 경우, 고른 기본 보고서를 URL에 반영한다 - 사이드바는
+      // ?type=&date=로 액티브 항목을 판정하므로 이렇게 해야 같이 표시된다. URL이 바뀌면 이 effect가
+      // 다시 돌면서 보고서를 불러온다
+      if (!hasQueryTarget && target?.date) {
+        if (!cancelled) {
+          redirecting = true
+          router.replace(`${pathname}?type=${target.type}&date=${target.date}`, {
+            scroll: false,
+          })
+        }
+        return
+      }
 
       if (!target || !target.date) {
         if (!cancelled) {
@@ -92,13 +109,13 @@ function BriefingPageContent() {
         setIsEmpty(true)
       })
       .finally(() => {
-        if (!cancelled) setIsLoading(false)
+        if (!cancelled && !redirecting) setIsLoading(false)
       })
 
     return () => {
       cancelled = true
     }
-  }, [queryType, queryDate])
+  }, [queryType, queryDate, pathname, router])
 
   const reportSectionItems = useMemo(
     () =>
