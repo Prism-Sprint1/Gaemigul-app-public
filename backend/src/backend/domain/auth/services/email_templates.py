@@ -65,7 +65,7 @@ def render_account_email_html(
 
             <tr>
               <td style="padding:32px 24px 4px 24px;border-top:4px solid {_BRAND_RED};">
-                <p style="margin:0;font-size:18px;font-weight:bold;color:{_TEXT_DARK};">
+                <p style="margin:0;font-size:18px;font-weight:bold;color:{_TEXT_DARK}; text-align:center;">
                   {_esc(heading)} 🐜
                 </p>
               </td>
@@ -73,7 +73,7 @@ def render_account_email_html(
 
             <tr>
               <td style="padding:4px 24px 20px 24px;">
-                <p style="margin:0;font-size:14px;line-height:1.6;color:{_TEXT_MUTED};">
+                <p style="margin:0;font-size:14px;line-height:1.6;color:{_TEXT_MUTED}; text-align:center;">
                   {_esc(intro)}
                 </p>
               </td>
@@ -102,8 +102,7 @@ def render_account_email_html(
 
             <tr>
               <td style="padding:20px 24px;border-top:1px solid {_BORDER};background-color:{_CARD_BG};">
-                <p style="margin:0;font-size:11px;color:{_TEXT_MUTED};">
-                  이 메일에 짐작 가는 바가 없다면 무시하셔도 됩니다.<br />
+                <p style="margin:0;font-size:11px;color:{_TEXT_MUTED}; text-align:center;">
                   © 2026 Anthill. All rights reserved.
                 </p>
               </td>
