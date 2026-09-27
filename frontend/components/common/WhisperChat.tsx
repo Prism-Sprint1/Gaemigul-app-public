@@ -688,12 +688,13 @@ export default function WhisperChat() {
       </div>
 
       {/* 모든 페이지 우측 하단 플로팅 토글 버튼 - 데스크톱·모바일 공통.
-          바로 아래(bottom-4)에 같은 크기의 ScrollTopButton이 있어 그 위(bottom-4 + 56px + 간격 8px)에 둔다 */}
+          바로 아래(bottom-4)에 같은 크기의 ScrollTopButton이 있어 그 위(bottom-4 + 56px + 간격 8px)에 둔다.
+          모바일(sm 미만)에서는 50px, 그 이상에서는 56px. */}
       <button
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
         aria-label={isOpen ? "대장 챗 닫기" : "대장 챗 열기"}
-        className="cursor-pointer fixed right-3 bottom-20 z-50 flex size-14 items-center justify-center rounded-full bg-point text-white shadow-lg transition-transform active:scale-95"
+        className="cursor-pointer fixed right-3 bottom-20 z-50 flex size-[50px] items-center justify-center rounded-full bg-point text-white shadow-lg transition-transform active:scale-95 sm:size-14"
       >
         {isOpen ? (
           <X size={24} />

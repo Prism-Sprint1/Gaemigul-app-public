@@ -6,7 +6,6 @@ export default function SummaryInfoTooltip() {
   return (
     <InfoTooltip
       label="AI 요약 안내"
-      align="right"
       iconSize={16}
       buttonClassName="size-6"
       panelClassName="w-114"
