@@ -280,8 +280,5 @@ button {
   cursor: pointer;
 }
 
-@media all and (max-width: 768px) {
-  body {
-    overflow-x: hidden;
-  }
-}
+/* 가로 스크롤 방지는 app/layout.tsx의 html(overflow-x-hidden)·body(overflow-x-clip) 클래스가 맡는다.
+   여기서 body에 overflow-x: hidden을 다시 주면 body가 스크롤 컨테이너가 되어 sticky가 깨지므로 넣지 않는다 */

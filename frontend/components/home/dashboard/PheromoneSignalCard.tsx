@@ -57,7 +57,7 @@ function SignalInfoButton() {
       </button>
       <div
         className={cn(
-          "absolute top-full right-0 z-20 mt-2 w-100 rounded-xl border border-border bg-popover p-4 text-xs leading-relaxed text-muted-foreground shadow-lg transition-opacity duration-150",
+          "absolute top-full right-0 z-20 mt-2 w-100 max-w-[calc(100vw-2rem)] rounded-xl border border-border bg-popover p-4 text-xs leading-relaxed text-muted-foreground shadow-lg transition-opacity duration-150",
           open ? "opacity-100" : "pointer-events-none opacity-0"
         )}
       >
@@ -65,9 +65,15 @@ function SignalInfoButton() {
           개미굴 소란지수란?
         </p>
         <p className="mb-2 rounded-md bg-muted p-2 font-mono text-[11px] leading-relaxed whitespace-pre-line">
-          {"지수 모멘텀(코스피 등락률×0.7 + 코스닥 등락률×0.3의\n최근 60거래일 백분위) × 30%\n"}
-          {"+ 상승 종목 비율(코스피+코스닥 합산 오른 종목 수÷\n(상승+하락+보합 종목 수)×100) × 25%\n"}
-          {"+ 외국인 수급(외국인 순매수 합÷거래대금 합의\n최근 60거래일 백분위) × 20%\n"}
+          {
+            "지수 모멘텀(코스피 등락률×0.7 + 코스닥 등락률×0.3의\n최근 60거래일 백분위) × 30%\n"
+          }
+          {
+            "+ 상승 종목 비율(코스피+코스닥 합산 오른 종목 수÷\n(상승+하락+보합 종목 수)×100) × 25%\n"
+          }
+          {
+            "+ 외국인 수급(외국인 순매수 합÷거래대금 합의\n최근 60거래일 백분위) × 20%\n"
+          }
           {"+ 변동성(100−VKOSPI의 최근 60거래일 백분위) × 15%\n"}
           {"+ 환율(100−원·달러 등락률의 최근 60거래일 백분위) × 10%"}
         </p>
@@ -143,7 +149,9 @@ export default function PheromoneSignalCard() {
                   {level.label}
                 </span>
               </p>
-              <p className="text-xs text-neutral-500 dark:text-neutral-400">{level.description}</p>
+              <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                {level.description}
+              </p>
             </div>
           )
         })()

@@ -22,7 +22,7 @@ export default function InfoTooltip({
       >
         <Info size={14} />
       </button>
-      <div className="pointer-events-none absolute top-full left-0 z-10 mt-2 w-72 rounded-lg border border-border bg-popover p-3 text-[12px] leading-relaxed text-muted-foreground opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100">
+      <div className="pointer-events-none absolute top-full left-0 z-10 mt-2 hidden w-72 max-w-[calc(100vw-2rem)] rounded-lg border border-border bg-popover p-3 text-[12px] leading-relaxed text-muted-foreground shadow-lg group-hover:block">
         {children}
       </div>
     </div>

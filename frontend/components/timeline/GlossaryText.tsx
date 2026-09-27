@@ -38,7 +38,7 @@ export default function GlossaryText({ text, glossary }: GlossaryTextProps) {
             className="group relative inline-block cursor-help rounded bg-point/10 px-0.5 text-point"
           >
             {part}
-            <span className="pointer-events-none absolute bottom-full left-1/2 z-20 mb-1.5 w-56 -translate-x-1/2 rounded-lg border border-border bg-popover p-2.5 text-[11px] leading-relaxed font-normal text-popover-foreground opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100">
+            <span className="pointer-events-none absolute bottom-full left-1/2 z-20 mb-1.5 hidden w-56 max-w-[calc(100vw-2rem)] -translate-x-1/2 rounded-lg border border-border bg-popover p-2.5 text-[11px] leading-relaxed font-normal text-popover-foreground shadow-lg group-hover:block">
               {description}
             </span>
           </span>

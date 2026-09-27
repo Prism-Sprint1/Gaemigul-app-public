@@ -32,11 +32,16 @@ export default function Sidebar() {
         )}
       />
 
+      {/* 모바일 메뉴: 닫혀 있을 때 화면 오른쪽 밖에 요소가 남아 있으면 iOS 등에서 가로 스크롤이 생긴다.
+          그래서 닫히는 애니메이션이 끝나면 display:none(transition-discrete)으로 아예 빼고,
+          열 때는 starting: 상태(화면 밖)에서 밀려 들어오게 한다. 데스크톱(md 이상)은 항상 보인다 */}
       <aside
         className={cn(
-          "fixed inset-y-0 right-0 z-50 w-67.5 translate-x-full bg-card transition-transform duration-300",
+          "fixed inset-y-0 right-0 z-50 w-67.5 bg-card transition-all transition-discrete duration-300",
           "md:sticky md:top-18.75 md:z-auto md:flex md:h-[calc(100vh-75px)] md:w-auto md:max-w-67.5 md:translate-x-0 md:flex-col md:overflow-hidden",
-          isOpen && "translate-x-0"
+          isOpen
+            ? "translate-x-0 starting:translate-x-full"
+            : "translate-x-full max-md:hidden"
         )}
       >
         <div className="flex flex-col gap-2 px-5 py-3 md:hidden">
@@ -53,14 +58,18 @@ export default function Sidebar() {
           </div>
           <div className="flex items-start justify-between">
             <div className="flex flex-col gap-0.5">
-              <span className="text-[12px] text-muted-foreground">현재 시간</span>
+              <span className="text-[12px] text-muted-foreground">
+                현재 시간
+              </span>
               <strong className="text-[24px] leading-6 font-semibold tracking-[1px] text-foreground">
                 {now ? formatClock(now) : "--:--:--"}
               </strong>
             </div>
             <div className="text-right text-[12px] text-muted-foreground">
               <p>다음 일정</p>
-              <p className="pt-0.75 text-foreground">{nextItem ? nextItem.title : "-"}</p>
+              <p className="pt-0.75 text-foreground">
+                {nextItem ? nextItem.title : "-"}
+              </p>
               <p className="font-semibold text-point">
                 {remainingLabel ?? "-"}
               </p>

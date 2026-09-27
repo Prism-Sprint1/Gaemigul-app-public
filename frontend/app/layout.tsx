@@ -37,9 +37,15 @@ export default function RootLayout({
     <html
       lang="ko"
       suppressHydrationWarning
-      className={cn("antialiased", pretendard.variable, "font-sans")}
+      // 가로 스크롤 방지: html은 hidden(iOS Safari는 body 값만으로는 막히지 않는다), body는 clip.
+      // 둘 다 hidden이면 body가 스크롤 컨테이너가 되어 sticky(헤더 아래 고정 영역)가 모두 깨지므로 body는 clip으로 둔다
+      className={cn(
+        "overflow-x-hidden antialiased",
+        pretendard.variable,
+        "font-sans"
+      )}
     >
-      <body className="overflow-x-hidden">
+      <body className="overflow-x-clip">
         <ThemeProvider>
           <AuthProvider>
             <MobileSidebarProvider>
