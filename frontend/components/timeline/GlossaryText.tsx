@@ -1,4 +1,8 @@
-import { Fragment } from "react"
+"use client"
+
+import { Fragment, useEffect, useRef, useState } from "react"
+
+import { cn, supportsHover } from "@/lib/utils"
 
 type GlossaryTextProps = {
   text: string
@@ -11,7 +15,75 @@ function escapeRegExp(value: string) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
 }
 
-/** 본문 중 용어 사전에 있는 단어에만 연한 배경을 주고, 호버 시 설명을 띄운다. */
+/** 용어 하나 - 호버 가능한 기기에서는 호버로, 모바일 등 터치 기기에서는 클릭으로 설명을 띄운다. */
+function GlossaryTerm({
+  term,
+  description,
+}: {
+  term: string
+  description: string
+}) {
+  const [open, setOpen] = useState(false)
+  const [hoverOpen, setHoverOpen] = useState(false)
+  const ref = useRef<HTMLSpanElement>(null)
+
+  const visible = open || hoverOpen
+
+  useEffect(() => {
+    if (!visible) return
+
+    const close = () => {
+      setOpen(false)
+      setHoverOpen(false)
+    }
+    const handlePointerDown = (event: PointerEvent) => {
+      if (!ref.current?.contains(event.target as Node)) close()
+    }
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") close()
+    }
+
+    document.addEventListener("pointerdown", handlePointerDown)
+    document.addEventListener("keydown", handleKeyDown)
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown)
+      document.removeEventListener("keydown", handleKeyDown)
+    }
+  }, [visible])
+
+  return (
+    <span
+      ref={ref}
+      role="button"
+      tabIndex={0}
+      onClick={() => setOpen((prev) => !prev)}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault()
+          setOpen((prev) => !prev)
+        }
+      }}
+      onMouseEnter={() => {
+        // 터치 기기(pointer: coarse)에서는 호버로 열리지 않고 클릭으로만 연다.
+        if (supportsHover()) setHoverOpen(true)
+      }}
+      onMouseLeave={() => setHoverOpen(false)}
+      className="relative inline-block cursor-help rounded bg-point/10 px-0.5 text-point"
+    >
+      {term}
+      <span
+        className={cn(
+          "pointer-events-none absolute bottom-full left-1/2 z-20 mb-1.5 w-56 max-w-[calc(100vw-2rem)] -translate-x-1/2 rounded-lg border border-border bg-popover p-2.5 text-[11px] leading-relaxed font-normal text-popover-foreground opacity-0 shadow-lg transition-opacity duration-150",
+          visible && "opacity-100"
+        )}
+      >
+        {description}
+      </span>
+    </span>
+  )
+}
+
+/** 본문 중 용어 사전에 있는 단어에만 연한 배경을 주고, 설명을 띄운다. */
 export default function GlossaryText({ text, glossary }: GlossaryTextProps) {
   const terms = Object.keys(glossary).sort((a, b) => b.length - a.length)
 
@@ -32,17 +104,7 @@ export default function GlossaryText({ text, glossary }: GlossaryTextProps) {
         }
         seen.add(part)
 
-        return (
-          <span
-            key={index}
-            className="group relative inline-block cursor-help rounded bg-point/10 px-0.5 text-point"
-          >
-            {part}
-            <span className="pointer-events-none absolute bottom-full left-1/2 z-20 mb-1.5 hidden w-56 max-w-[calc(100vw-2rem)] -translate-x-1/2 rounded-lg border border-border bg-popover p-2.5 text-[11px] leading-relaxed font-normal text-popover-foreground shadow-lg group-hover:block">
-              {description}
-            </span>
-          </span>
-        )
+        return <GlossaryTerm key={index} term={part} description={description} />
       })}
     </>
   )
