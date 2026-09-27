@@ -11,7 +11,7 @@
 | 폴더 | 내용 |
 |---|---|
 | `backend/` | FastAPI 서버. `src/backend/core/`(외부 API·DB 클라이언트), `src/backend/domain/`(timeline · market · calendar · heatmap · glossary · auth · attendance) |
-| `frontend/` | Next.js 대시보드 |
+| `frontend/` | Next.js(App Router) 대시보드. `app/`(화면), `components/`, `lib/api/`(백엔드 호출) |
 | `docs/` | QA 체크리스트, 요구사항, 트러블슈팅 보고서 |
 
 - 도메인별 설계·작업 기록은 각 도메인의 `Claude.md`를 본다 (예: `backend/src/backend/domain/timeline/Claude.md`).
@@ -19,7 +19,7 @@
 
 ## 1. 실행
 
-**준비물**: Python 3.14 + [uv](https://docs.astral.sh/uv/), Supabase PostgreSQL 접속 정보, 팀이 공유한 `.env`
+**준비물**: Python 3.14 + [uv](https://docs.astral.sh/uv/), Node.js 20 이상, Supabase PostgreSQL 접속 정보, 팀이 공유한 `.env`
 
 ```bash
 # 백엔드
@@ -28,12 +28,19 @@ uv sync
 cp .env.example .env              # 키 입력 (설명은 .env.example, 커밋 금지)
 uv run python create_tables.py    # 처음 한 번, 없는 테이블만 생성 (기존 테이블에 칼럼이 늘면 SQL로 직접 ALTER)
 uv run fastapi run main.py        # http://127.0.0.1:8000 (API 문서 /docs)
+
+# 프런트엔드
+cd frontend
+npm install
+cp .env.example .env.local        # NEXT_PUBLIC_API_BASE_URL=http://localhost:8000 (커밋 금지)
+npm run dev                       # http://localhost:3000
 ```
 
 - `.env` 항목은 `.env.example`에 설명이 있다. KIS·Gemini·네이버·FRED·DART·Supabase·SMTP 키와 `ADMIN_API_KEY`, 세션 쿠키 설정, 히트맵 옵션이 들어간다. **키는 백엔드에만 둔다.**
 - 자동 재시작이 없다. 코드를 고치면 직접 다시 띄운다. 로그는 터미널 + `backend/logs/timeline.log`(14일 보관).
 - 새 모델 파일을 만들면 `create_tables.py`의 import에 넣어야 인식된다.
-- CORS는 `main.py`에서 `http://localhost:3000`·`http://127.0.0.1:3000`만 허용한다. 배포 프런트엔드는 프록시(`rewrites`)로 붙기 때문에 서버 쪽 추가 설정이 필요 없다. 다른 출처에서 직접 호출해야 하면 이 목록을 늘려야 한다.
+- CORS 허용 출처는 `main.py`에 있다: `http://localhost:3000` · `http://127.0.0.1:3000` · 배포 도메인. 허용 메서드는 `GET · POST · PATCH · DELETE`이고 쿠키를 함께 보낸다(`allow_credentials`). 배포 도메인이 바뀌면 이 목록을 고쳐야 한다.
+- 프런트엔드는 환경변수가 `NEXT_PUBLIC_API_BASE_URL` 하나뿐이고, 값이 없으면 `http://localhost:8000`을 쓴다. **외부 API 키는 프런트엔드에 두지 않는다** — 브라우저는 백엔드만 호출한다. 화면·컴포넌트 설명은 `frontend/README.md`를 본다.
 - **백엔드를 켜면 예약 작업이 바로 돈다.** 운영 서버가 따로 있으므로 로컬 백엔드는 필요할 때만 켠다 ([4. 운영 규칙](#4-운영-규칙)).
 
 ### 백엔드 운영 서버 구축 (Oracle Cloud Always Free, Ubuntu 24.04)
@@ -65,8 +72,34 @@ uv run fastapi run main.py        # http://127.0.0.1:8000 (API 문서 /docs)
 cd ~/Gaemigul-app-public && git pull && sudo systemctl restart gaemigul   # 의존성이 바뀌면 uv sync 먼저
 ```
 
+**DB 칼럼이 늘어난 변경을 반영할 때는 순서가 있다.** 새 코드가 없는 칼럼을 조회하면 그 엔드포인트가 500으로 떨어지므로, **칼럼 추가 스크립트를 재시작보다 먼저** 돌린다.
+
+```bash
+cd ~/Gaemigul-app-public && git pull                       # 코드만 받고 아직 재시작하지 않는다
+cd backend && uv run python scripts/add_glossary_category_column.py
+uv run python scripts/add_nickname_changed_at_column.py
+sudo systemctl restart gaemigul                            # 매시 40~55분
+uv run python scripts/seed_glossary_terms.py               # 용어 사전 데이터(현재 89개) 적재
+```
+
+`backend/scripts/`의 수동 스크립트는 넷이다. 모두 여러 번 돌려도 안전하다(`ADD COLUMN IF NOT EXISTS` · upsert).
+
+| 스크립트 | 하는 일 |
+|---|---|
+| `add_glossary_category_column.py` | `glossary_term.category` 칼럼 추가 |
+| `add_nickname_changed_at_column.py` | `auth_user.nickname_changed_at` 칼럼 추가 |
+| `add_newsletter_columns.py` | 개미레터 관련 칼럼 추가 |
+| `seed_glossary_terms.py` | 용어 사전 데이터 적재·갱신 (난이도 3톤 설명 · 카테고리 · 연관 용어) |
+
 - 재시작은 **예약 작업 시각을 피해 매시 40~55분**에 한다. 슬롯·보고서 시각에 걸리면 그 회차가 빠진다.
 - 서버를 옮길 때는 `backend/.env`(권한 600), `backend/.cache/`(KIS 토큰 예비 파일·히트맵 캐시), `backend/logs/`를 새 경로로 함께 옮긴다. 토큰 캐시를 빼먹으면 **KIS 토큰이 재발급되어 계좌 주인에게 알림이 간다.**
+
+### 프런트엔드 배포 (Vercel)
+
+- 배포는 Vercel 프로젝트에서 최신 `dev` 기준으로 다시 배포한다. **백엔드만 반영하고 프런트를 다시 배포하지 않으면, 새 API는 살아 있는데 화면에 기능이 안 보인다.**
+- 브라우저는 백엔드를 직접 부르지 않고 **같은 도메인의 `/api/*`** 를 부른다. `frontend/vercel.json`의 `rewrites`가 이를 백엔드로 넘긴다. https 페이지에서 http 백엔드를 직접 부르면 브라우저가 막기 때문이다.
+- 그래서 프런트에는 백엔드 주소를 넣을 필요가 없다. 로컬에서만 `NEXT_PUBLIC_API_BASE_URL`로 `http://localhost:8000`을 가리킨다.
+- 쿼리 값에 `&`가 들어가는 API가 있다(예: 용어 카테고리 `시장&지수`). 호출할 때 **`encodeURIComponent`로 인코딩**하지 않으면 값이 잘려 422가 난다.
 
 ## 2. 데이터 갱신
 
@@ -104,18 +137,13 @@ grep "스케줄러 시작" backend/logs/timeline.log | tail -1     # "작업 20�
 grep -E "WARNING|ERROR" backend/logs/timeline.log | tail -20
 ```
 
-**점검 시점**: 평일 슬롯 직후 `저장 완료` 로그, 20:10 뒤 `GET /timeline/report?type=daily&date=오늘`, 20:20 뒤 아래 문구 검수, 하루 한 번 `WARNING|ERROR` 로그
-
-### AI 문구 검수 (하루 한 번, 20:20 이후)
-
-그날 슬롯과 보고서가 모두 만들어진 뒤에 확인한다.
-
 ```bash
-curl -H "X-Admin-Key: $ADMIN_API_KEY" "http://<서버>:8000/timeline/holds?date=2026-09-21"    # 확인이 필요한 문구 목록
-curl -X POST -H "X-Admin-Key: $ADMIN_API_KEY" "http://<서버>:8000/timeline/holds/1/resolve"   # 확인 완료 (화면 표시도 내려간다)
+curl -s "http://<서버>:8000/glossary/terms" | python3 -c "import sys,json;print(len(json.load(sys.stdin)))"   # 용어 수 (현재 89)
 ```
 
-저장 전 코드 검사(`text_review.py`)에 걸린 문구는 빠지지 않고 화면에 **"확인 중"** 으로 표시된 채 나간다(응답의 `review_status`). 사람이 자료와 대조해 문장을 고친 뒤 `resolve`를 부르면 목록에서 빠지고 표시도 내려간다. 하루 1~2건 수준이다.
+배포된 화면은 브라우저에서 확인한다. 메인(지표·차트가 채워지는지) → 타임라인(그날 시점 카드) → 용어 사전(카테고리 탭 전환) → 마이페이지(로그인 필요). 화면은 나오는데 값이 비면 백엔드를, 값은 API로 내려오는데 화면에 없으면 프런트 배포 버전을 먼저 의심한다.
+
+**점검 시점**: 평일 슬롯 직후 `저장 완료` 로그, 20:10 뒤 `GET /timeline/report?type=daily&date=오늘`, 하루 한 번 `WARNING|ERROR` 로그
 
 | 증상 | 대응 |
 |---|---|
@@ -123,7 +151,6 @@ curl -X POST -H "X-Admin-Key: $ADMIN_API_KEY" "http://<서버>:8000/timeline/hol
 | DB 연결 실패 `ECIRCUITBREAKER` | 틀린 DB 비밀번호로 접속하는 서버가 있음 → 옛 `.env` 서버를 끄면 몇 분 뒤 자동 해제 |
 | 슬롯·보고서가 비어 있음 | 로그 확인 후 [2. 데이터 갱신](#2-데이터-갱신)의 수동 갱신 |
 | 보고서 이미지 없음 | Pollinations 잔액(402)·한글 폰트(`fonts-noto-cjk`) 확인 |
-| AI 문구에 "확인 중" 표시 | 자동 검사에 걸린 문구 → 위 문구 검수로 대조·수정 후 `resolve` |
 | 캘린더 값이 안 바뀜, 로그에 `FRED … 갱신 실패` | FRED가 간헐적으로 5xx·timeout을 준다. 3회 재시도하고, 모두 실패하면 마지막 값을 유지한 채 다음 주기에 다시 시도한다 |
 | 코드가 반영 안 됨 | 자동 재시작이 없으므로 `sudo systemctl restart gaemigul` |
 
@@ -138,4 +165,6 @@ API 전체 목록과 요청·응답 형식은 서버의 `/docs`에서 확인한�
 - 로컬 실행은 **최신 `dev` + 팀이 공유한 최신 `.env`** 로만 한다. KIS 토큰은 DB `kis_token` 표로 공유하며(`core/kis_token_store.py`), 옛 코드는 토큰을 따로 발급해 운영 서버 토큰을 무효로 만든다.
 - KIS 토큰은 계좌 단위라 `kis_client.get_access_token()`만 쓴다. 따로 발급하면 계좌 주인에게 알림이 간다.
 - `.env`, `backend/.cache/`는 커밋하지 않는다. **운영 서버 주소·포트도 저장소에 적지 않는다**(공개 저장소이고, 서버는 http라 스캔 대상이 된다).
-- 작업 흐름: 기능 브랜치 push → 확인 후 `dev` 병합 → 운영 서버 `git pull` + 재시작.
+- **AI가 만든 문구는 참고용임을 화면에 안내한다.** 브리핑·해설·보고서는 Gemini가 생성하므로, 콘텐츠와 푸터에 AI 생성 안내를 노출한다. 문구를 사람이 매일 검수하지는 않는다.
+- 작업 흐름: 기능 브랜치 push → 확인 후 `dev` 병합 → 운영 서버 `git pull` + 재시작 → **필요하면 프런트엔드 재배포**.
+- 백엔드와 프런트엔드는 따로 배포된다. 한쪽만 올리면 화면과 API가 어긋나므로, 기능 하나를 마치면 **양쪽이 모두 최신인지 확인한다.**
