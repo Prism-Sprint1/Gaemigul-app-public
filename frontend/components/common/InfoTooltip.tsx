@@ -116,7 +116,7 @@ export default function InfoTooltip({
           <div
             ref={panelRef}
             className={cn(
-              "fixed z-20 w-72 max-w-[calc(100vw-2rem)] rounded-lg border border-border bg-popover p-3 text-[12px] leading-relaxed text-muted-foreground shadow-lg transition-opacity duration-150",
+              "fixed z-10 w-72 max-w-[calc(100vw-2rem)] rounded-lg border border-border bg-popover p-3 text-[12px] leading-relaxed text-muted-foreground shadow-lg transition-opacity duration-150",
               visible
                 ? "pointer-events-auto opacity-100"
                 : "pointer-events-none opacity-0",
