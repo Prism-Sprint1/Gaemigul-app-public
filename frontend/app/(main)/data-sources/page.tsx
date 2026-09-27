@@ -29,13 +29,13 @@ const HOME_ROWS = [
     "장 시작 전에는 등락률이 0으로 내려오기 때문에 직전 거래일 등락률로 바꿔 보여줍니다.",
   ],
   [
-    "페로몬 온도 (VIX)",
+    "개미굴 체감온도 (VIX)",
     "한국투자증권 Open API (해외지수)",
     "매시 00·30분",
     "미국 S&P500 옵션 가격으로 계산하는 변동성 지수입니다.",
   ],
   [
-    "페로몬 신호 강도",
+    "개미굴 소란지수",
     "개미굴 자체 계산 (한국투자증권 값 사용)",
     "평일 09:05, 09:30~15:00 30분마다, 15:35",
     "공식 지수가 아닌 개미굴 자체 지표입니다. 계산식은 아래 '개미굴이 직접 계산하는 값'에 있습니다.",
@@ -249,7 +249,7 @@ const COMMITMENTS = [
   },
   {
     title: "자체 지표는 공식 지표가 아닙니다",
-    body: "페로몬 신호 강도, 히트맵의 1위 업종·칸 크기·연관 업종은 개미굴 기준으로 계산하거나 정한 값이라 거래소·증권사의 공식 지표와 다를 수 있습니다.",
+    body: "개미굴 소란지수, 히트맵의 1위 업종·칸 크기·연관 업종은 개미굴 기준으로 계산하거나 정한 값이라 거래소·증권사의 공식 지표와 다를 수 있습니다.",
   },
   {
     title: "뉴스는 원문으로 연결합니다",
@@ -319,7 +319,7 @@ export default function DataSourcesPage() {
       >
         <div className="flex flex-col gap-3 rounded-xl border bg-card px-4 py-4 shadow-sm">
           <strong className="text-sm font-bold text-card-foreground">
-            페로몬 신호 강도 (0~100점)
+            개미굴 소란지수 (0~100점)
           </strong>
           <pre className="overflow-x-auto rounded-lg bg-muted p-3 font-mono text-[12px] leading-relaxed whitespace-pre-wrap text-muted-foreground">
             {[
@@ -361,7 +361,7 @@ export default function DataSourcesPage() {
       >
         <LegalTable columns={AI_COLUMNS} widths={AI_WIDTHS} rows={AI_ROWS} />
         <LegalText>
-          시세·지표 숫자, 페로몬 온도·신호 강도, 히트맵, 캘린더 일정과 설명,
+          시세·지표 숫자, 개미굴 체감온도·소란지수, 히트맵, 캘린더 일정과 설명,
           용어 사전, 등급 진단, 불개미 대장 챗 알림은 AI 없이 저장된 데이터와
           정해진 규칙으로 만듭니다.
         </LegalText>

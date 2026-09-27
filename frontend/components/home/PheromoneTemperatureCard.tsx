@@ -52,16 +52,16 @@ export default function PheromoneTemperatureCard() {
     <div className="rounded-none py-0">
       <div className="flex flex-col gap-4 px-0">
         <div className="flex items-baseline gap-2 text-base font-bold">
-          페로몬 온도
+          개미굴 체감온도
           <span className="text-2xl font-bold" style={{ color: level.color }}>
             {vix.value.toFixed(2)}
           </span>
           <span className="text-sm font-semibold text-neutral-400">
             ({level.statusEn})
           </span>
-          <InfoTooltip label="페로몬 온도 안내">
+          <InfoTooltip label="개미굴 체감온도 안내">
             <p className="mb-1 font-semibold text-popover-foreground">
-              🐜 페로몬 온도란?
+              🐜 개미굴 체감온도란?
             </p>
             <p>
               미국 변동성지수(VIX)를 그대로 가져와 보여주는 수치예요. VIX가

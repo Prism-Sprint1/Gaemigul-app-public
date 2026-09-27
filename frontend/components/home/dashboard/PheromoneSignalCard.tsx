@@ -62,7 +62,7 @@ function SignalInfoButton() {
         )}
       >
         <p className="mb-1.5 font-bold text-popover-foreground">
-          페로몬 신호 강도란?
+          개미굴 소란지수란?
         </p>
         <p className="mb-2 rounded-md bg-muted p-2 font-mono text-[11px] leading-relaxed whitespace-pre-line">
           {"지수 모멘텀(코스피 등락률×0.7 + 코스닥 등락률×0.3의\n최근 60거래일 백분위) × 30%\n"}
@@ -112,7 +112,7 @@ export default function PheromoneSignalCard() {
   return (
     <DashboardCard
       icon={<Radio size={16} className="text-point" />}
-      title="페로몬 신호 강도"
+      title="개미굴 소란지수"
       action={<SignalInfoButton />}
       className="h-full w-full"
     >

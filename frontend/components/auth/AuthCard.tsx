@@ -22,7 +22,7 @@ export function AuthCard({
   maxWidthClassName?: string
 }) {
   return (
-    <div className="flex justify-center bg-background p-3 sm:p-4 lg:p-6">
+    <div className="flex justify-center bg-background">
       <div className="flex w-full flex-col gap-3">
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2 text-lg leading-none font-bold sm:text-xl lg:text-2xl">
@@ -30,7 +30,9 @@ export function AuthCard({
             {title}
           </div>
           {description && (
-            <p className="truncate text-[10px] text-muted-foreground sm:text-xs">{description}</p>
+            <p className="truncate text-[10px] text-muted-foreground sm:text-xs">
+              {description}
+            </p>
           )}
         </div>
         <Separator />

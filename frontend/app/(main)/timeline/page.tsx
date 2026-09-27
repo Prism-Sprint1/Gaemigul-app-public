@@ -96,8 +96,12 @@ function TimelinePageContent() {
   // 자동으로 "loading"이 된다 - 새 날짜로 옮겨 가는 동안에도 따로 상태를 초기화할 필요가 없다
   const requestKey = isInvalidParam ? `invalid:${dateParam}` : selectedKey
   const [slots, setSlots] = useState<ApiTimelineSlot[]>([])
-  const [result, setResult] = useState<{ key: string; state: LoadState } | null>(null)
-  const loadState: LoadState = result?.key === requestKey ? result.state : "loading"
+  const [result, setResult] = useState<{
+    key: string
+    state: LoadState
+  } | null>(null)
+  const loadState: LoadState =
+    result?.key === requestKey ? result.state : "loading"
   const [glossaryTerms, setGlossaryTerms] = useState<ApiGlossaryTerm[]>([])
 
   const goToDate = useCallback(
@@ -230,7 +234,7 @@ function TimelinePageContent() {
   }, [])
 
   return (
-    <div className="flex w-full flex-col gap-6 px-0 py-0 md:px-6 md:py-4">
+    <div className="flex w-full flex-col gap-6">
       <PageTitle
         title="개미들을 위한 실시간 시장 페로몬 신호"
         description="시장의 급박한 변화와 핵심 뉴스 요약을 페로몬 흔적처럼 빠르게 따라갑니다."

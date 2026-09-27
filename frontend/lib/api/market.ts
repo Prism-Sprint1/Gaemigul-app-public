@@ -23,7 +23,7 @@ export interface SentimentResponse {
   updated_at: string
 }
 
-/** GET /market/sentiment — 개미굴 시장심리지수(페로몬 신호 강도). 캐시가 없으면 503. */
+/** GET /market/sentiment — 개미굴 시장심리지수(개미굴 소란지수). 캐시가 없으면 503. */
 export async function getSentiment(): Promise<SentimentResponse> {
   const response = await axios.get<SentimentResponse>(
     `${MARKET_URL}/sentiment`

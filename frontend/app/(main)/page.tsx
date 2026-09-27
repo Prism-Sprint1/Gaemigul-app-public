@@ -7,7 +7,7 @@ import UsdKrwTrendCard from "@/components/home/dashboard/UsdKrwTrendCard"
 
 export default function Page() {
   return (
-    <div className="flex w-full flex-col gap-5 md:px-6 md:py-10">
+    <div className="flex w-full flex-col gap-5">
       <div className="flex flex-col gap-6">
         <PheromoneTemperatureCard />
 

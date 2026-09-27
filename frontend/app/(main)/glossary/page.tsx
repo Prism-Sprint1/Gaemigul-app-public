@@ -143,7 +143,7 @@ function GlossaryPageContent() {
     : "이 카테고리에 해당하는 용어가 아직 없어요."
 
   return (
-    <div className="flex min-h-svh justify-center bg-background p-3 sm:p-4 lg:p-6">
+    <div className="flex min-h-svh justify-center bg-background">
       <div className="flex w-full flex-col gap-3">
         <PageTitle
           title="개미들을 위한 주식&경제 용어 사전"
@@ -212,6 +212,7 @@ function GlossaryPageContent() {
                 <GlossaryGroupHeader
                   title={selectedInfo.title}
                   subtitle={selectedInfo.subtitle}
+                  count={0}
                 />
               )}
               <p className="py-12 text-center text-sm text-muted-foreground">
@@ -230,6 +231,7 @@ function GlossaryPageContent() {
                     id={`glossary-group-${group.key}`}
                     title={group.title}
                     subtitle={group.subtitle}
+                    count={group.terms.length}
                   />
                   <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
                     {group.terms.map((term) => (
@@ -261,15 +263,19 @@ function GlossaryGroupHeader({
   id,
   title,
   subtitle,
+  count,
 }: {
   id?: string
   title: string
   subtitle: string
+  /** 이 그룹에 보이는 용어 수 (검색 중이면 검색에 걸린 수) */
+  count: number
 }) {
   return (
     <div className="flex flex-col gap-1 border-b pb-2">
-      <h2 id={id} className="text-base font-bold">
+      <h2 id={id} className="flex items-baseline gap-2 text-base font-bold">
         {title}
+        <span className="text-xs font-medium text-point">{count}개</span>
       </h2>
       <p className="text-xs text-muted-foreground">{subtitle}</p>
     </div>

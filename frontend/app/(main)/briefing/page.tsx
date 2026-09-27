@@ -74,9 +74,12 @@ function BriefingPageContent() {
       if (!hasQueryTarget && target?.date) {
         if (!cancelled) {
           redirecting = true
-          router.replace(`${pathname}?type=${target.type}&date=${target.date}`, {
-            scroll: false,
-          })
+          router.replace(
+            `${pathname}?type=${target.type}&date=${target.date}`,
+            {
+              scroll: false,
+            }
+          )
         }
         return
       }
@@ -128,7 +131,7 @@ function BriefingPageContent() {
 
   return (
     <div className="flex">
-      <div className="flex w-full flex-col gap-6 px-0 py-0 md:px-6 md:py-4">
+      <div className="flex w-full flex-col gap-6">
         <PageTitle
           title="개미들을 위한 실시간 시장 페로몬 신호"
           description="시장의 급박한 변화와 핵심 뉴스 요약을 페로몬 흔적처럼 빠르게 따라갑니다."

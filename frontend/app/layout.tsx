@@ -39,16 +39,15 @@ export default function RootLayout({
       suppressHydrationWarning
       className={cn("antialiased", pretendard.variable, "font-sans")}
     >
-      <body>
+      <body className="overflow-x-hidden">
         <ThemeProvider>
           <AuthProvider>
             <MobileSidebarProvider>
               <Header />
               <div className="flex">
                 <Sidebar />
-                <main className="w-full min-w-0 px-4 py-10 md:px-0 md:py-0">
-                  {children}
-                </main>
+                {/* 페이지 콘텐츠 여백은 (main)/layout.tsx 한 곳에서만 준다 - 여기와 각 페이지에는 넣지 않는다 */}
+                <main className="w-full min-w-0">{children}</main>
               </div>
               <Footer />
             </MobileSidebarProvider>

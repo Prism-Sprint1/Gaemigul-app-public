@@ -218,7 +218,7 @@ export default function CalendarPage() {
       : "현재 필터 조건에 맞는 일정이 없습니다."
 
   return (
-    <div className="flex min-h-svh justify-center bg-background p-3 sm:p-4 lg:p-6">
+    <div className="flex min-h-svh justify-center bg-background">
       <div className="flex w-full flex-col gap-3">
         {/* 로고 바로 아래, 페이지 맨 위에 고정되는 타이틀 */}
         <PageTitle

@@ -388,7 +388,7 @@ export default function MyPage() {
   if (status === "loading" || status === "unauthenticated" || !user) return null
 
   return (
-    <div className="flex min-h-svh justify-center bg-background p-3 sm:p-4 lg:p-6">
+    <div className="flex min-h-svh justify-center bg-background">
       <div className="flex w-full flex-col gap-3">
         <PageTitle
           title="마이페이지"

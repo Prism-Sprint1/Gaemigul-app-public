@@ -92,7 +92,7 @@ export const marketSessionSchedule: MarketSessionSchedule = {
   usRegularEnd: "05:00",
 }
 
-// ── 페로몬 신호 강도 ──────────────────────────────────────────
+// ── 개미굴 소란지수 ──────────────────────────────────────────
 
 export interface PheromoneSignalLevel {
   /** 와이파이 신호 막대 중 채워지는 개수(1~5) */
