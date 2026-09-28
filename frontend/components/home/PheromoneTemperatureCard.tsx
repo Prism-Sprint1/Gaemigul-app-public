@@ -59,7 +59,7 @@ export default function PheromoneTemperatureCard() {
           <span className="text-sm font-semibold text-neutral-400">
             ({level.statusEn})
           </span>
-          <InfoTooltip label="개미굴 체감온도 안내">
+          <InfoTooltip label="개미굴 체감온도 안내" anchorBelowOnDesktop>
             <p className="mb-1 font-semibold text-popover-foreground">
               🐜 개미굴 체감온도란?
             </p>

@@ -14,9 +14,12 @@ type InfoTooltipProps = {
   iconSize?: number
   buttonClassName?: string
   panelClassName?: string
+  // PC(호버 가능한 기기)에서는 화면 우측 고정 대신 버튼 바로 아래에 띄운다.
+  anchorBelowOnDesktop?: boolean
 }
 
-// 모든 툴팁 패널은 앵커 위치와 무관하게 브라우저 화면 우측에서 16px 띄운 자리에 뜬다.
+// 기본적으로 툴팁 패널은 앵커 위치와 무관하게 브라우저 화면 우측에서 16px 띄운 자리에 뜬다.
+// (anchorBelowOnDesktop이면 PC에서는 버튼 바로 아래에 뜬다.)
 const SCREEN_EDGE_GAP = 16
 // 버튼 바로 아래 8px 간격(기존 mt-2와 동일)
 const VERTICAL_GAP = 8
@@ -29,10 +32,12 @@ export default function InfoTooltip({
   iconSize = 14,
   buttonClassName,
   panelClassName,
+  anchorBelowOnDesktop = false,
 }: InfoTooltipProps) {
   const [open, setOpen] = useState(false)
   const [hoverOpen, setHoverOpen] = useState(false)
   const [top, setTop] = useState(0)
+  const [left, setLeft] = useState<number | null>(null)
   const [mounted, setMounted] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
@@ -46,7 +51,18 @@ export default function InfoTooltip({
 
   const updatePosition = () => {
     const rect = containerRef.current?.getBoundingClientRect()
-    if (rect) setTop(rect.bottom + VERTICAL_GAP)
+    if (!rect) return
+    setTop(rect.bottom + VERTICAL_GAP)
+
+    const panelWidth = panelRef.current?.offsetWidth ?? 0
+    if (anchorBelowOnDesktop && supportsHover() && panelWidth > 0) {
+      // 버튼 중앙 아래에 두되, 화면 좌우 16px 안쪽으로 밀어 넣는다.
+      const centered = rect.left + rect.width / 2 - panelWidth / 2
+      const maxLeft = window.innerWidth - panelWidth - SCREEN_EDGE_GAP
+      setLeft(Math.max(SCREEN_EDGE_GAP, Math.min(centered, maxLeft)))
+    } else {
+      setLeft(null)
+    }
   }
 
   useLayoutEffect(() => {
@@ -122,7 +138,11 @@ export default function InfoTooltip({
                 : "pointer-events-none opacity-0",
               panelClassName
             )}
-            style={{ top, right: SCREEN_EDGE_GAP }}
+            style={
+              left === null
+                ? { top, right: SCREEN_EDGE_GAP }
+                : { top, left }
+            }
           >
             {children}
           </div>,

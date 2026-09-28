@@ -9,6 +9,7 @@ export default function SummaryInfoTooltip() {
       iconSize={16}
       buttonClassName="size-6"
       panelClassName="w-114"
+      anchorBelowOnDesktop
     >
       <p className="mb-1 font-semibold text-popover-foreground">
         🐜 불개미 대장 알림
