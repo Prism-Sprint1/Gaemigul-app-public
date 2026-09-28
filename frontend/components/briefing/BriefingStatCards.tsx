@@ -28,7 +28,7 @@ export default function BriefingStatCards({ cards }: BriefingStatCardsProps) {
         <div
           key={card.label}
           className={cn(
-            "flex h-max items-center justify-between gap-1.5 rounded-lg border p-4",
+            "flex h-max flex-col items-start justify-between gap-1.5 rounded-lg border p-4",
             toneClassName[card.tone]
           )}
         >

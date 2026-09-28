@@ -53,7 +53,7 @@ export default function FindPasswordPage() {
             value={username}
             onChange={(event) => setUsername(event.target.value)}
             autoComplete="username"
-            placeholder="가입하신 아이디"
+            placeholder="아이디를 입력해주세요."
             required
           />
           <AuthTextField
@@ -62,7 +62,7 @@ export default function FindPasswordPage() {
             value={email}
             onChange={(event) => setEmail(event.target.value)}
             autoComplete="email"
-            placeholder="가입하신 이메일"
+            placeholder="이메일을 입력해주세요."
             required
           />
 

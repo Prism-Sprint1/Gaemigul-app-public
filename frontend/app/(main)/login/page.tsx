@@ -34,14 +34,18 @@ export default function LoginPage() {
   }
 
   return (
-    <AuthCard title="로그인" description="아이디와 비밀번호를 입력해주세요." icon={LogIn}>
+    <AuthCard
+      title="로그인"
+      description="아이디와 비밀번호를 입력해주세요."
+      icon={LogIn}
+    >
       <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
         <AuthTextField
           label="아이디"
           value={username}
           onChange={(event) => setUsername(event.target.value)}
           autoComplete="username"
-          placeholder="가입하신 아이디"
+          placeholder="아이디를 입력해주세요."
           required
         />
         <AuthTextField
@@ -50,26 +54,39 @@ export default function LoginPage() {
           value={password}
           onChange={(event) => setPassword(event.target.value)}
           autoComplete="current-password"
-          placeholder="비밀번호"
+          placeholder="비밀번호를 입력해주세요."
           required
         />
 
         {error && <p className="text-sm text-red-500">{error}</p>}
 
-        <Button type="submit" disabled={submitting} className="mt-2 h-10 w-full">
+        <Button
+          type="submit"
+          disabled={submitting}
+          className="mt-2 h-10 w-full"
+        >
           {submitting ? "로그인 중..." : "로그인"}
         </Button>
 
         <div className="flex justify-center gap-3 text-xs text-muted-foreground">
-          <Link href="/find-id" className="hover:text-foreground hover:underline">
+          <Link
+            href="/find-id"
+            className="hover:text-foreground hover:underline"
+          >
             아이디 찾기
           </Link>
           <span>·</span>
-          <Link href="/find-password" className="hover:text-foreground hover:underline">
+          <Link
+            href="/find-password"
+            className="hover:text-foreground hover:underline"
+          >
             비밀번호 찾기
           </Link>
           <span>·</span>
-          <Link href="/signup" className="hover:text-foreground hover:underline">
+          <Link
+            href="/signup"
+            className="hover:text-foreground hover:underline"
+          >
             회원가입
           </Link>
         </div>

@@ -53,7 +53,7 @@ export default function FindIdPage() {
             value={email}
             onChange={(event) => setEmail(event.target.value)}
             autoComplete="email"
-            placeholder="가입하신 이메일"
+            placeholder="이메일을 입력해주세요."
             required
           />
 

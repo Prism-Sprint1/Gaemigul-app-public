@@ -99,7 +99,7 @@ export default function SignupPage() {
   return (
     <AuthCard
       title="회원가입"
-      description="개미굴에서 쓸 정보를 입력해주세요."
+      description="개미굴에서 사용할 정보를 입력해주세요."
       icon={UserPlus}
     >
       <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
@@ -109,7 +109,7 @@ export default function SignupPage() {
           value={email}
           onChange={(event) => setEmail(event.target.value)}
           autoComplete="email"
-          placeholder="example@gaemigul.com"
+          placeholder="이메일을 입력해주세요. ex)example@gaemigul.com"
           required
         />
         <AuthTextField
@@ -117,7 +117,7 @@ export default function SignupPage() {
           value={username}
           onChange={(event) => setUsername(event.target.value)}
           autoComplete="username"
-          placeholder="영문, 숫자로 된 아이디"
+          placeholder="아이디를 입력해주세요."
           required
         />
         <AuthTextField
@@ -125,7 +125,7 @@ export default function SignupPage() {
           value={nickname}
           onChange={(event) => setNickname(event.target.value)}
           maxLength={NICKNAME_MAX_LENGTH}
-          placeholder="다른 개미들에게 보여질 이름"
+          placeholder="닉네임을 입력해주세요."
           required
         />
         <AuthTextField
@@ -143,7 +143,7 @@ export default function SignupPage() {
           value={passwordConfirm}
           onChange={(event) => setPasswordConfirm(event.target.value)}
           autoComplete="new-password"
-          placeholder="비밀번호를 한 번 더 입력해주세요"
+          placeholder="비밀번호를 한 번 더 입력해주세요."
           required
         />
 
