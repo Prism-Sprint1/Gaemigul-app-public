@@ -69,7 +69,9 @@ export function HeaderAuthAction() {
   return (
     <Link href="/mypage" className="flex shrink-0 items-center gap-2">
       <ProfileAvatar nickname={user.nickname} />
-      <span className="hidden text-sm font-medium sm:inline">{user.nickname}님</span>
+      <span className="hidden text-sm font-medium sm:inline">
+        {user.nickname}님
+      </span>
       <Badge className="bg-point3 text-[11px] text-point2">{user.grade}</Badge>
     </Link>
   )
@@ -118,7 +120,7 @@ export default function Header() {
           </div>
         </Link>
         <Marquee></Marquee>
-        <div className="flex min-w-67.5 flex-col justify-center gap-0.5 px-5">
+        <div className="flex min-w-60 flex-col justify-center gap-0.5 px-5">
           <strong className="flex items-center gap-1 text-[18px] text-point">
             <Badge className="bg-point text-[12px] text-white">TIMER</Badge>
             {remaining}
