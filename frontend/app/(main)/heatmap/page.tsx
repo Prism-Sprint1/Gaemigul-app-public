@@ -6,7 +6,7 @@ import type { HeatmapMarket, HeatmapPeriod } from "@/lib/types/HeatmapType"
 import { PageTitle } from "@/components/common"
 
 export default function Page() {
-  const [market, setMarket] = useState<HeatmapMarket>("kospi")
+  const [market, setMarket] = useState<HeatmapMarket>("kosdaq")
   const [period, setPeriod] = useState<HeatmapPeriod>("day")
 
   return (
