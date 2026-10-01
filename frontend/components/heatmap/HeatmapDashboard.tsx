@@ -53,7 +53,7 @@ export default function HeatmapDashboard({
         : null)
 
   return (
-    <div className="space-y-5 text-slate-900 dark:text-neutral-100">
+    <div className="space-y-5 text-neutral-900 dark:text-neutral-100">
       <HeatmapTopSectorBanner
         market={market}
         topSector={topSector}
@@ -62,7 +62,7 @@ export default function HeatmapDashboard({
         isLoading={isLoading}
         collecting={collecting}
       />
-      <div className="rounded-2xl border border-heatmap-border bg-heatmap-panel px-4 py-4 shadow-sm sm:px-5">
+      <div className="rounded-xl border border-heatmap-border bg-heatmap-panel p-4 shadow-sm sm:p-5">
         <HeatmapFilters
           market={market}
           period={period}
@@ -75,14 +75,14 @@ export default function HeatmapDashboard({
           onRefresh={refresh}
         />
         <details className="group mt-2">
-          <summary className="ml-auto flex min-h-6 w-fit cursor-pointer list-none items-center gap-1 rounded text-[11px] text-slate-500 outline-offset-2 hover:text-slate-800 focus-visible:outline-slate-700 dark:text-neutral-400 dark:hover:text-neutral-200 dark:focus-visible:outline-neutral-400 [&::-webkit-details-marker]:hidden">
+          <summary className="ml-auto flex min-h-6 w-fit cursor-pointer list-none items-center gap-1 rounded text-[11px] text-neutral-500 outline-offset-2 hover:text-neutral-800 focus-visible:outline-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200 dark:focus-visible:outline-neutral-400 [&::-webkit-details-marker]:hidden">
             데이터 기준
             <ChevronDown
               className="size-3.5 group-open:rotate-180"
               aria-hidden="true"
             />
           </summary>
-          <div className="mt-2 flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-heatmap-border/60 pt-2 text-[11px] leading-5 text-slate-500 dark:text-neutral-400">
+          <div className="mt-2 flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-heatmap-border/60 pt-2 text-[11px] leading-5 text-neutral-500 dark:text-neutral-400">
             <span className="inline-flex items-center gap-1.5">
               <Database className="size-3.5" aria-hidden="true" /> 한국투자증권
               시세
@@ -101,7 +101,7 @@ export default function HeatmapDashboard({
             <span className="sm:ml-auto">{PERIOD_DESCRIPTIONS[period]}</span>
           </div>
           {data?.as_of_date && (
-            <p className="mt-1 text-[11px] text-slate-500 dark:text-neutral-400">
+            <p className="mt-1 text-[11px] text-neutral-500 dark:text-neutral-400">
               시세 기준일 {data.as_of_date}
             </p>
           )}
@@ -119,7 +119,7 @@ export default function HeatmapDashboard({
       <div className="grid min-w-0 grid-cols-1 items-start gap-5 xl:grid-cols-[minmax(0,1fr)_300px] 2xl:grid-cols-[minmax(0,1fr)_320px]">
         <section
           aria-label="주식 히트맵"
-          className="min-w-0 rounded-2xl border border-heatmap-border bg-heatmap-panel p-4 shadow-heatmap-card sm:p-5"
+          className="min-w-0 rounded-xl border border-heatmap-border bg-heatmap-panel p-4 shadow-sm sm:p-5"
         >
           {hasData && data ? (
             <HeatmapTree sectors={data.sectors} />

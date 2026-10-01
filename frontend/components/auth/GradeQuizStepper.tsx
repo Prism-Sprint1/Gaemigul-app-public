@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react"
 
 import { useAuth } from "@/components/common"
 import { Button } from "@/components/ui"
+import { trackEvent } from "@/lib/analytics"
 import { extractErrorMessage, getGradeQuiz, submitGradeSurvey } from "@/lib/api/auth"
 import type { GradeQuiz, GradeSurveyResult, InvestmentExperience, QuizAnswers } from "@/lib/types/AuthType"
 
@@ -93,6 +94,7 @@ export function GradeQuizStepper({
         news_quiz_answers: newsAnswers,
       })
       setResult(surveyResult)
+      trackEvent("grade_quiz_complete", { grade: surveyResult.grade })
     } catch (submitError) {
       setError(extractErrorMessage(submitError, "제출에 실패했습니다."))
     } finally {

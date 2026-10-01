@@ -79,9 +79,12 @@ export function Marquee({
             animation-direction: reverse !important;
           }
  
-          .pause-on-hover:hover .animate-marquee,
-          .pause-on-hover:hover .animate-marquee-vertical {
-            animation-play-state: paused !important;
+          /* 터치 기기에서는 탭하면 :hover가 붙은 채 남아 슬라이드가 멈추므로 실제 마우스 호버에서만 멈춘다 */
+          @media (hover: hover) and (pointer: fine) {
+            .pause-on-hover:hover .animate-marquee,
+            .pause-on-hover:hover .animate-marquee-vertical {
+              animation-play-state: paused !important;
+            }
           }
  
           .animate-scroll {

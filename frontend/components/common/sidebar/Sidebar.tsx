@@ -3,11 +3,11 @@
 import { useEffect } from "react"
 import { usePathname } from "next/navigation"
 import { Lightbulb, X } from "lucide-react"
-import { cn, formatClock } from "@/lib/utils"
+import { cn } from "@/lib/utils"
 
 import { Separator } from "../../ui"
 import { HeaderAuthAction, ThemeToggle } from "../Header"
-import { TimelineTimer, useTimelineSchedule } from "../timeline"
+import { ScheduleClock, TimelineTimer } from "../timeline"
 
 import SidebarNav from "./SidebarNav"
 import { useMobileSidebar } from "./MobileSidebarContext"
@@ -15,7 +15,6 @@ import { useMobileSidebar } from "./MobileSidebarContext"
 export default function Sidebar() {
   const { isOpen, close } = useMobileSidebar()
   const pathname = usePathname()
-  const { now, nextItem, remainingLabel } = useTimelineSchedule(1000)
 
   useEffect(() => {
     close()
@@ -56,24 +55,9 @@ export default function Sidebar() {
               <X size={20} />
             </button>
           </div>
+          {/* 매초 갱신되는 시계는 ScheduleClock 안에서만 리렌더링된다 */}
           <div className="flex items-start justify-between">
-            <div className="flex flex-col gap-0.5">
-              <span className="text-[12px] text-muted-foreground">
-                현재 시간
-              </span>
-              <strong className="text-[24px] leading-6 font-semibold tracking-[1px] text-foreground">
-                {now ? formatClock(now) : "--:--:--"}
-              </strong>
-            </div>
-            <div className="text-right text-[12px] text-muted-foreground">
-              <p>다음 일정</p>
-              <p className="pt-0.75 text-foreground">
-                {nextItem ? nextItem.title : "-"}
-              </p>
-              <p className="font-semibold text-point">
-                {remainingLabel ?? "-"}
-              </p>
-            </div>
+            <ScheduleClock />
           </div>
         </div>
         <Separator className="w-full md:hidden" />

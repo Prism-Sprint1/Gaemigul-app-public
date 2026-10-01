@@ -21,6 +21,8 @@ import {
   type ExchangeRateResponse,
 } from "@/lib/api/market"
 import { usdKrwRangeLabels, type UsdKrwRange } from "@/lib/constant/home"
+import { SEGMENT_LIST, SEGMENT_TRIGGER } from "@/lib/constant/surface"
+import { cn } from "@/lib/utils"
 import { useIndicatorSchedule } from "@/hooks/use-indicator-schedule"
 import DashboardCard from "./DashboardCard"
 
@@ -100,14 +102,14 @@ export default function UsdKrwTrendCard() {
         <Tabs
           value={range}
           onValueChange={(value) => setRange(value as UsdKrwRange)}
-          className="h-5"
         >
-          <TabsList variant="line">
+          <TabsList className={SEGMENT_LIST}>
             {RANGE_ORDER.map((key) => (
               <TabsTrigger
                 key={key}
                 value={key}
-                className="h-5 cursor-pointer px-2 py-0 text-xs"
+                // 카드 헤더 안이라 공통 알약 탭을 한 단계 작게 쓴다
+                className={cn(SEGMENT_TRIGGER, "cursor-pointer px-2.5 py-1 text-xs")}
               >
                 {usdKrwRangeLabels[key]}
               </TabsTrigger>

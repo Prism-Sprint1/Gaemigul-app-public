@@ -1,4 +1,6 @@
 import { Clock, Lock } from "lucide-react"
+import { EMPTY_STATE_BOX } from "@/lib/constant/surface"
+import { cn } from "@/lib/utils"
 
 type TimelineLockedSectionProps = {
   time: string
@@ -11,7 +13,7 @@ export default function TimelineLockedSection({
   pending,
 }: TimelineLockedSectionProps) {
   return (
-    <div className="flex items-center gap-3 rounded-xl border border-dashed border-border bg-muted px-5 py-8 text-muted-foreground">
+    <div className={cn(EMPTY_STATE_BOX, "flex items-center gap-3 px-5 py-8")}>
       {pending ? <Lock size={16} /> : <Clock size={16} />}
       <p className="text-sm">
         {pending

@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import Image from "next/image"
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { useTheme } from "next-themes"
 import { Badge, Button, Separator } from "@/components/ui"
 
@@ -12,7 +12,14 @@ import Logo from "@/public/images/logo.svg"
 import Marquee from "../marquee/marquee"
 import { Info, Menu, Moon, Sun } from "lucide-react"
 
-import { useIndicatorSchedule } from "@/hooks/use-indicator-schedule"
+import {
+  useIndicatorCountdown,
+  useIndicatorSchedule,
+} from "@/hooks/use-indicator-schedule"
+import {
+  getTimelineIndicators,
+  type MarketIndicatorItem,
+} from "@/lib/api/indicator"
 import { useAuth } from "./auth/AuthContext"
 import { useMobileSidebar } from "./sidebar"
 
@@ -77,9 +84,31 @@ export function HeaderAuthAction() {
   )
 }
 
+/** 다음 지수 갱신까지 남은 시간. 매초 바뀌므로 이 텍스트만 따로 리렌더링되게 분리했다
+ * (헤더 전체와 지수 티커가 매초 다시 그려지지 않도록) */
+function IndicatorCountdown() {
+  return <>{useIndicatorCountdown()}</>
+}
+
 export default function Header() {
   const { toggle } = useMobileSidebar()
-  const { remaining } = useIndicatorSchedule()
+  const [indicators, setIndicators] = useState<MarketIndicatorItem[]>([])
+
+  // 지수 티커는 데스크톱/모바일용으로 두 번 그려지지만 데이터는 여기서 한 번만 불러온다.
+  const fetchIndicators = useCallback(() => {
+    getTimelineIndicators()
+      .then((data) => setIndicators(data.items))
+      .catch((error: unknown) => {
+        console.error("[getTimelineIndicators] 실패", error)
+      })
+  }, [])
+
+  // 최초 진입 시 1회, 이후 정시 기준 15분 경계마다 다시 불러온다
+  useEffect(() => {
+    fetchIndicators()
+  }, [fetchIndicators])
+
+  useIndicatorSchedule(fetchIndicators)
   const headerRef = useRef<HTMLElement>(null)
   const { resolvedTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
@@ -119,11 +148,11 @@ export default function Header() {
             <Separator orientation="vertical" />
           </div>
         </Link>
-        <Marquee></Marquee>
+        <Marquee items={indicators} />
         <div className="flex min-w-60 flex-col justify-center gap-0.5 px-5">
           <strong className="flex items-center gap-1 text-[18px] text-point">
             <Badge className="bg-point text-[12px] text-white">TIMER</Badge>
-            {remaining}
+            <IndicatorCountdown />
           </strong>
           <p className="flex items-center gap-1 text-[10px] text-neutral-500 dark:text-neutral-400">
             <Info size="11" />
@@ -144,7 +173,7 @@ export default function Header() {
         <div className="flex items-center gap-3">
           <strong className="flex items-center gap-1 text-[16px] text-point">
             <Badge className="bg-point text-[12px] text-white">TIMER</Badge>
-            {remaining}
+            <IndicatorCountdown />
           </strong>
           <button
             type="button"
@@ -159,7 +188,7 @@ export default function Header() {
 
       {/* 모바일: 헤더 아래 지수 데이터 티커 */}
       <div className="w-full md:hidden">
-        <Marquee></Marquee>
+        <Marquee items={indicators} />
       </div>
     </header>
   )

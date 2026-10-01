@@ -1,3 +1,4 @@
+import { SECTION_CARD, SECTION_CARD_TITLE } from "@/lib/constant/surface"
 import { cn } from "@/lib/utils"
 
 interface DashboardCardProps {
@@ -18,12 +19,13 @@ export default function DashboardCard({
   return (
     <div
       className={cn(
-        "flex flex-col gap-4 rounded-lg border border-border bg-card p-5 shadow-sm",
+        SECTION_CARD,
+        "flex flex-col gap-4",
         className
       )}
     >
       <div className="flex items-center justify-between gap-2">
-        <h3 className="flex items-center gap-1.5 text-sm font-bold text-foreground">
+        <h3 className={SECTION_CARD_TITLE}>
           {icon}
           {title}
         </h3>

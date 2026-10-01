@@ -97,10 +97,10 @@ export function announceLabel(d: Date): string {
 
 export const segBtn = (active: boolean) =>
   cn(
-    "cursor-pointer rounded-md px-2.5 py-1.5 whitespace-nowrap transition-colors",
+    "cursor-pointer rounded-full px-3 py-1.5 whitespace-nowrap transition-colors",
     active
-      ? "bg-card font-semibold text-primary shadow-sm"
-      : "text-muted-foreground hover:text-foreground"
+      ? "bg-point font-semibold text-white"
+      : "text-neutral-500 hover:text-foreground dark:text-neutral-400"
   )
 
 // 앱(모바일)에서는 줄을 꽉 채우도록 늘어나고, 웹(lg 이상)에서는 원래대로 콘텐츠 너비만 차지

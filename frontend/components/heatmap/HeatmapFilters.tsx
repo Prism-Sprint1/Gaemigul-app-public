@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { Clock3, Lock, RefreshCw } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { SEGMENT_LIST, SEGMENT_TRIGGER } from "@/lib/constant/surface"
 import {
   formatCountdown,
   isAfterMarketClose,
@@ -65,13 +66,13 @@ export default function HeatmapFilters({
           >
             <TabsList
               aria-label="시장 선택"
-              className="h-auto rounded-xl bg-heatmap-canvas p-1"
+              className={SEGMENT_LIST}
             >
               {MARKETS.map((value) => (
                 <TabsTrigger
                   key={value}
                   value={value}
-                  className="min-h-9 min-w-12 rounded-lg px-3 py-2 text-xs font-semibold text-slate-500 dark:text-neutral-400 data-active:bg-heatmap-soft data-active:text-heatmap-accent data-active:shadow-sm"
+                  className={SEGMENT_TRIGGER}
                 >
                   {value.toUpperCase()}
                 </TabsTrigger>
@@ -84,13 +85,13 @@ export default function HeatmapFilters({
           >
             <TabsList
               aria-label="기간 선택"
-              className="h-auto rounded-xl bg-heatmap-canvas p-1"
+              className={SEGMENT_LIST}
             >
               {PERIODS.map((value) => (
                 <TabsTrigger
                   key={value}
                   value={value}
-                  className="min-h-9 min-w-12 rounded-lg px-3 py-2 text-xs font-semibold text-slate-500 dark:text-neutral-400 data-active:bg-heatmap-soft data-active:text-heatmap-accent data-active:shadow-sm"
+                  className={SEGMENT_TRIGGER}
                 >
                   {PERIOD_LABELS[value]}
                 </TabsTrigger>
@@ -101,7 +102,7 @@ export default function HeatmapFilters({
         <div className="flex flex-wrap items-center gap-2.5">
           {!marketClosed && remainingMs !== null && (
             <span
-              className="flex items-center gap-1.5 text-xs font-medium text-slate-500 dark:text-neutral-400 tabular-nums"
+              className="flex items-center gap-1.5 text-xs font-medium text-neutral-500 dark:text-neutral-400 tabular-nums"
               aria-label="다음 자동 갱신까지 남은 시간"
             >
               <Clock3 className="size-3.5" />
@@ -124,7 +125,7 @@ export default function HeatmapFilters({
                 ? "정규장 마감(15:30) 이후에는 업데이트할 수 없습니다."
                 : "수동 업데이트는 1분에 한 번 가능합니다."
             }
-            className="h-10 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white tabular-nums hover:bg-slate-700 disabled:bg-slate-100 disabled:text-slate-500 disabled:opacity-100 dark:disabled:bg-neutral-800 dark:disabled:text-neutral-400"
+            className="h-10 rounded-lg bg-neutral-900 px-3 text-xs font-semibold text-white tabular-nums hover:bg-neutral-700 disabled:bg-neutral-100 disabled:text-neutral-500 disabled:opacity-100 dark:disabled:bg-neutral-800 dark:disabled:text-neutral-400"
           >
             {marketClosed || isCoolingDown ? (
               <Lock />
@@ -142,7 +143,7 @@ export default function HeatmapFilters({
         </div>
       </div>
       {marketClosed && (
-        <p className="mt-3 text-xs leading-5 text-slate-500 dark:text-neutral-400">
+        <p className="mt-3 text-xs leading-5 text-neutral-500 dark:text-neutral-400">
           장 마감 이후에는 마지막 수집 시세를 표시합니다. 다음 정규장에
           갱신됩니다.
         </p>

@@ -5,14 +5,7 @@ import IndicatorSparkline from "./IndicatorSparkline"
 
 import { Marquee } from "@/components/animations/marquee"
 
-import {
-  getTimelineIndicators,
-  type MarketIndicatorItem,
-} from "@/lib/api/indicator"
-
-import { useIndicatorSchedule } from "@/hooks/use-indicator-schedule"
-
-import { useCallback, useEffect, useState } from "react"
+import type { MarketIndicatorItem } from "@/lib/api/indicator"
 
 import {
   uptrendChartData,
@@ -73,25 +66,13 @@ const IndexDataCardSkeleton = () => (
 
 const SKELETON_KEYS = ["s1", "s2", "s3", "s4", "s5", "s6"]
 
-export default function TestimonialMarqueeDemo() {
-  const [items, setItems] = useState<MarketIndicatorItem[]>([])
-
-  const fetchTimelineIndicators = useCallback(() => {
-    return getTimelineIndicators()
-      .then((data) => setItems(data.items))
-      .catch((error: unknown) => {
-        console.error("[getTimelineIndicators] 실패", error)
-      })
-  }, [])
-
-  // 최초 진입 시 1회 실행
-  useEffect(() => {
-    fetchTimelineIndicators()
-  }, [fetchTimelineIndicators])
-
-  // 정시 기준 30분 간격마다 실행
-  useIndicatorSchedule(fetchTimelineIndicators)
-
+/** 지수 티커 - 표시만 담당한다. 헤더에 데스크톱/모바일용으로 두 번 그려지므로 데이터는
+ * 여기서 불러오지 않고 Header가 한 번만 불러와 내려준다(인스턴스마다 요청·타이머가 중복되지 않게) */
+export default function TestimonialMarqueeDemo({
+  items,
+}: {
+  items: MarketIndicatorItem[]
+}) {
   const isLoading = items.length === 0
 
   return (
