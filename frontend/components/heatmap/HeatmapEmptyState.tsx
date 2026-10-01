@@ -27,7 +27,7 @@ export default function HeatmapEmptyState({
   return (
     <div className="flex min-h-[530px] flex-col items-center justify-center rounded-xl border border-dashed border-neutral-200 bg-neutral-50/70 px-6 text-center dark:border-neutral-700 dark:bg-neutral-800/40">
       <div
-        className={`mb-4 flex size-14 items-center justify-center rounded-2xl ${error ? "bg-amber-50 text-amber-600" : "bg-red-50 text-point"}`}
+        className={`mb-4 flex size-14 items-center justify-center rounded-xl ${error ? "bg-amber-50 text-amber-600" : "bg-red-50 text-point"}`}
       >
         {error ? (
           <AlertCircle className="size-6" />

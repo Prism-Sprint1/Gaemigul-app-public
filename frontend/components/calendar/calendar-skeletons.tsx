@@ -1,7 +1,8 @@
 import { Skeleton } from "@/components/ui"
+import { SECTION_CARD } from "@/lib/constant/surface"
 import { cn } from "@/lib/utils"
 
-/** 옅은 카드 배경(bg-primary/5) 위에서도 잘 보이도록 기본 Skeleton보다 대비를 높인 바 */
+/** 카드 배경 위에서도 잘 보이도록 기본 Skeleton보다 대비를 높인 바 */
 function Bar({ className }: { className?: string }) {
   return <Skeleton className={cn("bg-muted-foreground/15", className)} />
 }
@@ -69,7 +70,7 @@ export function MonthGridSkeleton() {
 /** WeekPlan 카드가 아직 데이터를 못 받아왔을 때 보여줄 스켈레톤 */
 export function WeekPlanSkeleton() {
   return (
-    <div className="rounded-xl border bg-primary/5 p-3 sm:p-4">
+    <div className={SECTION_CARD}>
       <Bar className="mb-2 h-3.5 w-32" />
       <div className="flex flex-col gap-2.5">
         {[0, 1, 2].map((i) => (
@@ -86,7 +87,7 @@ export function WeekPlanSkeleton() {
 /** BeginnerLessonTeaser 카드가 아직 데이터를 못 받아왔을 때 보여줄 스켈레톤 */
 export function BeginnerLessonTeaserSkeleton() {
   return (
-    <div className="rounded-xl border bg-primary/5 p-3 sm:p-4">
+    <div className={SECTION_CARD}>
       <Bar className="mb-2 h-3.5 w-28" />
       <Bar className="h-3 w-full" />
       <Bar className="mt-1.5 h-2.5 w-2/3" />

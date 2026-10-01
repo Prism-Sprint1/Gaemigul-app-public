@@ -8,7 +8,7 @@ export default function HeatmapLegend() {
       className="w-36 shrink-0"
       aria-label="등락률: 파랑은 하락, 회색은 보합 또는 미제공, 빨강은 상승"
     >
-      <div className="mb-1 flex justify-between text-[9px] font-medium text-slate-500 dark:text-neutral-400 tabular-nums">
+      <div className="mb-1 flex justify-between text-[9px] font-medium text-neutral-500 dark:text-neutral-400 tabular-nums">
         <span>−5% 이하</span>
         <span>0%</span>
         <span>+5% 이상</span>
@@ -28,8 +28,8 @@ export default function HeatmapLegend() {
 
 export function HeatmapLegendFootnote() {
   return (
-    <details className="group mt-4 border-t border-heatmap-border/60 pt-3 text-xs text-slate-500 dark:text-neutral-400">
-      <summary className="w-fit cursor-pointer rounded py-1 font-medium outline-offset-4 focus-visible:outline-slate-700 dark:outline-neutral-400">
+    <details className="group mt-4 border-t border-heatmap-border/60 pt-3 text-xs text-neutral-500 dark:text-neutral-400">
+      <summary className="w-fit cursor-pointer rounded py-1 font-medium outline-offset-4 focus-visible:outline-neutral-700 dark:outline-neutral-400">
         데이터와 표시 기준
       </summary>
       <ul className="mt-2 space-y-1.5 pl-4 leading-6">

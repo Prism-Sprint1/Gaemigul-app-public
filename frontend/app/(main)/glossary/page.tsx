@@ -30,6 +30,8 @@ import {
   type ToneFilter,
 } from "@/lib/glossary"
 import type { ApiGlossaryTerm } from "@/lib/types/GlossaryType"
+import { SECTION_CARD } from "@/lib/constant/surface"
+import { cn } from "@/lib/utils"
 
 function GlossaryPageContent() {
   // 다른 화면(홈 "오늘의 한 입" 등)에서 /glossary?q=용어 로 넘어오면 그 용어로 검색된 상태로 연다
@@ -150,11 +152,11 @@ function GlossaryPageContent() {
           description="난이도에 맞는 톤으로 투자 용어를 익혀보세요."
         />
 
-        <main className="flex h-max min-w-0 flex-1 flex-col gap-4 rounded-xl border bg-card px-3 py-4 shadow-sm sm:pb-5 lg:px-5">
+        <section className={cn(SECTION_CARD, "flex h-max min-w-0 flex-1 flex-col gap-4")}>
           {/* 검색창은 맨 위에 전체 너비로 크게 두고, 스크롤해도 헤더 바로 아래에 붙어 있게 한다.
               카드 좌우 여백까지 배경으로 덮어서 아래로 지나가는 카드가 비쳐 보이지 않게 한다 */}
           <div
-            className="sticky z-20 -mx-3 bg-card px-3 py-2 lg:-mx-5 lg:px-5"
+            className="sticky z-20 -mx-4 bg-card px-4 py-2 sm:-mx-5 sm:px-5"
             style={{ top: "var(--header-height, 75px)" }}
           >
             <div className="relative w-full">
@@ -250,7 +252,7 @@ function GlossaryPageContent() {
               ))}
             </div>
           )}
-        </main>
+        </section>
       </div>
 
       <LoginRequiredDialog open={loginDialogOpen} onClose={closeLoginDialog} />

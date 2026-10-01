@@ -74,7 +74,7 @@ export function LegalCards({
       {items.map((item) => (
         <div
           key={item.title}
-          className="flex flex-col gap-1 rounded-xl border bg-card px-4 py-3 shadow-sm"
+          className="flex flex-col gap-1 rounded-lg border border-border bg-card px-4 py-3"
         >
           <strong className="text-sm font-bold text-card-foreground">
             {item.title}
@@ -101,7 +101,7 @@ export function LegalTable({
 }) {
   return (
     <>
-      <div className="hidden overflow-hidden rounded-xl border md:block">
+      <div className="hidden overflow-hidden rounded-lg border border-border md:block">
         <table className="w-full table-fixed border-collapse text-left text-[13px]">
           {widths && (
             <colgroup>
@@ -154,7 +154,7 @@ export function LegalTable({
         {rows.map((row, rowIndex) => (
           <div
             key={rowIndex}
-            className="flex flex-col gap-2 rounded-xl border bg-card px-4 py-3 shadow-sm"
+            className="flex flex-col gap-2 rounded-lg border border-border bg-card px-4 py-3"
           >
             <strong className="text-sm font-bold text-card-foreground">
               {row[0]}
@@ -181,7 +181,7 @@ export function LegalTable({
 /** 페이지 끝 안내 상자 */
 export function LegalNotice({ children }: { children: ReactNode }) {
   return (
-    <div className="rounded-xl bg-muted px-4 py-3 text-xs leading-relaxed text-muted-foreground">
+    <div className="rounded-lg bg-muted px-4 py-3 text-xs leading-relaxed text-muted-foreground">
       {children}
     </div>
   )

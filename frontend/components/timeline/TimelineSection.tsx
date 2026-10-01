@@ -10,6 +10,8 @@ import NewsList from "./NewsList"
 import SectorGrid from "./SectorGrid"
 import TimelineLockedSection from "./TimelineLockedSection"
 import TimelineSectionHeader from "./TimelineSectionHeader"
+import { SECTION_CARD } from "@/lib/constant/surface"
+import { cn } from "@/lib/utils"
 
 type TimelineSectionProps = {
   item: ScheduleItem
@@ -44,7 +46,7 @@ export default function TimelineSection({
       />
 
       {isOpen && content ? (
-        <div className="flex w-full flex-col gap-10 rounded-none border-b border-border bg-muted px-3 py-5">
+        <div className={cn(SECTION_CARD, "flex w-full flex-col gap-10")}>
           {content.marketStats && (
             <MarketStatGrid groups={content.marketStats} />
           )}

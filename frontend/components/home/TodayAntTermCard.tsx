@@ -7,8 +7,10 @@ import { useEffect, useMemo, useState } from "react"
 import { useAuth } from "@/components/common"
 import { Badge } from "@/components/ui"
 import { getGlossaryTerms } from "@/lib/api/glossary"
+import { SECTION_CARD } from "@/lib/constant/surface"
 import { descriptionForTone, toneForGrade } from "@/lib/glossary"
 import type { ApiGlossaryTerm } from "@/lib/types/GlossaryType"
+import { cn } from "@/lib/utils"
 
 /** 용어 사전에서 오늘의 한 입으로 보여줄 항목 하나를 날짜 기준으로 고정 선택한다.
  * 목록 순서가 바뀌어도 같은 날엔 같은 용어가 나오도록 id 순으로 정렬한 뒤 고른다. */
@@ -51,7 +53,7 @@ export default function TodayAntTermCard() {
   if (!antTerm) return null
 
   return (
-    <div className="flex flex-col gap-4 rounded-lg border border-border bg-card p-5 shadow-sm">
+    <div className={cn(SECTION_CARD, "flex flex-col gap-4")}>
       <div className="flex min-w-0 flex-col gap-1">
         <div className="flex flex-wrap items-center gap-2">
           <Badge className="bg-point text-[11px] text-white">

@@ -1,5 +1,6 @@
 "use client"
 
+import { SECTION_CARD } from "@/lib/constant/surface"
 import { cn } from "@/lib/utils"
 import { addMonths, format, isSameDay, isSameMonth, subMonths } from "date-fns"
 import { ChevronLeft, ChevronRight } from "lucide-react"
@@ -31,9 +32,9 @@ export function MiniCalendar({
   const weeks = useMemo(() => getMonthGridWeeks(month), [month])
 
   return (
-    <div className="rounded-xl border bg-card p-3 shadow-sm sm:p-4">
+    <div className={SECTION_CARD}>
       <div className="mb-2 flex items-center justify-between">
-        <span className="text-sm font-semibold whitespace-nowrap tabular-nums">
+        <span className="text-sm font-bold whitespace-nowrap tabular-nums">
           {format(month, "yyyy년 M월")}
         </span>
         <div className="flex items-center gap-1">

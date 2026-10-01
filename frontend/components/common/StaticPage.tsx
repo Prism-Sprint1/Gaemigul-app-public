@@ -4,6 +4,9 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import PageTitle from "./title"
+import { SECTION_CARD, SEGMENT_LIST, SEGMENT_TRIGGER } from "@/lib/constant/surface"
+import { cn } from "@/lib/utils"
 
 // "데이터·AI 이용 안내"(/data-ai-usage)는 "데이터 출처·방법론"으로 합쳤다 (옛 주소는 새 페이지로 이동한다)
 const LEGAL_TABS = [
@@ -22,7 +25,7 @@ const LEGAL_TABS = [
 ]
 
 /** 개인정보처리방침/이용약관/데이터 출처·방법론처럼 텍스트 위주 고정 페이지의 공용 레이아웃.
- * 페이지끼리 오가는 탭을 상단 가운데에 둬서 푸터까지 내려가지 않아도 서로 넘나들 수 있게 한다.
+ * 다른 서브 페이지와 같은 PageTitle + 섹션 카드 구성이고, 페이지끼리 오가는 탭을 제목 아래에 둬서 푸터까지 내려가지 않아도 서로 넘나들 수 있게 한다.
  * 본문은 LegalContent.tsx의 조각(LegalSection·LegalTable 등)으로 채운다 */
 export default function StaticPage({
   title,
@@ -41,19 +44,19 @@ export default function StaticPage({
     LEGAL_TABS.find((tab) => tab.href === pathname)?.value ?? "privacy-policy"
 
   return (
-    <div className="flex justify-center">
-      <div className="flex w-full max-w-220 min-w-0 flex-col items-center gap-8">
+    <div className="flex w-full flex-col gap-6">
+      <PageTitle title={title} description={`최종 업데이트 ${updatedAt}`}>
         {/* 좁은 화면에서는 탭이 가로로 스크롤된다 */}
         <Tabs value={activeTab} className="max-w-full min-w-0">
           <div className="max-w-full overflow-x-auto">
-            <TabsList className="h-auto w-max rounded-full bg-neutral-100 p-1 dark:bg-neutral-800">
+            <TabsList className={SEGMENT_LIST}>
               {LEGAL_TABS.map((tab) => (
                 <TabsTrigger
                   key={tab.value}
                   value={tab.value}
                   render={<Link href={tab.href} />}
                   nativeButton={false}
-                  className="shrink-0 rounded-full px-4 py-1.5 text-neutral-500 dark:text-neutral-400 data-active:bg-point data-active:text-white data-active:shadow-none"
+                  className={cn(SEGMENT_TRIGGER, "shrink-0")}
                 >
                   {tab.label}
                 </TabsTrigger>
@@ -61,20 +64,15 @@ export default function StaticPage({
             </TabsList>
           </div>
         </Tabs>
+      </PageTitle>
 
-        <div className="flex w-full flex-col gap-2 border-b pb-6">
-          <h1 className="text-xl font-bold sm:text-2xl">{title}</h1>
-          <p className="text-xs text-muted-foreground">
-            최종 업데이트 {updatedAt}
+      <div className={cn(SECTION_CARD, "flex flex-col gap-10")}>
+        {intro && (
+          <p className="text-sm leading-relaxed text-muted-foreground">
+            {intro}
           </p>
-          {intro && (
-            <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-              {intro}
-            </p>
-          )}
-        </div>
-
-        <div className="flex w-full flex-col gap-10 text-sm leading-relaxed text-foreground">
+        )}
+        <div className="flex max-w-220 flex-col gap-10 text-sm leading-relaxed text-foreground">
           {children}
         </div>
       </div>

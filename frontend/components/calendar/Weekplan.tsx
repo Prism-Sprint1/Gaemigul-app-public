@@ -1,5 +1,6 @@
 "use client"
 
+import { SECTION_CARD, SECTION_CARD_TITLE } from "@/lib/constant/surface"
 import { cn } from "@/lib/utils"
 import { CAT, type NewsItem } from "@/app/(main)/calendar/news-data"
 
@@ -14,8 +15,8 @@ export function WeekPlan({
   const isEmpty = items.length === 0
 
   return (
-    <div className="rounded-xl border bg-primary/5 p-3 sm:p-4">
-      <div className="mb-2 flex items-center justify-start gap-1.5 truncate text-left text-xs font-semibold whitespace-nowrap text-primary">
+    <div className={SECTION_CARD}>
+      <div className={cn(SECTION_CARD_TITLE, "mb-3 truncate whitespace-nowrap")}>
         <span className="shrink-0">{isEmpty ? "🍃" : "✨"}</span>
         {isEmpty
           ? "이번 주는 예정된 일정이 없어요"

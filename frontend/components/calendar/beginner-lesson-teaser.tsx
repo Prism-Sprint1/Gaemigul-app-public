@@ -1,5 +1,6 @@
 "use client"
 
+import { SECTION_CARD, SECTION_CARD_TITLE } from "@/lib/constant/surface"
 import { cn } from "@/lib/utils"
 import type { BeginnerLesson } from "@/app/(main)/calendar/beginner-lessons"
 import {
@@ -22,8 +23,8 @@ export function BeginnerLessonTeaser({
   const { lesson, matchedEvent } = data
 
   return (
-    <div className="rounded-xl border bg-primary/5 p-3 sm:p-4">
-      <div className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-primary">
+    <div className={SECTION_CARD}>
+      <div className={cn(SECTION_CARD_TITLE, "mb-3")}>
         <span className="shrink-0">🐣</span>
         이번 주, 주린이 탈출
       </div>

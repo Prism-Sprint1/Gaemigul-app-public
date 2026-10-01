@@ -1,6 +1,8 @@
 "use client"
 
 import { Separator } from "../ui"
+import { INNER_CARD } from "@/lib/constant/surface"
+import { cn } from "@/lib/utils"
 
 type ReportSectionsNavItem = {
   id: string
@@ -24,7 +26,7 @@ export default function ReportSectionsNav({
 
   return (
     <aside className="hidden w-56 shrink-0 lg:block">
-      <div className="sticky top-23.75 flex flex-col gap-3 rounded-xl bg-card p-4 shadow-sm">
+      <div className={cn(INNER_CARD, "sticky top-23.75 flex flex-col gap-3")}>
         <p className="text-xs font-bold tracking-wide text-point">
           REPORT SECTIONS
         </p>
