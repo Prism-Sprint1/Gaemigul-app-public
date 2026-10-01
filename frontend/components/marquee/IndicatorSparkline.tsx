@@ -14,8 +14,9 @@ export default function IndicatorSparkline({
 
   // The ticker is always 80 × 40. A hidden desktop/mobile header has no
   // measurable parent size, so this chart must not use ResponsiveContainer.
+  // Decorative only: ignore pointer/touch so tapping the ticker never interacts with the chart.
   return (
-    <div className="h-10 w-20 shrink-0 **:outline-none" aria-hidden="true">
+    <div className="pointer-events-none h-10 w-20 shrink-0 **:outline-none" aria-hidden="true">
       <AreaChart
         width={80}
         height={40}

@@ -388,8 +388,8 @@ export default function MyPage() {
   if (status === "loading" || status === "unauthenticated" || !user) return null
 
   return (
-    <div className="flex min-h-svh justify-center bg-background">
-      <div className="flex w-full flex-col gap-3">
+    <div className="flex w-full flex-col">
+      <div className="flex w-full flex-col gap-6">
         <PageTitle
           title="마이페이지"
           description="내 정보와 굴 파기 기록을 확인합니다."

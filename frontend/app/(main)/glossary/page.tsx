@@ -143,8 +143,8 @@ function GlossaryPageContent() {
     : "이 카테고리에 해당하는 용어가 아직 없어요."
 
   return (
-    <div className="flex min-h-svh justify-center bg-background">
-      <div className="flex w-full flex-col gap-3">
+    <div className="flex w-full flex-col">
+      <div className="flex w-full flex-col gap-6">
         <PageTitle
           title="개미들을 위한 주식&경제 용어 사전"
           description="난이도에 맞는 톤으로 투자 용어를 익혀보세요."

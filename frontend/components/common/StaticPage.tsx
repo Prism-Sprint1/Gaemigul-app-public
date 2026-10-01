@@ -41,8 +41,8 @@ export default function StaticPage({
     LEGAL_TABS.find((tab) => tab.href === pathname)?.value ?? "privacy-policy"
 
   return (
-    <div className="flex min-h-svh justify-center bg-background">
-      <div className="flex w-full max-w-220 min-w-0 flex-col items-center gap-8 py-6">
+    <div className="flex justify-center">
+      <div className="flex w-full max-w-220 min-w-0 flex-col items-center gap-8">
         {/* 좁은 화면에서는 탭이 가로로 스크롤된다 */}
         <Tabs value={activeTab} className="max-w-full min-w-0">
           <div className="max-w-full overflow-x-auto">
