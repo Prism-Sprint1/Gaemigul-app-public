@@ -118,13 +118,19 @@ function slotToGroup(
 function useTodayTimeline() {
   const [slots, setSlots] = useState<ApiTimelineSlot[] | null>(null)
   const [loadError, setLoadError] = useState(false)
+  // 가장 최근 요청 번호 - 언마운트 후 도착한 응답이나, 늦게 도착한 이전 응답이
+  // 최신 데이터를 덮어쓰지 않도록 번호가 다르면 버린다
+  const requestIdRef = useRef(0)
 
   const fetchTimeline = useCallback(async () => {
+    const requestId = ++requestIdRef.current
     try {
       const data = await getTimelineDay()
+      if (requestId !== requestIdRef.current) return
       setSlots(data)
       setLoadError(false)
     } catch (error) {
+      if (requestId !== requestIdRef.current) return
       console.error("[getTimelineDay] 실패", error)
       setLoadError(true)
     }
@@ -133,7 +139,10 @@ function useTodayTimeline() {
   useEffect(() => {
     fetchTimeline()
     const timer = setInterval(fetchTimeline, 60_000)
-    return () => clearInterval(timer)
+    return () => {
+      requestIdRef.current += 1
+      clearInterval(timer)
+    }
   }, [fetchTimeline])
 
   return { slots, loadError }
@@ -156,12 +165,15 @@ function useTodayHeatmapTopSector() {
   }, [])
 
   useEffect(() => {
-    const controller = new AbortController()
+    // 진행 중인 요청 하나만 들고 있다가, 다음 갱신이나 언마운트 때 취소한다
+    // (갱신마다 새 컨트롤러를 만들고 버리면 언마운트 시 진행 중인 갱신 요청을 취소할 수 없다)
+    let controller = new AbortController()
     fetchTopSector(controller.signal)
 
     const timer = setInterval(() => {
-      const tickController = new AbortController()
-      fetchTopSector(tickController.signal)
+      controller.abort()
+      controller = new AbortController()
+      fetchTopSector(controller.signal)
     }, 60_000)
 
     return () => {
@@ -317,22 +329,38 @@ const PROMOTION_POLL_INTERVAL_MS = 60_000
  * 안 읽음 배지(useUnreadWhisperCount)와 개수를 합치지 않고 독립적으로 다룬다 */
 function usePromotionSuggestion(enabled: boolean) {
   const [suggestion, setSuggestion] = useState<PromotionSuggestion | null>(null)
+  // 가장 최근 요청 번호 - 응답이 왔을 때 이 값과 다르면(로그아웃·언마운트·더 최근 요청) 버린다.
+  // 로그아웃 직전에 보낸 요청의 응답이 뒤늦게 도착해 승급 카드가 다시 뜨는 걸 막는다
+  const requestIdRef = useRef(0)
 
   const fetchSuggestion = useCallback(() => {
+    const requestId = ++requestIdRef.current
     if (!enabled) {
       setSuggestion(null)
       return
     }
     getPromotionSuggestion()
-      .then(setSuggestion)
-      .catch((error) => console.error("[getPromotionSuggestion] 실패", error))
+      .then((data) => {
+        if (requestId === requestIdRef.current) setSuggestion(data)
+      })
+      .catch((error) => {
+        if (requestId === requestIdRef.current) {
+          console.error("[getPromotionSuggestion] 실패", error)
+        }
+      })
   }, [enabled])
 
   useEffect(() => {
     fetchSuggestion()
-    const timer = setInterval(fetchSuggestion, PROMOTION_POLL_INTERVAL_MS)
-    return () => clearInterval(timer)
-  }, [fetchSuggestion])
+    // 비로그인 상태에서는 조회할 게 없으므로 주기 조회 타이머를 걸지 않는다
+    const timer = enabled
+      ? setInterval(fetchSuggestion, PROMOTION_POLL_INTERVAL_MS)
+      : undefined
+    return () => {
+      requestIdRef.current += 1
+      clearInterval(timer)
+    }
+  }, [enabled, fetchSuggestion])
 
   return { suggestion, refetch: fetchSuggestion }
 }
