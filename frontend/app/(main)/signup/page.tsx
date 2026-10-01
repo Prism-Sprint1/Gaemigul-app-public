@@ -9,6 +9,7 @@ import { AuthCard } from "@/components/auth/AuthCard"
 import { AuthTextField } from "@/components/auth/AuthTextField"
 import { useAuth } from "@/components/common"
 import { Button, Checkbox } from "@/components/ui"
+import { trackEvent } from "@/lib/analytics"
 import {
   extractErrorMessage,
   NICKNAME_MAX_LENGTH,
@@ -64,6 +65,7 @@ export default function SignupPage() {
       })
       setUser(user)
       setSignupComplete(true)
+      if (newsletterOptIn) trackEvent("newsletter_subscribe", { source: "signup" })
     } catch (submitError) {
       setError(extractErrorMessage(submitError, "회원가입에 실패했습니다."))
     } finally {
