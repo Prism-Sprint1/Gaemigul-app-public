@@ -4,13 +4,22 @@ import Link from "next/link"
 import Image from "next/image"
 import { useEffect, useRef, useState } from "react"
 import { useTheme } from "next-themes"
-import { Badge, Button, Separator } from "@/components/ui"
+import { Badge, Button, Separator, Skeleton } from "@/components/ui"
 
 import DarkLogo from "@/public/images/dark-logo.svg"
 import Logo from "@/public/images/logo.svg"
 
 import Marquee from "../marquee/marquee"
-import { Info, LogOut, Menu, Moon, Sun, User } from "lucide-react"
+import {
+  Info,
+  LogIn,
+  LogOut,
+  Menu,
+  Moon,
+  Sun,
+  User,
+  UserPlus,
+} from "lucide-react"
 
 import { useIndicatorSchedule } from "@/hooks/use-indicator-schedule"
 import { useAuth } from "./auth/AuthContext"
@@ -80,14 +89,76 @@ export function HeaderAuthAction() {
 const PROFILE_MENU_ITEM =
   "flex w-full cursor-pointer items-center gap-2 rounded-md px-2.5 py-2 text-left text-sm text-popover-foreground transition-colors hover:bg-muted disabled:cursor-default disabled:opacity-50"
 
-/** 데스크톱 헤더 프로필 - [아바타] [닉네임님]에 호버하면 마이페이지 / 테마 변경 / 로그아웃 메뉴가 열린다.
- * 비로그인·로딩 중에는 HeaderAuthAction(로그인 버튼·빈 자리)을 그대로 쓴다 */
+/** 호버(키보드는 focus-visible)하면 trigger 아래 오른쪽 정렬로 메뉴가 열린다.
+ * 메뉴와 trigger 사이 간격은 pt로 둬서, 마우스가 그 틈을 지나도 호버가 끊기지 않게 한다 */
+function HeaderHoverMenu({
+  trigger,
+  children,
+}: {
+  trigger: React.ReactNode
+  children: React.ReactNode
+}) {
+  return (
+    <div className="group relative shrink-0">
+      {trigger}
+      <div className="invisible absolute top-full right-0 z-40 pt-2 opacity-0 transition-opacity duration-150 group-hover:visible group-hover:opacity-100 group-has-[:focus-visible]:visible group-has-[:focus-visible]:opacity-100">
+        <div
+          role="menu"
+          className="flex w-40 flex-col rounded-lg border border-border bg-popover p-1 shadow-lg"
+        >
+          {children}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/** 데스크톱 헤더 프로필 영역.
+ * - 로딩 중: 아바타·닉네임 자리 스켈레톤
+ * - 비로그인: [테마 토글] [유저 아이콘] - 유저 아이콘에 호버하면 로그인 / 회원가입 메뉴
+ * - 로그인: [아바타] [닉네임님] - 호버하면 마이페이지 / 테마 변경 / 로그아웃 메뉴 */
 function HeaderProfileMenu() {
-  const { user, logout } = useAuth()
+  const { user, status, logout } = useAuth()
   const { resolvedTheme, setTheme } = useTheme()
   const [loggingOut, setLoggingOut] = useState(false)
 
-  if (!user) return <HeaderAuthAction />
+  if (status === "loading") {
+    return (
+      <div className="flex shrink-0 items-center gap-2" aria-hidden="true">
+        <Skeleton className="size-8 rounded-full" />
+        <Skeleton className="h-4 w-16" />
+      </div>
+    )
+  }
+
+  if (!user) {
+    return (
+      <div className="flex shrink-0 items-center gap-1">
+        <ThemeToggle />
+        <HeaderHoverMenu
+          trigger={
+            <button
+              type="button"
+              aria-haspopup="menu"
+              aria-label="로그인 메뉴"
+              className="flex size-8 cursor-pointer items-center justify-center rounded-full text-neutral-500 hover:bg-muted dark:text-neutral-400"
+            >
+              <User size={18} />
+            </button>
+          }
+        >
+          <Link href="/login" role="menuitem" className={PROFILE_MENU_ITEM}>
+            <LogIn size={15} />
+            로그인
+          </Link>
+          <Link href="/signup" role="menuitem" className={PROFILE_MENU_ITEM}>
+            <UserPlus size={15} />
+            회원가입
+          </Link>
+        </HeaderHoverMenu>
+      </div>
+    )
+  }
 
   const isDark = resolvedTheme === "dark"
 
@@ -105,49 +176,43 @@ function HeaderProfileMenu() {
   }
 
   return (
-    <div className="group relative shrink-0">
-      <Link
-        href="/mypage"
-        aria-haspopup="menu"
-        className="flex items-center gap-2"
-      >
-        <ProfileAvatar nickname={user.nickname} />
-        <span className="text-sm font-medium">{user.nickname}님</span>
-      </Link>
-      {/* 메뉴와 프로필 사이 간격은 pt로 둬서, 마우스가 그 틈을 지나도 호버가 끊기지 않게 한다.
-          키보드 사용자는 Tab으로 포커스가 들어오면(focus-visible) 같이 열린다 */}
-      <div className="invisible absolute top-full right-0 z-40 pt-2 opacity-0 transition-opacity duration-150 group-hover:visible group-hover:opacity-100 group-has-[:focus-visible]:visible group-has-[:focus-visible]:opacity-100">
-        <div
-          role="menu"
-          className="flex w-40 flex-col rounded-lg border border-border bg-popover p-1 shadow-lg"
+    <HeaderHoverMenu
+      trigger={
+        <Link
+          href="/mypage"
+          aria-haspopup="menu"
+          className="flex items-center gap-2"
         >
-          <Link href="/mypage" role="menuitem" className={PROFILE_MENU_ITEM}>
-            <User size={15} />
-            마이페이지
-          </Link>
-          <button
-            type="button"
-            role="menuitem"
-            onClick={() => setTheme(isDark ? "light" : "dark")}
-            aria-label={isDark ? "라이트 모드로 전환" : "다크 모드로 전환"}
-            className={PROFILE_MENU_ITEM}
-          >
-            {isDark ? <Sun size={15} /> : <Moon size={15} />}
-            테마 변경
-          </button>
-          <button
-            type="button"
-            role="menuitem"
-            onClick={handleLogout}
-            disabled={loggingOut}
-            className={PROFILE_MENU_ITEM}
-          >
-            <LogOut size={15} />
-            {loggingOut ? "로그아웃 중..." : "로그아웃"}
-          </button>
-        </div>
-      </div>
-    </div>
+          <ProfileAvatar nickname={user.nickname} />
+          <span className="text-sm font-medium">{user.nickname}님</span>
+        </Link>
+      }
+    >
+      <Link href="/mypage" role="menuitem" className={PROFILE_MENU_ITEM}>
+        <User size={15} />
+        마이페이지
+      </Link>
+      <button
+        type="button"
+        role="menuitem"
+        onClick={() => setTheme(isDark ? "light" : "dark")}
+        aria-label={isDark ? "라이트 모드로 전환" : "다크 모드로 전환"}
+        className={PROFILE_MENU_ITEM}
+      >
+        {isDark ? <Sun size={15} /> : <Moon size={15} />}
+        테마 변경
+      </button>
+      <button
+        type="button"
+        role="menuitem"
+        onClick={handleLogout}
+        disabled={loggingOut}
+        className={PROFILE_MENU_ITEM}
+      >
+        <LogOut size={15} />
+        {loggingOut ? "로그아웃 중..." : "로그아웃"}
+      </button>
+    </HeaderHoverMenu>
   )
 }
 
