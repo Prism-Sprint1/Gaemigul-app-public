@@ -11,6 +11,7 @@ import { Button, Separator, Skeleton } from "@/components/ui"
 import { getPromotionSuggestion, respondToPromotionSuggestion } from "@/lib/api/auth"
 import { getCalendarEvents } from "@/lib/api/calendar"
 import { getHeatmap } from "@/lib/api/heatmap"
+import { isAfterMarketClose } from "@/lib/heatmap-format"
 import { getTimelineDay } from "@/lib/api/timeline"
 import { cn } from "@/lib/utils"
 import { toNewsItem, type NewsItem } from "@/app/(main)/calendar/news-data"
@@ -148,39 +149,44 @@ function useTodayTimeline() {
   return { slots, loadError }
 }
 
-/** 코스피 "단물 섹터"(1위 업종) - 타임라인과 같은 주기로 다시 불러온다. 시황 타임라인이 갱신될
- * 때 같이 최신 값을 반영하도록, 그리고 장 마감(15:30) 이후로는 더 이상 새 슬롯이 안 나와
- * 자연히 마지막 값에서 멈추도록 하기 위함이다 */
-function useTodayHeatmapTopSector() {
+/** 코스피 "단물 섹터"(1위 업종). 말풍선 개수가 흔들리지 않도록 첫 진입 시 한 번은 항상 불러오고,
+ * 이후 60초 주기 갱신은 챗이 열려 있을 때만 한다(닫혀 있을 땐 화면에 안 보이므로 모든 페이지에서
+ * 계속 폴링할 이유가 없다). 열 때 바로 한 번 갱신해 최신 값을 보여주고, 장 마감(15:30) 이후로는
+ * 값이 더 바뀌지 않으므로 주기 갱신을 하지 않는다 */
+function useTodayHeatmapTopSector(isOpen: boolean) {
   const [topSector, setTopSector] = useState<HeatmapResponse["top_sector"] | null>(null)
+  // 진행 중인 요청 하나만 들고 있다가, 다음 요청이나 언마운트 때 취소한다
+  const controllerRef = useRef<AbortController | null>(null)
 
-  const fetchTopSector = useCallback((signal: AbortSignal) => {
-    getHeatmap("kospi", "day", signal)
+  const fetchTopSector = useCallback(() => {
+    controllerRef.current?.abort()
+    const controller = new AbortController()
+    controllerRef.current = controller
+    getHeatmap("kospi", "day", controller.signal)
       .then((data) => {
-        if (!signal.aborted) setTopSector(data.top_sector)
+        if (!controller.signal.aborted) setTopSector(data.top_sector)
       })
       .catch((error) => {
-        if (!signal.aborted) console.error("[getHeatmap] 실패", error)
+        if (!controller.signal.aborted) console.error("[getHeatmap] 실패", error)
       })
   }, [])
 
+  // 첫 진입 시 1회
   useEffect(() => {
-    // 진행 중인 요청 하나만 들고 있다가, 다음 갱신이나 언마운트 때 취소한다
-    // (갱신마다 새 컨트롤러를 만들고 버리면 언마운트 시 진행 중인 갱신 요청을 취소할 수 없다)
-    let controller = new AbortController()
-    fetchTopSector(controller.signal)
-
-    const timer = setInterval(() => {
-      controller.abort()
-      controller = new AbortController()
-      fetchTopSector(controller.signal)
-    }, 60_000)
-
-    return () => {
-      controller.abort()
-      clearInterval(timer)
-    }
+    fetchTopSector()
+    return () => controllerRef.current?.abort()
   }, [fetchTopSector])
+
+  // 챗이 열려 있는 동안만: 열 때 즉시 1회 + 60초마다
+  useEffect(() => {
+    if (!isOpen) return
+    const refresh = () => {
+      if (!isAfterMarketClose()) fetchTopSector()
+    }
+    refresh()
+    const timer = setInterval(refresh, 60_000)
+    return () => clearInterval(timer)
+  }, [isOpen, fetchTopSector])
 
   return topSector
 }
@@ -541,7 +547,7 @@ export default function WhisperChat() {
   }
 
   const { slots, loadError } = useTodayTimeline()
-  const topSector = useTodayHeatmapTopSector()
+  const topSector = useTodayHeatmapTopSector(isOpen)
   const { events: calendarEvents, revealed: calendarRevealed } = useTodayCalendarBriefing()
   const { status: authStatus, refresh: refreshAuth } = useAuth()
   const { suggestion, refetch: refetchSuggestion } = usePromotionSuggestion(authStatus === "authenticated")
