@@ -1,10 +1,10 @@
 "use client"
 
 import { Badge } from "@/components/ui"
-import { useIndicatorSchedule } from "@/hooks/use-indicator-schedule"
+import { useIndicatorCountdown } from "@/hooks/use-indicator-schedule"
 
 export default function HeaderTimer() {
-  const { remaining } = useIndicatorSchedule()
+  const remaining = useIndicatorCountdown()
 
   return (
     <strong className="flex items-center gap-1 text-[18px] text-point">

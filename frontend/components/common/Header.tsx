@@ -12,7 +12,10 @@ import Logo from "@/public/images/logo.svg"
 import Marquee from "../marquee/marquee"
 import { Info, Menu, Moon, Sun } from "lucide-react"
 
-import { useIndicatorSchedule } from "@/hooks/use-indicator-schedule"
+import {
+  useIndicatorCountdown,
+  useIndicatorSchedule,
+} from "@/hooks/use-indicator-schedule"
 import {
   getTimelineIndicators,
   type MarketIndicatorItem,
@@ -81,6 +84,12 @@ export function HeaderAuthAction() {
   )
 }
 
+/** 다음 지수 갱신까지 남은 시간. 매초 바뀌므로 이 텍스트만 따로 리렌더링되게 분리했다
+ * (헤더 전체와 지수 티커가 매초 다시 그려지지 않도록) */
+function IndicatorCountdown() {
+  return <>{useIndicatorCountdown()}</>
+}
+
 export default function Header() {
   const { toggle } = useMobileSidebar()
   const [indicators, setIndicators] = useState<MarketIndicatorItem[]>([])
@@ -99,7 +108,7 @@ export default function Header() {
     fetchIndicators()
   }, [fetchIndicators])
 
-  const { remaining } = useIndicatorSchedule(fetchIndicators)
+  useIndicatorSchedule(fetchIndicators)
   const headerRef = useRef<HTMLElement>(null)
   const { resolvedTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
@@ -143,7 +152,7 @@ export default function Header() {
         <div className="flex min-w-60 flex-col justify-center gap-0.5 px-5">
           <strong className="flex items-center gap-1 text-[18px] text-point">
             <Badge className="bg-point text-[12px] text-white">TIMER</Badge>
-            {remaining}
+            <IndicatorCountdown />
           </strong>
           <p className="flex items-center gap-1 text-[10px] text-neutral-500 dark:text-neutral-400">
             <Info size="11" />
@@ -164,7 +173,7 @@ export default function Header() {
         <div className="flex items-center gap-3">
           <strong className="flex items-center gap-1 text-[16px] text-point">
             <Badge className="bg-point text-[12px] text-white">TIMER</Badge>
-            {remaining}
+            <IndicatorCountdown />
           </strong>
           <button
             type="button"
