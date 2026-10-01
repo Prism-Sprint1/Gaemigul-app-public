@@ -10,6 +10,7 @@ import { isSameDay } from "date-fns"
 import { Button, Separator, Skeleton } from "@/components/ui"
 import { getPromotionSuggestion, respondToPromotionSuggestion } from "@/lib/api/auth"
 import { getCalendarEvents } from "@/lib/api/calendar"
+import { trackEvent } from "@/lib/analytics"
 import { getHeatmap } from "@/lib/api/heatmap"
 import { isAfterMarketClose } from "@/lib/heatmap-format"
 import { getTimelineDay } from "@/lib/api/timeline"
@@ -735,7 +736,10 @@ export default function WhisperChat() {
           모바일(sm 미만)에서는 50px, 그 이상에서는 56px. */}
       <button
         type="button"
-        onClick={() => setIsOpen((prev) => !prev)}
+        onClick={() => {
+          if (!isOpen) trackEvent("whisper_chat_open")
+          setIsOpen(!isOpen)
+        }}
         aria-label={isOpen ? "대장 챗 닫기" : "대장 챗 열기"}
         className="cursor-pointer fixed right-3 bottom-20 z-50 flex size-[50px] items-center justify-center rounded-full bg-point text-white shadow-lg transition-transform active:scale-95 sm:size-14"
       >
