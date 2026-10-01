@@ -110,26 +110,22 @@ export default function Header() {
     <header ref={headerRef} className="sticky top-0 z-30 w-full bg-background">
       {/* 데스크톱 헤더 (기존 그대로) */}
       <div className="hidden w-full md:flex">
-        <Link
-          href={"/"}
-          className="flex min-w-67.5 items-center justify-between pl-5"
-        >
-          <Image src={logoSrc} alt="개미굴 로고" width="140"></Image>
-          <div className="flex items-center gap-2.5">
-            <Separator orientation="vertical" />
+        <div className="flex min-w-67.5 items-center pl-5">
+          <Link href={"/"}>
+            <Image src={logoSrc} alt="개미굴 로고" width="120"></Image>
+          </Link>
+          <div className="flex min-w-60 flex-col justify-center gap-0.5 px-5">
+            <strong className="flex items-center gap-1 text-[18px] text-point">
+              <Badge className="bg-point text-[12px] text-white">TIMER</Badge>
+              {remaining}
+            </strong>
+            <p className="flex items-center gap-1 text-[10px] text-neutral-500 dark:text-neutral-400">
+              <Info size="11" />
+              지수 데이터는 정시 기준 15분마다 갱신됩니다.
+            </p>
           </div>
-        </Link>
-        <Marquee></Marquee>
-        <div className="flex min-w-60 flex-col justify-center gap-0.5 px-5">
-          <strong className="flex items-center gap-1 text-[18px] text-point">
-            <Badge className="bg-point text-[12px] text-white">TIMER</Badge>
-            {remaining}
-          </strong>
-          <p className="flex items-center gap-1 text-[10px] text-neutral-500 dark:text-neutral-400">
-            <Info size="11" />
-            지수 데이터는 정시 기준 15분마다 갱신됩니다.
-          </p>
         </div>
+        <Marquee></Marquee>
         <div className="flex shrink-0 items-center gap-2 px-5">
           <ThemeToggle />
           <HeaderAuthAction />

@@ -17,7 +17,7 @@ export default function SidebarNav() {
 
   return (
     <nav className="bg-card px-2.5 py-3">
-      <ul className="flex flex-col gap-2.5">
+      <ul className="flex flex-col gap-2">
         {sidebarNavItems.map(
           ({
             href,
@@ -38,14 +38,16 @@ export default function SidebarNav() {
                   href={href}
                   aria-current={isActive ? "page" : undefined}
                   className={cn(
-                    "group flex w-full items-center justify-between rounded-lg px-3 py-2 transition-colors duration-200",
+                    "group flex w-full items-center justify-between rounded-lg px-3 py-1.25 transition-colors duration-200",
                     isActive ? "bg-point" : "hover:bg-point/10"
                   )}
                 >
                   <span
                     className={cn(
-                      "flex items-center gap-2 text-[14px] transition-colors duration-200",
-                      isActive ? "text-white" : "text-foreground group-hover:text-point"
+                      "flex items-center gap-2 text-[13px] transition-colors duration-200",
+                      isActive
+                        ? "text-white"
+                        : "text-foreground group-hover:text-point"
                     )}
                   >
                     <Icon size="16" />

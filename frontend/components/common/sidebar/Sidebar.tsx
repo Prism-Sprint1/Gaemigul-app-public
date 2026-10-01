@@ -66,13 +66,11 @@ export default function Sidebar() {
               </strong>
             </div>
             <div className="text-right text-[12px] text-muted-foreground">
-              <p>다음 일정</p>
-              <p className="pt-0.75 text-foreground">
+              <p className="flex items-center gap-0.5 pt-0.75 text-foreground">
+                <span>다음 일정 |</span>
                 {nextItem ? nextItem.title : "-"}
               </p>
-              <p className="font-semibold text-point">
-                {remainingLabel ?? "-"}
-              </p>
+              <p className="font-semibold text-point">{remainingLabel ?? ""}</p>
             </div>
           </div>
         </div>
