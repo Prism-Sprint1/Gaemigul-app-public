@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useRef, useState } from "react"
 import { usePathname } from "next/navigation"
 import { Lightbulb, X } from "lucide-react"
 import { cn, formatClock } from "@/lib/utils"
@@ -21,6 +21,31 @@ export default function Sidebar() {
     close()
   }, [pathname, close])
 
+  // TIP 닫힘 여부 - 사이드바는 루트 레이아웃에 붙어 있어 페이지를 옮겨도 언마운트되지 않으므로
+  // 한 번 닫으면 새로고침 전까지 계속 닫혀 있다(저장소에 남기지 않아 새로고침하면 다시 보인다)
+  const [tipDismissed, setTipDismissed] = useState(false)
+  const asideRef = useRef<HTMLElement>(null)
+  const tipRef = useRef<HTMLDivElement>(null)
+
+  // TIP은 타임라인 위에 떠 있으므로(absolute), 그 높이를 --sidebar-tip-height로 내려서
+  // 타임라인 목록 하단 여백으로 쓴다 - 마지막 항목이 TIP에 가려지지 않게.
+  // 모바일에서는 TIP이 display:none이라 높이가 0으로 잡힌다
+  useEffect(() => {
+    const aside = asideRef.current
+    const tip = tipRef.current
+    if (!aside || !tip) return
+
+    const update = () =>
+      aside.style.setProperty("--sidebar-tip-height", `${tip.offsetHeight}px`)
+    update()
+    const observer = new ResizeObserver(update)
+    observer.observe(tip)
+    return () => {
+      observer.disconnect()
+      aside.style.removeProperty("--sidebar-tip-height")
+    }
+  }, [tipDismissed])
+
   return (
     <>
       <div
@@ -36,9 +61,10 @@ export default function Sidebar() {
           그래서 닫히는 애니메이션이 끝나면 display:none(transition-discrete)으로 아예 빼고,
           열 때는 starting: 상태(화면 밖)에서 밀려 들어오게 한다. 데스크톱(md 이상)은 항상 보인다 */}
       <aside
+        ref={asideRef}
         className={cn(
           "fixed inset-y-0 right-0 z-50 w-67.5 bg-card transition-all transition-discrete duration-300",
-          "md:sticky md:top-18.75 md:z-auto md:flex md:h-[calc(100vh-75px)] md:w-auto md:max-w-67.5 md:translate-x-0 md:flex-col md:overflow-hidden",
+          "md:sticky md:top-18.75 md:z-auto md:flex md:h-[calc(100vh-75px)] md:w-auto md:min-w-67.5 md:translate-x-0 md:flex-col md:overflow-hidden",
           isOpen
             ? "translate-x-0 starting:translate-x-full"
             : "translate-x-full max-md:hidden"
@@ -83,16 +109,30 @@ export default function Sidebar() {
         <div className="hidden min-h-0 md:flex md:flex-1 md:flex-col">
           <TimelineTimer />
         </div>
-        <div className="hidden shrink-0 bg-point3/60 p-3 px-5 md:block">
-          <p className="flex items-center gap-1 text-[14px] font-semibold text-point2 dark:text-neutral-900">
-            <Lightbulb size="16" />
-            TIP 불개미 꿀팁!
-          </p>
-          <p className="mt-0.5 text-[12px] text-neutral-500 dark:text-neutral-800">
-            매크로 지표 발표 직후 5분은 뇌동매매를 멈추고 페로몬 신호의 방향성을
-            확인하세요.
-          </p>
-        </div>
+        {/* 타임라인 위에 떠 있는 TIP - 반투명 배경 + 블러로 뒤 목록이 살짝 비친다 */}
+        {!tipDismissed && (
+          <div
+            ref={tipRef}
+            className="absolute inset-x-0 bottom-0 z-10 hidden bg-point3/60 p-3 px-5 backdrop-blur-sm md:block"
+          >
+            <p className="flex items-center gap-1 pr-6 text-[14px] font-semibold text-point2 dark:text-neutral-900">
+              <Lightbulb size="16" />
+              TIP 불개미 꿀팁!
+            </p>
+            <p className="mt-0.5 text-[12px] text-neutral-500 dark:text-neutral-800">
+              매크로 지표 발표 직후 5분은 뇌동매매를 멈추고 페로몬 신호의
+              방향성을 확인하세요.
+            </p>
+            <button
+              type="button"
+              onClick={() => setTipDismissed(true)}
+              aria-label="꿀팁 닫기"
+              className="absolute top-2 right-2 flex size-6 cursor-pointer items-center justify-center rounded-full text-point2 transition-colors hover:bg-point2/10 dark:text-neutral-900"
+            >
+              <X size={14} />
+            </button>
+          </div>
+        )}
       </aside>
     </>
   )

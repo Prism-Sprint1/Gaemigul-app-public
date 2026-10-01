@@ -49,7 +49,9 @@ export default function Timeline() {
   }
 
   return (
-    <div className="min-h-0 flex-1 overflow-y-auto">
+    // 사이드바 하단에 떠 있는 TIP 높이(--sidebar-tip-height, Sidebar가 설정)만큼 아래 여백을 둬서
+    // 마지막 항목까지 스크롤로 TIP 위에 올릴 수 있게 한다. TIP을 닫으면 0
+    <div className="min-h-0 flex-1 overflow-y-auto pb-(--sidebar-tip-height)">
       <ol className="relative flex flex-col px-5 py-3">
         <span className="absolute top-5.5 bottom-5.5 left-6.75 w-0.5 bg-neutral-200" />
         {items.map((item) => {

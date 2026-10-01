@@ -10,7 +10,7 @@ import DarkLogo from "@/public/images/dark-logo.svg"
 import Logo from "@/public/images/logo.svg"
 
 import Marquee from "../marquee/marquee"
-import { Info, Menu, Moon, Sun } from "lucide-react"
+import { Info, LogOut, Menu, Moon, Sun, User } from "lucide-react"
 
 import { useIndicatorSchedule } from "@/hooks/use-indicator-schedule"
 import { useAuth } from "./auth/AuthContext"
@@ -77,6 +77,80 @@ export function HeaderAuthAction() {
   )
 }
 
+const PROFILE_MENU_ITEM =
+  "flex w-full cursor-pointer items-center gap-2 rounded-md px-2.5 py-2 text-left text-sm text-popover-foreground transition-colors hover:bg-muted disabled:cursor-default disabled:opacity-50"
+
+/** 데스크톱 헤더 프로필 - [아바타] [닉네임님]에 호버하면 마이페이지 / 테마 변경 / 로그아웃 메뉴가 열린다.
+ * 비로그인·로딩 중에는 HeaderAuthAction(로그인 버튼·빈 자리)을 그대로 쓴다 */
+function HeaderProfileMenu() {
+  const { user, logout } = useAuth()
+  const { resolvedTheme, setTheme } = useTheme()
+  const [loggingOut, setLoggingOut] = useState(false)
+
+  if (!user) return <HeaderAuthAction />
+
+  const isDark = resolvedTheme === "dark"
+
+  // 마이페이지에는 "비로그인이 되면 /login으로 보내는" 가드가 있어 클라이언트 이동은 그쪽과 경합한다.
+  // 로그아웃 후에는 전체 페이지 이동으로 홈에 보내서 어느 페이지에서 눌러도 결과가 같게 한다
+  const handleLogout = async () => {
+    setLoggingOut(true)
+    try {
+      await logout()
+      window.location.assign("/")
+    } catch (error) {
+      console.error("[logout] 실패", error)
+      setLoggingOut(false)
+    }
+  }
+
+  return (
+    <div className="group relative shrink-0">
+      <Link
+        href="/mypage"
+        aria-haspopup="menu"
+        className="flex items-center gap-2"
+      >
+        <ProfileAvatar nickname={user.nickname} />
+        <span className="text-sm font-medium">{user.nickname}님</span>
+      </Link>
+      {/* 메뉴와 프로필 사이 간격은 pt로 둬서, 마우스가 그 틈을 지나도 호버가 끊기지 않게 한다.
+          키보드 사용자는 Tab으로 포커스가 들어오면(focus-visible) 같이 열린다 */}
+      <div className="invisible absolute top-full right-0 z-40 pt-2 opacity-0 transition-opacity duration-150 group-hover:visible group-hover:opacity-100 group-has-[:focus-visible]:visible group-has-[:focus-visible]:opacity-100">
+        <div
+          role="menu"
+          className="flex w-40 flex-col rounded-lg border border-border bg-popover p-1 shadow-lg"
+        >
+          <Link href="/mypage" role="menuitem" className={PROFILE_MENU_ITEM}>
+            <User size={15} />
+            마이페이지
+          </Link>
+          <button
+            type="button"
+            role="menuitem"
+            onClick={() => setTheme(isDark ? "light" : "dark")}
+            aria-label={isDark ? "라이트 모드로 전환" : "다크 모드로 전환"}
+            className={PROFILE_MENU_ITEM}
+          >
+            {isDark ? <Sun size={15} /> : <Moon size={15} />}
+            테마 변경
+          </button>
+          <button
+            type="button"
+            role="menuitem"
+            onClick={handleLogout}
+            disabled={loggingOut}
+            className={PROFILE_MENU_ITEM}
+          >
+            <LogOut size={15} />
+            {loggingOut ? "로그아웃 중..." : "로그아웃"}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function Header() {
   const { toggle } = useMobileSidebar()
   const { remaining } = useIndicatorSchedule()
@@ -110,25 +184,35 @@ export default function Header() {
     <header ref={headerRef} className="sticky top-0 z-30 w-full bg-background">
       {/* 데스크톱 헤더 (기존 그대로) */}
       <div className="hidden w-full md:flex">
-        <div className="flex min-w-67.5 items-center pl-5">
-          <Link href={"/"}>
-            <Image src={logoSrc} alt="개미굴 로고" width="120"></Image>
+        <div className="flex min-w-67.5 items-center justify-between px-5 py-2 pr-1">
+          <Link href={"/"} className="mt-3">
+            <Image src={logoSrc} alt="개미굴 로고" width="150"></Image>
           </Link>
-          <div className="flex min-w-60 flex-col justify-center gap-0.5 px-5">
-            <strong className="flex items-center gap-1 text-[18px] text-point">
-              <Badge className="bg-point text-[12px] text-white">TIMER</Badge>
+          {/* INDEX에 호버(키보드는 포커스)하면 갱신 주기 안내 툴팁을 띄운다 */}
+          <div
+            tabIndex={0}
+            aria-describedby="header-index-tooltip"
+            className="group relative flex cursor-help gap-0.5 rounded-sm pt-1.5 outline-offset-2 focus-visible:outline-point"
+          >
+            <strong className="flex flex-col items-end gap-1 text-[14px] text-point">
+              <Badge className="py- bg-point text-[10px] text-white">
+                INDEX
+              </Badge>
               {remaining}
             </strong>
-            <p className="flex items-center gap-1 text-[10px] text-neutral-500 dark:text-neutral-400">
-              <Info size="11" />
+            <p
+              id="header-index-tooltip"
+              role="tooltip"
+              className="pointer-events-none invisible absolute top-full left-1/2 z-40 mt-2 flex w-max -translate-x-1/2 items-center gap-1 rounded-lg border border-border bg-popover px-2.5 py-1.5 text-[11px] text-popover-foreground opacity-0 shadow-lg transition-opacity duration-150 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100"
+            >
+              <Info size={11} className="text-muted-foreground" />
               지수 데이터는 정시 기준 15분마다 갱신됩니다.
             </p>
           </div>
         </div>
         <Marquee></Marquee>
         <div className="flex shrink-0 items-center gap-2 px-5">
-          <ThemeToggle />
-          <HeaderAuthAction />
+          <HeaderProfileMenu />
         </div>
       </div>
 
