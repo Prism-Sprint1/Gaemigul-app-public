@@ -11,24 +11,24 @@ export default function TimelineTimer() {
 
   return (
     <>
-      <div className="w-full bg-card px-5 py-3">
+      <div className="w-full bg-card px-5 py-3 pr-1">
         <div className="text-right text-[12px] text-muted-foreground">
           {/* 타임라인 타이머 */}
           <div className="flex gap-0.5">
             {/* <span className="text-[12px] text-muted-foreground">현재 시간</span> */}
             <div className="flex w-full items-center justify-between">
-              <strong className="text-[30px] leading-6 font-semibold tracking-[1px] text-foreground">
+              <strong className="text-[32px] leading-6 font-bold tracking-[1px] text-foreground">
                 {now ? formatClock(now) : "--:--:--"}
               </strong>
 
-              <div>
-                <div className="flex items-center justify-end gap-0.5">
+              <div className="mt-px flex flex-col gap-px">
+                <div className="flex items-center justify-end">
                   {/* <p>다음 일정 | </p> */}
-                  <p className="text-foreground">
+                  <p className="text-[10px] text-foreground">
                     {nextItem ? nextItem.title : "-"}
                   </p>
                 </div>
-                <p className="font-semibold text-point">
+                <p className="-mt-1 font-semibold text-point">
                   {remainingLabel ?? "-"}
                 </p>
               </div>
@@ -36,7 +36,10 @@ export default function TimelineTimer() {
           </div>
         </div>
       </div>
-      <Separator className="w-full" />
+      <div className="flex w-full flex-col gap-1">
+        <Separator className="w-full" />
+        <Separator className="w-full" />
+      </div>
       <Timeline />
     </>
   )

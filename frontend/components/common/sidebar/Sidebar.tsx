@@ -9,7 +9,6 @@ import { Separator } from "../../ui"
 import { HeaderAuthAction, ThemeToggle } from "../Header"
 import { TimelineTimer, useTimelineSchedule } from "../timeline"
 
-import SidebarNav from "./SidebarNav"
 import { useMobileSidebar } from "./MobileSidebarContext"
 
 export default function Sidebar() {
@@ -101,11 +100,10 @@ export default function Sidebar() {
           </div>
         </div>
         <Separator className="w-full md:hidden" />
-        <SidebarNav />
         <div className="absolute bottom-6 left-5 md:hidden">
           <ThemeToggle />
         </div>
-        <Separator className="w-full" />
+        {/* <Separator className="w-full" /> */}
         <div className="hidden min-h-0 md:flex md:flex-1 md:flex-col">
           <TimelineTimer />
         </div>

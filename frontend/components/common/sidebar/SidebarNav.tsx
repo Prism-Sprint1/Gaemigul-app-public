@@ -6,8 +6,6 @@ import { cn } from "cn"
 
 import { sidebarNavItems } from "@/lib/constant/sidebar"
 
-import { Badge } from "../../ui"
-
 // 브리핑 페이지는 실시간 페로몬(타임라인)의 하위 화면이라 같은 항목을 active 처리한다.
 const TIMELINE_PATH = "/timeline"
 const BRIEFING_PATH = "/briefing"
@@ -16,17 +14,10 @@ export default function SidebarNav() {
   const pathname = usePathname()
 
   return (
-    <nav className="bg-card px-2.5 py-3">
-      <ul className="flex flex-col gap-2">
+    <nav className="fixed bottom-5 left-[50%] z-20 translate-x-[-50%] rounded-full border border-neutral-200/50 bg-card p-2 shadow-2xl">
+      <ul className="flex gap-2">
         {sidebarNavItems.map(
-          ({
-            href,
-            label,
-            icon: Icon,
-            badge,
-            badgeClassName,
-            activeBadgeClassName,
-          }) => {
+          ({ href, label, icon: Icon }) => {
             const isActive =
               pathname === href ||
               pathname.startsWith(`${href}/`) ||
@@ -38,31 +29,29 @@ export default function SidebarNav() {
                   href={href}
                   aria-current={isActive ? "page" : undefined}
                   className={cn(
-                    "group flex w-full items-center justify-between rounded-lg px-3 py-1.25 transition-colors duration-200",
+                    "group flex w-full items-center justify-between rounded-lg p-2 transition-colors duration-200",
                     isActive ? "bg-point" : "hover:bg-point/10"
                   )}
                 >
                   <span
                     className={cn(
-                      "flex items-center gap-2 text-[13px] transition-colors duration-200",
+                      "relative flex items-center gap-2 transition-colors duration-200",
                       isActive
                         ? "text-white"
                         : "text-foreground group-hover:text-point"
                     )}
                   >
                     <Icon size="16" />
-                    {label}
-                  </span>
-                  {badge && (
-                    <Badge
-                      className={cn(
-                        isActive ? activeBadgeClassName : badgeClassName,
-                        "transition-colors duration-200"
-                      )}
+                    {/* 호버(키보드는 포커스) 시 메뉴 위로 "통" 튀어나오는 라벨 툴팁.
+                        아래쪽을 기준점으로 작게 접혀 있다가, 살짝 넘쳤다 돌아오는(overshoot) 곡선으로 커지며 올라온다.
+                        활성 메뉴는 글자가 흰색이라 색을 직접 지정한다(다크 모드 포함) */}
+                    <span
+                      role="tooltip"
+                      className="pointer-events-none absolute bottom-full left-1/2 mb-6 w-max origin-bottom -translate-x-1/2 translate-y-2 scale-50 rounded-full border border-border bg-popover px-2.5 py-1 text-[13px] font-medium whitespace-nowrap text-popover-foreground opacity-0 shadow-md transition-[opacity,scale,translate] duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:translate-y-0 group-hover:scale-100 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:scale-100 group-focus-visible:opacity-100"
                     >
-                      {badge}
-                    </Badge>
-                  )}
+                      {label}
+                    </span>
+                  </span>
                 </Link>
               </li>
             )

@@ -4,7 +4,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { useEffect, useRef, useState } from "react"
 import { useTheme } from "next-themes"
-import { Badge, Button, Separator, Skeleton } from "@/components/ui"
+import { Badge, Button, Skeleton } from "@/components/ui"
 
 import DarkLogo from "@/public/images/dark-logo.svg"
 import Logo from "@/public/images/logo.svg"
@@ -16,6 +16,7 @@ import {
   LogOut,
   Menu,
   Moon,
+  RotateCcwClock,
   Sun,
   User,
   UserPlus,
@@ -249,8 +250,8 @@ export default function Header() {
     <header ref={headerRef} className="sticky top-0 z-30 w-full bg-background">
       {/* 데스크톱 헤더 (기존 그대로) */}
       <div className="hidden w-full md:flex">
-        <div className="flex min-w-67.5 items-center justify-between px-5 py-2 pr-1">
-          <Link href={"/"} className="mt-3">
+        <div className="flex min-w-67.5 items-end justify-between px-5 py-2 pr-1 pb-5">
+          <Link href={"/"}>
             <Image src={logoSrc} alt="개미굴 로고" width="150"></Image>
           </Link>
           {/* INDEX에 호버(키보드는 포커스)하면 갱신 주기 안내 툴팁을 띄운다 */}
@@ -259,11 +260,13 @@ export default function Header() {
             aria-describedby="header-index-tooltip"
             className="group relative flex cursor-help gap-0.5 rounded-sm pt-1.5 outline-offset-2 focus-visible:outline-point"
           >
-            <strong className="flex flex-col items-end gap-1 text-[14px] text-point">
-              <Badge className="py- bg-point text-[10px] text-white">
+            {/* <strong className="flex flex-col items-end gap-1 text-[14px] text-point"> */}
+            <strong className="-mb-1.25 flex items-center gap-0 text-[14px] text-point">
+              {/* <Badge className="py- bg-point text-[10px] text-white">
                 INDEX
-              </Badge>
-              {remaining}
+              </Badge> */}
+              <RotateCcwClock width={13.5} />
+              <span className="min-w-10 text-right">{remaining}</span>
             </strong>
             <p
               id="header-index-tooltip"

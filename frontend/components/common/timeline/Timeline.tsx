@@ -1,6 +1,7 @@
 "use client"
 
 import { usePathname, useRouter } from "next/navigation"
+import { useEffect, useRef } from "react"
 import { cn } from "cn"
 
 import { Badge } from "../../ui"
@@ -29,6 +30,33 @@ export default function Timeline() {
   const router = useRouter()
   const pathname = usePathname()
   const { items } = useTimelineSchedule(30000)
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const itemRefs = useRef<Record<string, HTMLLIElement | null>>({})
+  const autoScrolledRef = useRef(false)
+
+  // 지금 진행 중인 시황(없으면 다음 시황) - 페이지 로드 시 사이드바 목록을 여기로 스크롤한다
+  const activeId =
+    items.find((item) => item.status === "current")?.id ??
+    items.find((item) => item.status === "next")?.id
+
+  // 처음 한 번만 자동 스크롤한다(이후엔 사용자가 직접 스크롤한 위치를 존중).
+  // 시계는 마운트 직후 한 틱 뒤에 잡혀서 그때 activeId가 정해진다.
+  // scrollIntoView는 페이지 전체까지 움직일 수 있어서 목록 컨테이너의 scrollTop만 조정한다
+  useEffect(() => {
+    if (autoScrolledRef.current || !activeId) return
+    const container = scrollRef.current
+    const target = itemRefs.current[activeId]
+    // 모바일처럼 타임라인이 숨겨져(display:none) 있으면 크기가 0이라 스크롤하지 않는다
+    if (!container || !target || container.clientHeight === 0) return
+
+    autoScrolledRef.current = true
+    const top =
+      target.getBoundingClientRect().top -
+      container.getBoundingClientRect().top +
+      container.scrollTop
+    // 로드 직후(첫 페인트 전)에 시작한 smooth 스크롤은 취소돼 버려서 즉시 이동한다
+    container.scrollTo({ top: Math.max(0, top - 12) })
+  }, [activeId])
 
   const goToSection = (
     id: string,
@@ -51,14 +79,23 @@ export default function Timeline() {
   return (
     // 사이드바 하단에 떠 있는 TIP 높이(--sidebar-tip-height, Sidebar가 설정)만큼 아래 여백을 둬서
     // 마지막 항목까지 스크롤로 TIP 위에 올릴 수 있게 한다. TIP을 닫으면 0
-    <div className="min-h-0 flex-1 overflow-y-auto pb-(--sidebar-tip-height)">
+    <div
+      ref={scrollRef}
+      className="min-h-0 flex-1 overflow-y-auto pb-(--sidebar-tip-height)"
+    >
       <ol className="relative flex flex-col px-5 py-3">
         <span className="absolute top-5.5 bottom-5.5 left-6.75 w-0.5 bg-neutral-200" />
         {items.map((item) => {
           const isMuted = mutedStatuses.has(item.status)
 
           return (
-            <li key={item.id} className="pb-5 last:pb-0">
+            <li
+              key={item.id}
+              ref={(node) => {
+                itemRefs.current[item.id] = node
+              }}
+              className="pb-5 last:pb-0"
+            >
               <button
                 type="button"
                 onClick={(event) => goToSection(item.id, event)}
