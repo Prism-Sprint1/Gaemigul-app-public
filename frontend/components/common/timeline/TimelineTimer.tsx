@@ -1,29 +1,15 @@
 "use client"
 
-import { formatClock } from "@/lib/utils"
-
 import { Separator } from "../../ui"
+import ScheduleClock from "./ScheduleClock"
 import Timeline from "./Timeline"
-import { useTimelineSchedule } from "./use-timeline-schedule"
 
 export default function TimelineTimer() {
-  const { now, nextItem, remainingLabel } = useTimelineSchedule(1000)
-
   return (
     <>
       <div className="flex w-full items-end justify-between bg-card px-5 py-3">
-        {/* 타임라인 타이머 */}
-        <div className="flex flex-col gap-0.5">
-          <span className="text-[12px] text-muted-foreground">현재 시간</span>
-          <strong className="text-[24px] leading-6 font-semibold tracking-[1px] text-foreground">
-            {now ? formatClock(now) : "--:--:--"}
-          </strong>
-        </div>
-        <div className="text-right text-[12px] text-muted-foreground">
-          <p>다음 일정</p>
-          <p className="pt-0.75 text-foreground">{nextItem ? nextItem.title : "-"}</p>
-          <p className="font-semibold text-point">{remainingLabel ?? "-"}</p>
-        </div>
+        {/* 타임라인 타이머 - 매초 갱신은 ScheduleClock 안에서만 일어난다 */}
+        <ScheduleClock />
       </div>
       <Separator className="w-full" />
       <Timeline />
