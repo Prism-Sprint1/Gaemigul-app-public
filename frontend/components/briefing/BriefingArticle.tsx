@@ -8,6 +8,8 @@ import BriefingStatCards from "./BriefingStatCards"
 import BriefingTakeaway from "./BriefingTakeaway"
 
 import { Separator } from "../ui"
+import { INNER_CARD } from "@/lib/constant/surface"
+import { cn } from "@/lib/utils"
 
 type BriefingArticleProps = {
   /** 0-based 순서. 강조 색상을 순환 선택하는 데 사용한다. */
@@ -29,7 +31,7 @@ export default function BriefingArticle({ id, article, reviewMessage }: Briefing
     <article
       id={article.id}
       style={accentStyle}
-      className="flex scroll-mt-24 flex-col gap-4 rounded-lg bg-card p-5 shadow-sm"
+      className={cn(INNER_CARD, "flex scroll-mt-24 flex-col gap-4")}
     >
       <div className="flex items-center gap-2">
         <span className="text-baisc flex size-9 items-center justify-center rounded-md bg-(--briefing-accent) font-bold text-white">

@@ -24,9 +24,7 @@ export default function Page() {
         <CalendarScheduleCard />
       </div>
 
-      <div className="rounded-2xl border border-border bg-card shadow-sm">
-        <TodayAntTermCard />
-      </div>
+      <TodayAntTermCard />
     </div>
   )
 }

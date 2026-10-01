@@ -20,6 +20,8 @@ import {
   mapReportToBriefingContent,
 } from "@/lib/briefing-mapper"
 import type { BriefingContent } from "@/lib/types/BriefingType"
+import { SECTION_CARD, EMPTY_STATE_BOX } from "@/lib/constant/surface"
+import { cn } from "@/lib/utils"
 
 type ReportTarget = { type: ReportKind; date: string }
 
@@ -142,7 +144,7 @@ function BriefingPageContent() {
         {isLoading && <BriefingSkeleton />}
 
         {!isLoading && isEmpty && (
-          <div className="flex min-h-100 w-full items-center justify-center rounded-xl bg-muted p-5">
+          <div className={cn(EMPTY_STATE_BOX, "flex min-h-100 w-full items-center justify-center")}>
             <p className="text-sm text-muted-foreground">
               아직 리포트가 생성되지 않았습니다.
             </p>
@@ -151,7 +153,7 @@ function BriefingPageContent() {
 
         {!isLoading && !isEmpty && content && (
           <div className="flex items-start gap-6">
-            <section className="flex min-w-0 flex-1 flex-col gap-6 rounded-xl bg-muted px-3 py-5 md:px-5">
+            <section className={cn(SECTION_CARD, "flex min-w-0 flex-1 flex-col gap-6")}>
               <BriefingArticleHeader content={content} />
 
               <BriefingImage url={content.mainImageUrl} alt={content.title} />

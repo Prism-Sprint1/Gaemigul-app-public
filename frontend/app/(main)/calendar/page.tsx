@@ -25,6 +25,8 @@ import { MiniCalendar } from "@/components/calendar/mini-calendar"
 import { MonthGrid } from "@/components/calendar/month-grid"
 import { WeekList } from "@/components/calendar/week-list"
 import { getCalendarEvents } from "@/lib/api/calendar"
+import { EMPTY_STATE_BOX, SECTION_CARD } from "@/lib/constant/surface"
+import { cn } from "@/lib/utils"
 import {
   toggleCategory,
   type GroupFilter,
@@ -218,19 +220,19 @@ export default function CalendarPage() {
       : "현재 필터 조건에 맞는 일정이 없습니다."
 
   return (
-    <div className="flex min-h-svh justify-center bg-background">
-      <div className="flex w-full flex-col gap-3">
+    <div className="flex w-full flex-col">
+      <div className="flex w-full flex-col gap-6">
         {/* 로고 바로 아래, 페이지 맨 위에 고정되는 타이틀 */}
         <PageTitle
           title="주요 경제 지표와 이벤트 일정"
           description="수익을 좌우할 미래의 주요 경제 지표와 기업 일정을 미리 모아 대비합니다."
         />
 
-        <div className="flex min-w-0 flex-col-reverse gap-3 lg:flex-row">
+        <div className="flex min-w-0 flex-col-reverse gap-6 lg:flex-row">
           {/* 왼쪽: 필터 + 월간/주간 뷰 */}
-          <main className="flex h-max min-w-0 flex-1 flex-col gap-3 rounded-xl border bg-card px-3 py-4 shadow-sm sm:pb-5 lg:px-5">
+          <section className={cn(SECTION_CARD, "flex h-max min-w-0 flex-1 flex-col gap-3")}>
             {/* 필터 — 웹에서는 스크롤해도 상단에 붙어서 따라옴. 데스크톱에서는 탭/토글과 같은 줄 가운데에 현재 월도 같이 표시(주별·월별 공통) */}
-            <div className="rounded-2xl lg:sticky lg:top-18.75 lg:z-10 lg:-mx-5 lg:bg-card lg:px-5 lg:pt-4 lg:pb-3">
+            <div className="lg:sticky lg:top-18.75 lg:z-10 lg:-mx-5 lg:bg-card lg:px-5 lg:pt-4 lg:pb-3">
               <FilterBar
                 groupFilter={groupFilter}
                 onSelectGroup={selectGroup}
@@ -248,13 +250,13 @@ export default function CalendarPage() {
             </div>
 
             {unavailableYear !== null ? (
-              <div className="flex min-h-64 items-center justify-center rounded-lg border border-dashed px-4 text-center text-sm text-muted-foreground">
+              <div className={cn(EMPTY_STATE_BOX, "flex min-h-64 items-center justify-center")}>
                 {unavailableYear < currentYear
                   ? "이전 연도의 데이터는 제공하지 않습니다."
                   : "아직 제공되지 않는 일정입니다."}
               </div>
             ) : loadError && allNews.length === 0 ? (
-              <div className="flex min-h-64 flex-col items-center justify-center gap-3 rounded-lg border border-dashed px-4 text-center text-sm text-muted-foreground">
+              <div className={cn(EMPTY_STATE_BOX, "flex min-h-64 flex-col items-center justify-center gap-3")}>
                 <p>일정을 불러오지 못했습니다.</p>
                 <button
                   type="button"
@@ -329,10 +331,10 @@ export default function CalendarPage() {
                 </div>
               </>
             )}
-          </main>
+          </section>
 
           {/* 오른쪽: 미니 달력 + AI 요약 — 앱(360) 사이즈에서는 페이지 최상단에 세로로 노출, 웹에서는 스크롤해도 따라오도록 sticky */}
-          <aside className="flex w-full shrink-0 flex-col gap-3 lg:sticky lg:top-23.75 lg:w-72 lg:self-start">
+          <aside className="flex w-full shrink-0 flex-col gap-6 lg:sticky lg:top-23.75 lg:w-72 lg:self-start">
             <MiniCalendar
               month={month}
               today={today}

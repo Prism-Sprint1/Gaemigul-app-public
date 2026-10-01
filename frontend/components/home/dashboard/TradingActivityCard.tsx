@@ -131,9 +131,9 @@ export default function TradingActivityCard() {
           거래 데이터를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.
         </p>
       ) : isLoading ? (
-        <div className="flex flex-col gap-6">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <Skeleton className="h-32 w-full" />
-          <div className="flex flex-col gap-2 border-t border-neutral-100 pt-4">
+          <div className="flex flex-col gap-2 border-t border-neutral-100 pt-4 md:border-t-0 md:border-l md:pt-0 md:pl-6">
             <Skeleton className="h-5 w-32" />
             <Skeleton className="h-28 w-full" />
           </div>
@@ -143,7 +143,8 @@ export default function TradingActivityCard() {
           아직 표시할 거래 데이터가 없어요.
         </p>
       ) : (
-        <>
+        // 거래대금 분포 | 투자자별 매매동향을 PC에서는 5:5 가로로, 모바일에서는 세로로 쌓는다
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <ChartContainer
             config={volumeChartConfig}
             className="aspect-auto h-32 w-full"
@@ -174,7 +175,7 @@ export default function TradingActivityCard() {
             </BarChart>
           </ChartContainer>
 
-          <div className="flex flex-col gap-2 border-t border-neutral-100 pt-4">
+          <div className="flex min-w-0 flex-col gap-2 border-t border-neutral-100 pt-4 md:border-t-0 md:border-l md:pt-0 md:pl-6">
             <div className="flex items-center justify-between gap-2">
               <h4 className="text-sm font-bold text-foreground">투자자별 매매동향</h4>
               <span className="text-[11px] text-neutral-400">
@@ -242,7 +243,7 @@ export default function TradingActivityCard() {
               })}
             </div>
           </div>
-        </>
+        </div>
       )}
     </DashboardCard>
   )

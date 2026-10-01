@@ -24,6 +24,7 @@ import {
   submitWithdrawalFeedback,
 } from "@/lib/api/auth"
 import { getGlossaryFavorites } from "@/lib/api/glossary"
+import { SECTION_CARD, SECTION_CARD_TITLE } from "@/lib/constant/surface"
 import { descriptionForTone, toneForGrade } from "@/lib/glossary"
 import type {
   ActivityStats,
@@ -31,6 +32,7 @@ import type {
   GradeHistoryItem,
 } from "@/lib/types/AuthType"
 import type { ApiGlossaryTerm } from "@/lib/types/GlossaryType"
+import { cn } from "@/lib/utils"
 
 // 닉네임 변경 간격. 백엔드 auth_service.NICKNAME_CHANGE_INTERVAL과 같은 값 (안내 문구용)
 const NICKNAME_CHANGE_DAYS = 14
@@ -264,8 +266,8 @@ function SectionCard({
   children: React.ReactNode
 }) {
   return (
-    <div className="flex flex-col gap-4 rounded-xl border bg-card px-3 py-4 shadow-sm sm:px-5 sm:pb-5">
-      <h2 className="flex items-center gap-1.5 text-sm font-bold">
+    <div className={cn(SECTION_CARD, "flex flex-col gap-4")}>
+      <h2 className={SECTION_CARD_TITLE}>
         <Icon size={16} className="text-point" />
         {title}
       </h2>
@@ -388,8 +390,8 @@ export default function MyPage() {
   if (status === "loading" || status === "unauthenticated" || !user) return null
 
   return (
-    <div className="flex min-h-svh justify-center bg-background">
-      <div className="flex w-full flex-col gap-3">
+    <div className="flex w-full flex-col">
+      <div className="flex w-full flex-col gap-6">
         <PageTitle
           title="마이페이지"
           description="내 정보와 굴 파기 기록을 확인합니다."

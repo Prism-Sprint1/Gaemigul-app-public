@@ -24,20 +24,20 @@ export default function HeatmapNewsSection({
   return (
     <section
       aria-labelledby="heatmap-news-title"
-      className="rounded-2xl border border-heatmap-border bg-heatmap-panel p-5 shadow-heatmap-card sm:p-6"
+      className="rounded-xl border border-heatmap-border bg-heatmap-panel p-4 shadow-sm sm:p-5"
     >
       <div className="mb-5 flex flex-wrap items-start justify-between gap-3 border-b border-heatmap-border pb-4">
         <div>
-          <div className="mb-2 flex items-center gap-2 text-xs font-medium text-slate-500 dark:text-neutral-400">
+          <div className="mb-2 flex items-center gap-2 text-xs font-medium text-neutral-500 dark:text-neutral-400">
             <Newspaper className="size-4" aria-hidden="true" /> 관련 경제뉴스
           </div>
           <h2
             id="heatmap-news-title"
-            className="text-lg font-bold tracking-tight text-slate-900 dark:text-neutral-100"
+            className="text-lg font-bold tracking-tight text-neutral-900 dark:text-neutral-100"
           >
             상승률 1위 섹터 뉴스
           </h2>
-          <p className="mt-1.5 text-xs leading-5 text-slate-500 dark:text-neutral-400">
+          <p className="mt-1.5 text-xs leading-5 text-neutral-500 dark:text-neutral-400">
             {topSectorName
               ? `${topSectorName} 관련 최신 기사`
               : "상승률 1위 섹터의 최신 기사"}{" "}
@@ -45,7 +45,7 @@ export default function HeatmapNewsSection({
           </p>
         </div>
         {topSectorName && (
-          <span className="rounded-full border border-heatmap-border bg-heatmap-canvas px-3 py-1.5 text-xs font-semibold text-slate-600 dark:text-neutral-400">
+          <span className="rounded-full border border-heatmap-border bg-heatmap-canvas px-3 py-1.5 text-xs font-semibold text-neutral-600 dark:text-neutral-400">
             {topSectorName}
           </span>
         )}
@@ -67,36 +67,36 @@ export default function HeatmapNewsSection({
               target="_blank"
               rel="noopener noreferrer"
               aria-label={`${item.title} (새 탭)`}
-              className="group flex min-w-0 flex-col rounded-xl border border-heatmap-border bg-heatmap-panel p-4 transition-colors hover:border-slate-300 hover:bg-heatmap-canvas focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900 dark:hover:border-neutral-600 dark:focus-visible:outline-neutral-300 sm:min-h-56"
+              className="group flex min-w-0 flex-col rounded-xl border border-heatmap-border bg-heatmap-panel p-4 transition-colors hover:border-neutral-300 hover:bg-heatmap-canvas focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-900 dark:hover:border-neutral-600 dark:focus-visible:outline-neutral-300 sm:min-h-56"
             >
               <div className="mb-4 flex items-center justify-between gap-2">
-                <span className="truncate text-xs font-semibold text-slate-600 dark:text-neutral-400">
+                <span className="truncate text-xs font-semibold text-neutral-600 dark:text-neutral-400">
                   {item.source || "언론사 미제공"}
                 </span>
                 <span
                   aria-hidden="true"
-                  className="text-xs text-slate-400 tabular-nums dark:text-neutral-500"
+                  className="text-xs text-neutral-400 tabular-nums dark:text-neutral-500"
                 >
                   {String(index + 1).padStart(2, "0")}
                 </span>
               </div>
-              <h3 className="line-clamp-4 text-[15px] leading-6 font-semibold tracking-tight break-keep text-slate-900 dark:text-neutral-100">
+              <h3 className="line-clamp-4 text-[15px] leading-6 font-semibold tracking-tight break-keep text-neutral-900 dark:text-neutral-100">
                 {item.title}
               </h3>
               {item.summary && (
-                <p className="mt-2 line-clamp-2 text-xs leading-5 text-slate-500 dark:text-neutral-400">
+                <p className="mt-2 line-clamp-2 text-xs leading-5 text-neutral-500 dark:text-neutral-400">
                   {item.summary}
                 </p>
               )}
               <div className="mt-auto flex items-center justify-between gap-2 pt-5">
                 <time
                   dateTime={item.published_at ?? undefined}
-                  className="text-[11px] text-slate-500 tabular-nums dark:text-neutral-400"
+                  className="text-[11px] text-neutral-500 tabular-nums dark:text-neutral-400"
                 >
                   {formatTimestamp(item.published_at)}
                 </time>
                 <ArrowUpRight
-                  className="size-4 shrink-0 text-slate-400 transition-colors group-hover:text-slate-900 dark:text-neutral-500 dark:group-hover:text-neutral-100"
+                  className="size-4 shrink-0 text-neutral-400 transition-colors group-hover:text-neutral-900 dark:text-neutral-500 dark:group-hover:text-neutral-100"
                   aria-hidden="true"
                 />
               </div>
@@ -114,10 +114,10 @@ export default function HeatmapNewsSection({
               key={index}
               className="min-h-48 rounded-xl border border-heatmap-border p-4 motion-safe:animate-pulse"
             >
-              <div className="h-3 w-1/3 rounded bg-slate-100 dark:bg-neutral-800" />
-              <div className="mt-6 h-4 w-full rounded bg-slate-100 dark:bg-neutral-800" />
-              <div className="mt-3 h-4 w-5/6 rounded bg-slate-100 dark:bg-neutral-800" />
-              <div className="mt-7 h-3 w-1/2 rounded bg-slate-100 dark:bg-neutral-800" />
+              <div className="h-3 w-1/3 rounded bg-neutral-100 dark:bg-neutral-800" />
+              <div className="mt-6 h-4 w-full rounded bg-neutral-100 dark:bg-neutral-800" />
+              <div className="mt-3 h-4 w-5/6 rounded bg-neutral-100 dark:bg-neutral-800" />
+              <div className="mt-7 h-3 w-1/2 rounded bg-neutral-100 dark:bg-neutral-800" />
             </div>
           ))}
           <span className="sr-only">관련 뉴스를 불러오고 있어요.</span>
@@ -125,7 +125,7 @@ export default function HeatmapNewsSection({
       ) : (
         <div
           role="status"
-          className="flex min-h-40 items-center justify-center gap-3 rounded-xl bg-heatmap-canvas px-5 py-8 text-sm leading-6 text-slate-500 dark:text-neutral-400"
+          className="flex min-h-40 items-center justify-center gap-3 rounded-xl bg-heatmap-canvas px-5 py-8 text-sm leading-6 text-neutral-500 dark:text-neutral-400"
         >
           <Newspaper className="size-5 shrink-0" aria-hidden="true" />
           <p>
@@ -137,7 +137,7 @@ export default function HeatmapNewsSection({
           </p>
         </div>
       )}
-      <div className="mt-4 flex flex-wrap justify-between gap-2 text-[11px] leading-5 text-slate-500 dark:text-neutral-400">
+      <div className="mt-4 flex flex-wrap justify-between gap-2 text-[11px] leading-5 text-neutral-500 dark:text-neutral-400">
         <p>Google 뉴스 RSS · 기사 선택 시 원문 링크를 새 탭에서 엽니다.</p>
         <p>
           {data?.updated_at
@@ -146,7 +146,7 @@ export default function HeatmapNewsSection({
         </p>
       </div>
       {items.length > 0 && data?.message && !data.is_stale && (
-        <p role="status" className="mt-1 text-xs text-slate-500 dark:text-neutral-400">
+        <p role="status" className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
           {data.message}
         </p>
       )}

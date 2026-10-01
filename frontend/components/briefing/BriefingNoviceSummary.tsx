@@ -2,6 +2,8 @@ import type { BriefingContent } from "@/lib/types/BriefingType"
 import { BriefingGlossary } from "@/components/briefing"
 
 import { Separator } from "../ui"
+import { INNER_CARD } from "@/lib/constant/surface"
+import { cn } from "@/lib/utils"
 
 type BriefingNoviceSummaryProps = {
   summary: BriefingContent["noviceSummary"]
@@ -15,7 +17,7 @@ export default function BriefingNoviceSummary({
   return (
     <article
       id="article-04"
-      className="flex scroll-mt-24 flex-col gap-4 rounded-lg bg-card p-5 shadow-sm"
+      className={cn(INNER_CARD, "flex scroll-mt-24 flex-col gap-4")}
     >
       <div className="flex items-center gap-2">
         <span className="text-baisc flex size-9 items-center justify-center rounded-md bg-point2 font-bold text-white">
@@ -42,7 +44,7 @@ export default function BriefingNoviceSummary({
           {summary.todoItems.map((item, index) => (
             <li
               key={item.title}
-              className="flex gap-3 rounded-lg border border-border p-3 shadow-sm"
+              className="flex gap-3 rounded-lg border border-border p-3"
             >
               <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-point text-xs font-bold text-white">
                 {index + 1}

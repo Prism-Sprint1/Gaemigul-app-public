@@ -3,8 +3,10 @@ import { useRef } from "react"
 
 import { Badge } from "@/components/ui"
 import { useRecordTermView } from "@/hooks/use-record-term-view"
+import { INNER_CARD } from "@/lib/constant/surface"
 import { descriptionForTone, type ToneFilter } from "@/lib/glossary"
 import type { ApiGlossaryTerm } from "@/lib/types/GlossaryType"
+import { cn } from "@/lib/utils"
 
 // 난이도 배지는 이번 스코프에서 UI에 쓰지 않는다 (difficulty 데이터는 향후 카드 배지 기능을 위해
 // 미리 채워둔 상태 - 팀 확인 사항 참고). 톤 필터로 고른 설명 한 줄과 연관 용어 태그만 보여준다
@@ -28,7 +30,7 @@ export function GlossaryTermCard({
   useRecordTermView(cardRef, term.id, trackView)
 
   return (
-    <div ref={cardRef} className="flex flex-col gap-2 rounded-xl border bg-card p-4 shadow-sm">
+    <div ref={cardRef} className={cn(INNER_CARD, "flex flex-col gap-2")}>
       <div className="flex items-start justify-between gap-2">
         <span className="font-bold">{term.term}</span>
         <button

@@ -1,4 +1,6 @@
 import type { BriefingGlossaryTerm } from "@/lib/types/BriefingType"
+import { INNER_CARD } from "@/lib/constant/surface"
+import { cn } from "@/lib/utils"
 
 type BriefingGlossaryProps = {
   terms: BriefingGlossaryTerm[]
@@ -15,7 +17,7 @@ export default function BriefingGlossary({ terms }: BriefingGlossaryProps) {
         {terms.map((term) => (
           <div
             key={term.term}
-            className="flex flex-col gap-1 rounded-lg border border-neutral-200 p-4 shadow-sm"
+            className={cn(INNER_CARD, "flex flex-col gap-1")}
           >
             <span className="text-sm font-semibold">{term.term}</span>
             <p className="text-xs leading-relaxed text-neutral-500 dark:text-neutral-400">

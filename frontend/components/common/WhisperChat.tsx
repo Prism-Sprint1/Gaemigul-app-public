@@ -503,6 +503,15 @@ export default function WhisperChat() {
     if (!isOpen) setIsPanelMounted(false)
   }
 
+  // 레이아웃에 붙어 있어 페이지를 옮겨도 언마운트되지 않으므로, 경로가 바뀌면 직접 닫는다.
+  // (같은 페이지 안의 해시 이동 - 타임라인 섹션 스크롤 - 은 pathname이 그대로라 닫히지 않는다)
+  const pathname = usePathname()
+  const [prevPathname, setPrevPathname] = useState(pathname)
+  if (pathname !== prevPathname) {
+    setPrevPathname(pathname)
+    setIsOpen(false)
+  }
+
   const { slots, loadError } = useTodayTimeline()
   const topSector = useTodayHeatmapTopSector()
   const { events: calendarEvents, revealed: calendarRevealed } = useTodayCalendarBriefing()

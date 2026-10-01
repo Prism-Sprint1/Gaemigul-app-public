@@ -51,7 +51,7 @@ export function FilterBar({
   return (
     <div className="flex flex-col gap-3">
       <div className="flex min-w-0 flex-nowrap items-center gap-1 overflow-x-auto scrollbar-none lg:grid lg:grid-cols-[auto_1fr_auto] lg:overflow-visible">
-        <div className="flex flex-1 gap-1 rounded-lg bg-muted p-1 text-xs lg:col-start-1 lg:flex-none lg:shrink-0">
+        <div className="flex flex-1 gap-1 rounded-full bg-neutral-100 p-1 text-xs lg:col-start-1 lg:flex-none lg:shrink-0 dark:bg-neutral-800">
           <button
             type="button"
             onClick={() => onSelectGroup("all")}
@@ -95,7 +95,7 @@ export function FilterBar({
 
         {/* 국내/해외, 뷰 전환(주별/월별) — 앱(모바일)에서는 둘 다 숨김 */}
         <div className="hidden shrink-0 items-center gap-1 lg:col-start-3 lg:flex">
-          <div className="flex gap-1 rounded-lg bg-muted p-1 text-xs">
+          <div className="flex gap-1 rounded-full bg-neutral-100 p-1 text-xs dark:bg-neutral-800">
             {(["domestic", "overseas"] as const).map((r) => (
               <button
                 key={r}
@@ -110,7 +110,7 @@ export function FilterBar({
             ))}
           </div>
 
-          <div className="flex gap-1 rounded-lg bg-muted p-1 text-xs">
+          <div className="flex gap-1 rounded-full bg-neutral-100 p-1 text-xs dark:bg-neutral-800">
             {(["week", "month"] as const).map((v) => (
               <button
                 key={v}
@@ -134,7 +134,7 @@ export function FilterBar({
           className={cn(
             "flex shrink-0 cursor-pointer items-center rounded-full border bg-muted/60 px-1.5 py-0.5 text-[11px] font-medium whitespace-nowrap transition-all hover:bg-muted",
             categorySet.size === 0
-              ? "border-primary/40 bg-primary/10 text-primary"
+              ? "border-point/40 bg-point/10 text-point"
               : "opacity-40"
           )}
         >
@@ -149,7 +149,7 @@ export function FilterBar({
             className={cn(
               "flex shrink-0 cursor-pointer items-center gap-1 rounded-full border bg-muted/60 px-1.5 py-0.5 text-[11px] whitespace-nowrap transition-all hover:bg-muted",
               categorySet.has(c) &&
-                "border-primary/40 bg-primary/10 font-medium text-primary",
+                "border-point/40 bg-point/10 font-medium text-point",
               categorySet.size > 0 && !categorySet.has(c) && "opacity-40"
             )}
           >

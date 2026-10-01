@@ -73,7 +73,7 @@ function GlossaryTerm({
       {term}
       <span
         className={cn(
-          "pointer-events-none absolute bottom-full left-1/2 z-20 mb-1.5 w-56 max-w-[calc(100vw-2rem)] -translate-x-1/2 rounded-lg border border-border bg-popover p-2.5 text-[11px] leading-relaxed font-normal text-popover-foreground opacity-0 shadow-lg transition-opacity duration-150",
+          "pointer-events-none absolute bottom-full left-1/2 z-10 mb-1.5 w-56 max-w-[calc(100vw-2rem)] -translate-x-1/2 rounded-lg border border-border bg-popover p-2.5 text-[11px] leading-relaxed font-normal text-popover-foreground opacity-0 shadow-lg transition-opacity duration-150",
           visible && "opacity-100"
         )}
       >

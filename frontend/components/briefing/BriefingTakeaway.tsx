@@ -28,7 +28,7 @@ export default function BriefingTakeaway({
   return (
     <div
       style={accentStyle}
-      className="relative flex flex-col gap-2 overflow-hidden rounded-lg bg-muted p-5 shadow-sm before:absolute before:top-0 before:left-0 before:h-full before:w-1 before:bg-(--briefing-accent) before:content-['']"
+      className="relative flex flex-col gap-2 overflow-hidden rounded-lg bg-muted p-4 before:absolute before:top-0 before:left-0 before:h-full before:w-1 before:bg-(--briefing-accent) before:content-['']"
     >
       <p className="flex items-center gap-1.5 text-sm font-bold text-briefing-accent">
         <span aria-hidden>📌</span>

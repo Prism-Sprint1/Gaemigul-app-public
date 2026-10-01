@@ -317,7 +317,7 @@ export default function DataSourcesPage() {
         title="개미굴이 직접 계산하는 값"
         description="아래 값은 거래소·증권사가 발표하는 지표가 아니라 개미굴이 정한 방식으로 계산합니다."
       >
-        <div className="flex flex-col gap-3 rounded-xl border bg-card px-4 py-4 shadow-sm">
+        <div className="flex flex-col gap-3 rounded-lg border border-border bg-card p-4">
           <strong className="text-sm font-bold text-card-foreground">
             개미굴 소란지수 (0~100점)
           </strong>

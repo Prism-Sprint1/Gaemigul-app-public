@@ -38,6 +38,7 @@ export default function InfoTooltip({
   const [hoverOpen, setHoverOpen] = useState(false)
   const [top, setTop] = useState(0)
   const [left, setLeft] = useState<number | null>(null)
+  const [maxSize, setMaxSize] = useState<{ width: number; height: number }>()
   const [mounted, setMounted] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
@@ -52,13 +53,31 @@ export default function InfoTooltip({
   const updatePosition = () => {
     const rect = containerRef.current?.getBoundingClientRect()
     if (!rect) return
-    setTop(rect.bottom + VERTICAL_GAP)
+    // 툴팁 최대 크기 = 실제 화면 크기 - 32px(양쪽 16px씩). 넘치는 내용은 패널 안에서 스크롤된다.
+    // 100vw는 모바일 브라우저에 따라 실제 보이는 폭보다 클 수 있어 clientWidth로 직접 잰다.
+    const viewportWidth = document.documentElement.clientWidth
+    const viewportHeight = window.innerHeight
+    const maxWidth = viewportWidth - SCREEN_EDGE_GAP * 2
+    const maxHeight = viewportHeight - SCREEN_EDGE_GAP * 2
+    setMaxSize({ width: maxWidth, height: maxHeight })
+
+    // 버튼 아래에 두되, 아래로 넘치면 화면 하단 16px 안쪽까지 끌어올린다.
+    const panelHeight = Math.min(panelRef.current?.offsetHeight ?? 0, maxHeight)
+    setTop(
+      Math.max(
+        SCREEN_EDGE_GAP,
+        Math.min(
+          rect.bottom + VERTICAL_GAP,
+          viewportHeight - panelHeight - SCREEN_EDGE_GAP
+        )
+      )
+    )
 
     const panelWidth = panelRef.current?.offsetWidth ?? 0
     if (anchorBelowOnDesktop && supportsHover() && panelWidth > 0) {
       // 버튼 중앙 아래에 두되, 화면 좌우 16px 안쪽으로 밀어 넣는다.
       const centered = rect.left + rect.width / 2 - panelWidth / 2
-      const maxLeft = window.innerWidth - panelWidth - SCREEN_EDGE_GAP
+      const maxLeft = viewportWidth - panelWidth - SCREEN_EDGE_GAP
       setLeft(Math.max(SCREEN_EDGE_GAP, Math.min(centered, maxLeft)))
     } else {
       setLeft(null)
@@ -132,17 +151,19 @@ export default function InfoTooltip({
           <div
             ref={panelRef}
             className={cn(
-              "fixed z-10 w-72 max-w-[calc(100vw-2rem)] rounded-lg border border-border bg-popover p-3 text-[12px] leading-relaxed text-muted-foreground shadow-lg transition-opacity duration-150",
+              "fixed z-10 w-72 max-w-[calc(100vw-2rem)] overflow-y-auto rounded-lg border border-border bg-popover p-3 text-[12px] leading-relaxed text-muted-foreground shadow-lg transition-opacity duration-150",
               visible
                 ? "pointer-events-auto opacity-100"
                 : "pointer-events-none opacity-0",
               panelClassName
             )}
-            style={
-              left === null
-                ? { top, right: SCREEN_EDGE_GAP }
-                : { top, left }
-            }
+            style={{
+              top,
+              ...(left === null ? { right: SCREEN_EDGE_GAP } : { left }),
+              // 인라인 스타일이라 panelClassName의 고정 폭(w-100 등)보다 우선한다
+              maxWidth: maxSize?.width,
+              maxHeight: maxSize?.height,
+            }}
           >
             {children}
           </div>,

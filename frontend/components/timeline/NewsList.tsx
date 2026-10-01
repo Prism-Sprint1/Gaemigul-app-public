@@ -90,17 +90,17 @@ export default function NewsList({ news }: NewsListProps) {
         {isSlider && (
           <>
             {/* 왼쪽/오른쪽에 아직 볼 카드가 남아 있을 때만 그라데이션으로 힌트를 준다.
-                실제로 카드 뒤에 깔린 배경(TimelineSection의 bg-muted)과 같은 색에서 투명으로
+                실제로 카드 뒤에 깔린 배경(TimelineSection의 bg-card)과 같은 색에서 투명으로
                 빠지게 해야 다크모드에서도 흰 띠로 뜨지 않는다 */}
             <div
               className={cn(
-                "pointer-events-none absolute inset-y-0 left-0 w-14 bg-linear-to-r from-muted to-transparent transition-opacity duration-200",
+                "pointer-events-none absolute inset-y-0 left-0 w-14 bg-linear-to-r from-card to-transparent transition-opacity duration-200",
                 canScrollLeft ? "opacity-100" : "opacity-0"
               )}
             />
             <div
               className={cn(
-                "pointer-events-none absolute inset-y-0 right-0 w-14 bg-linear-to-l from-muted to-transparent transition-opacity duration-200",
+                "pointer-events-none absolute inset-y-0 right-0 w-14 bg-linear-to-l from-card to-transparent transition-opacity duration-200",
                 canScrollRight ? "opacity-100" : "opacity-0"
               )}
             />

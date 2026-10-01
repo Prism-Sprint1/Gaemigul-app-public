@@ -12,7 +12,7 @@ type BriefingLedeProps = {
 export default function BriefingLede({ lead, points, reviewMessage }: BriefingLedeProps) {
   return (
     <div className="flex flex-col gap-4">
-      <div className="relative flex flex-col gap-2 overflow-hidden rounded-lg bg-card p-5 shadow-sm before:absolute before:top-0 before:left-0 before:h-full before:w-1 before:bg-point before:content-['']">
+      <div className="relative flex flex-col gap-2 overflow-hidden rounded-lg border border-border bg-card p-4 before:absolute before:top-0 before:left-0 before:h-full before:w-1 before:bg-point before:content-['']">
         <p className="text-xl font-bold text-card-foreground">{lead}</p>
         <Separator className="my-3 bg-border/50" />
         <p className="text-basic flex items-center gap-1.5 font-bold text-point">

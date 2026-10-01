@@ -17,7 +17,11 @@ export default function TimelineSectionHeader({
         {title}
       </h2>
       <span className="text-sm text-neutral-400">{time}</span>
-      <InfoTooltip label={`${title} 안내`} panelClassName="z-10">
+      <InfoTooltip
+        label={`${title} 안내`}
+        panelClassName="z-10"
+        anchorBelowOnDesktop
+      >
         <p>{infoText}</p>
       </InfoTooltip>
     </div>

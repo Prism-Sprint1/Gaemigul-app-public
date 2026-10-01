@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation"
 
 import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { SEGMENT_LIST, SEGMENT_TRIGGER } from "@/lib/constant/surface"
 
 const TIMELINE_PATH = "/timeline"
 const BRIEFING_PATH = "/briefing"
@@ -12,9 +13,15 @@ const BRIEFING_PATH = "/briefing"
 interface PageTitleType {
   title: string
   description: string
+  /** 제목 아래(구분선 위)에 붙는 페이지 전용 탭 등 */
+  children?: React.ReactNode
 }
 
-export default function PageTitle({ title, description }: PageTitleType) {
+export default function PageTitle({
+  title,
+  description,
+  children,
+}: PageTitleType) {
   const pathname = usePathname()
   const showMarketTabs =
     pathname.startsWith(TIMELINE_PATH) || pathname.startsWith(BRIEFING_PATH)
@@ -32,12 +39,12 @@ export default function PageTitle({ title, description }: PageTitleType) {
 
         {showMarketTabs && (
           <Tabs value={activeTab} className="shrink-0">
-            <TabsList className="h-auto rounded-full bg-neutral-100 p-1 dark:bg-neutral-800">
+            <TabsList className={SEGMENT_LIST}>
               <TabsTrigger
                 value="timeline"
                 render={<Link href={TIMELINE_PATH} />}
                 nativeButton={false}
-                className="rounded-full px-4 py-1.5 text-neutral-500 data-active:bg-point data-active:text-white data-active:shadow-none dark:text-neutral-400"
+                className={SEGMENT_TRIGGER}
               >
                 시황
               </TabsTrigger>
@@ -45,13 +52,14 @@ export default function PageTitle({ title, description }: PageTitleType) {
                 value="briefing"
                 render={<Link href={BRIEFING_PATH} />}
                 nativeButton={false}
-                className="rounded-full px-4 py-1.5 text-neutral-500 data-active:bg-point data-active:text-white data-active:shadow-none dark:text-neutral-400"
+                className={SEGMENT_TRIGGER}
               >
                 브리핑
               </TabsTrigger>
             </TabsList>
           </Tabs>
         )}
+        {children}
       </div>
       <Separator />
     </div>
