@@ -260,11 +260,7 @@ export default function Header() {
             aria-describedby="header-index-tooltip"
             className="group relative flex cursor-help gap-0.5 rounded-sm pt-1.5 outline-offset-2 focus-visible:outline-point"
           >
-            {/* <strong className="flex flex-col items-end gap-1 text-[14px] text-point"> */}
             <strong className="-mb-1.25 flex items-center gap-0 text-[14px] text-point">
-              {/* <Badge className="py- bg-point text-[10px] text-white">
-                INDEX
-              </Badge> */}
               <RotateCcwClock width={13.5} />
               <span className="min-w-10 text-right">{remaining}</span>
             </strong>
@@ -290,9 +286,13 @@ export default function Header() {
           <Image src={logoSrc} alt="개미굴 로고" className="h-7 w-auto" />
         </Link>
         <div className="flex items-center gap-3">
-          <strong className="flex items-center gap-1 text-[16px] text-point">
+          {/* <strong className="flex items-center gap-1 text-[16px] text-point">
             <Badge className="bg-point text-[12px] text-white">TIMER</Badge>
             {remaining}
+          </strong> */}
+          <strong className="flex items-center gap-0 text-[16px] text-point">
+            <RotateCcwClock width={16} />
+            <span className="min-w-10 text-right">{remaining}</span>
           </strong>
           <button
             type="button"
