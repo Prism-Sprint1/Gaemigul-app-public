@@ -177,6 +177,8 @@ function HeaderProfileMenu() {
     setLoggingOut(true)
     try {
       await logout()
+      // 위 이유로 router.push가 아니라 전체 페이지 이동을 일부러 쓴다 (마이페이지 가드와의 경합 방지)
+      // eslint-disable-next-line @next/next/no-location-assign-relative-destination
       window.location.assign("/")
     } catch (error) {
       console.error("[logout] 실패", error)
