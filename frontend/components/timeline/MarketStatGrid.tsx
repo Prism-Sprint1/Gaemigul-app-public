@@ -20,7 +20,11 @@ export default function MarketStatGrid({ groups }: MarketStatGridProps) {
             {group.stats.map((stat) => (
               <div
                 key={`${group.groupLabel}-${stat.label}`}
-                className="min-w-0 flex-1 basis-[calc(50%-0.375rem)] rounded-lg border border-border bg-card px-4 py-3"
+                className={cn(
+                  "min-w-0 flex-1 basis-[calc(50%-0.375rem)] rounded-lg border border-border bg-card px-4 py-3",
+                  // 장중 변화 카드(07:30 대비 줄이 붙는 카드)는 모바일에서 반 폭이면 좁아서 한 줄 전체를 쓴다
+                  stat.previousValue && "max-md:basis-full"
+                )}
               >
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-xs font-medium text-neutral-500 dark:text-neutral-400">

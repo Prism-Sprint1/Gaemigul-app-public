@@ -28,7 +28,7 @@ export default function BriefingStatCards({ cards }: BriefingStatCardsProps) {
         <div
           key={card.label}
           className={cn(
-            "flex h-max flex-col items-start justify-between gap-1.5 rounded-lg border p-4",
+            "flex h-full flex-col items-start justify-between gap-1.5 rounded-lg border p-4",
             toneClassName[card.tone]
           )}
         >
@@ -39,7 +39,7 @@ export default function BriefingStatCards({ cards }: BriefingStatCardsProps) {
             <strong className="pt-1 text-2xl font-bold">{card.value}</strong>
           </div>
           {card.changeLabel && (
-            <span className="h-max w-fit rounded-full bg-white/70 px-2 py-0.5 text-[10px] font-semibold">
+            <span className="h-max w-fit rounded-full bg-white/70 px-2 py-0.5 text-[10px] font-semibold dark:bg-white">
               {card.changeLabel}
             </span>
           )}

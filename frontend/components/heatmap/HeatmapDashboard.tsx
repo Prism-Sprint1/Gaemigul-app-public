@@ -1,19 +1,18 @@
 "use client"
 
-import { AlertCircle, ChevronDown, Clock3, Database } from "lucide-react"
+import { useState } from "react"
+import { AlertCircle } from "lucide-react"
 import { useHeatmap } from "@/hooks/use-heatmap"
-import {
-  formatTimestamp,
-  getVolumePeriodLabel,
-  MARKET_STATUS,
-  PERIOD_DESCRIPTIONS,
-} from "@/lib/heatmap-format"
-import type { HeatmapMarket, HeatmapPeriod } from "@/lib/types/HeatmapType"
+import { getVolumePeriodLabel } from "@/lib/heatmap-format"
+import type {
+  HeatmapMarket,
+  HeatmapPeriod,
+  HeatmapView,
+} from "@/lib/types/HeatmapType"
 import HeatmapTopSectorBanner from "./HeatmapTopSectorBanner"
 import HeatmapFilters from "./HeatmapFilters"
 import HeatmapEmptyState from "./HeatmapEmptyState"
 import HeatmapLoadingSkeleton from "./HeatmapLoadingSkeleton"
-import { HeatmapLegendFootnote } from "./HeatmapLegend"
 import HeatmapNewsSection from "./HeatmapNewsSection"
 import HeatmapRecommendation from "./HeatmapRecommendation"
 import HeatmapTree from "./HeatmapTree"
@@ -34,6 +33,8 @@ export default function HeatmapDashboard({
     period
   )
   const manualRefreshDisabled = isLoading || refreshWaitSeconds > 0
+  // 지도/목록 전환 탭은 기간 탭 옆(HeatmapFilters)에, 실제 보기는 HeatmapTree에 있어 여기서 상태를 갖는다
+  const [view, setView] = useState<HeatmapView>("map")
   const hasData = Boolean(
     data?.sectors.some(
       (sector) => sector.stocks.length && sector.market_cap > 0
@@ -53,7 +54,7 @@ export default function HeatmapDashboard({
         : null)
 
   return (
-    <div className="space-y-5 text-neutral-900 dark:text-neutral-100">
+    <div className="space-y-5 text-neutral-900 max-md:space-y-6 dark:text-neutral-100">
       <HeatmapTopSectorBanner
         market={market}
         topSector={topSector}
@@ -62,51 +63,19 @@ export default function HeatmapDashboard({
         isLoading={isLoading}
         collecting={collecting}
       />
-      <div className="rounded-xl border border-heatmap-border bg-heatmap-panel p-4 shadow-sm sm:p-5">
-        <HeatmapFilters
-          market={market}
-          period={period}
-          onMarketChange={onMarketChange}
-          onPeriodChange={onPeriodChange}
-          nextUpdateAt={data?.next_update_at}
-          manualRefreshDisabled={manualRefreshDisabled}
-          isLoading={isLoading}
-          refreshWaitSeconds={refreshWaitSeconds}
-          onRefresh={refresh}
-        />
-        <details className="group mt-2">
-          <summary className="ml-auto flex min-h-6 w-fit cursor-pointer list-none items-center gap-1 rounded text-[11px] text-neutral-500 outline-offset-2 hover:text-neutral-800 focus-visible:outline-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200 dark:focus-visible:outline-neutral-400 [&::-webkit-details-marker]:hidden">
-            데이터 기준
-            <ChevronDown
-              className="size-3.5 group-open:rotate-180"
-              aria-hidden="true"
-            />
-          </summary>
-          <div className="mt-2 flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-heatmap-border/60 pt-2 text-[11px] leading-5 text-neutral-500 dark:text-neutral-400">
-            <span className="inline-flex items-center gap-1.5">
-              <Database className="size-3.5" aria-hidden="true" /> 한국투자증권
-              시세
-            </span>
-            <span className="inline-flex items-center gap-1.5">
-              <Clock3 className="size-3.5" aria-hidden="true" /> 수집{" "}
-              <time dateTime={data?.updated_at ?? undefined}>
-                {formatTimestamp(data?.updated_at)}
-              </time>{" "}
-              · 한국시간
-            </span>
-            <span>
-              {data ? MARKET_STATUS[data.market_status] : "시세 확인 중"}
-              {collecting ? " · 수집 중" : ""} · 장중 10분 간격
-            </span>
-            <span className="sm:ml-auto">{PERIOD_DESCRIPTIONS[period]}</span>
-          </div>
-          {data?.as_of_date && (
-            <p className="mt-1 text-[11px] text-neutral-500 dark:text-neutral-400">
-              시세 기준일 {data.as_of_date}
-            </p>
-          )}
-        </details>
-      </div>
+      <HeatmapFilters
+        market={market}
+        period={period}
+        onMarketChange={onMarketChange}
+        onPeriodChange={onPeriodChange}
+        nextUpdateAt={data?.next_update_at}
+        manualRefreshDisabled={manualRefreshDisabled}
+        isLoading={isLoading}
+        refreshWaitSeconds={refreshWaitSeconds}
+        onRefresh={refresh}
+        view={view}
+        onViewChange={setView}
+      />
       {warning && (
         <div
           role="status"
@@ -122,7 +91,7 @@ export default function HeatmapDashboard({
           className="min-w-0 rounded-xl border border-heatmap-border bg-heatmap-panel p-4 shadow-sm sm:p-5"
         >
           {hasData && data ? (
-            <HeatmapTree sectors={data.sectors} />
+            <HeatmapTree sectors={data.sectors} view={view} />
           ) : isLoading && !data ? (
             <HeatmapLoadingSkeleton />
           ) : (
@@ -136,7 +105,6 @@ export default function HeatmapDashboard({
               onRefresh={refresh}
             />
           )}
-          <HeatmapLegendFootnote />
         </section>
         <HeatmapRecommendation
           topSectorName={topSector?.name}

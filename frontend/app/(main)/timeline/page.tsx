@@ -16,6 +16,7 @@ import {
 } from "date-fns"
 
 import { PageTitle, useAuth } from "@/components/common"
+import TimelineSkeleton from "@/components/timeline/TimelineSkeleton"
 import { useTimelineSchedule } from "@/components/common/timeline"
 import {
   TimelineDateHeader,
@@ -238,18 +239,22 @@ function TimelinePageContent() {
       <PageTitle
         title="개미들을 위한 실시간 시장 페로몬 신호"
         description="시장의 급박한 변화와 핵심 뉴스 요약을 페로몬 흔적처럼 빠르게 따라갑니다."
+        tabsAside={
+          <TimelineDateHeader
+            selectedDate={selectedDate}
+            minDate={MIN_DATE}
+            maxDate={TODAY}
+            onSelect={(date) => goToDate(toDateKey(date))}
+          />
+        }
       />
 
-      <TimelineSectionsNav items={items} />
-
-      <TimelineDateHeader
-        selectedDate={selectedDate}
-        minDate={MIN_DATE}
-        maxDate={TODAY}
-        onSelect={(date) => goToDate(toDateKey(date))}
+      <TimelineSectionsNav
+        items={items}
+        sectionsReady={loadState === "ready"}
       />
 
-      {loadState === "loading" && <TimelineLoadingMessage />}
+      {loadState === "loading" && <TimelineSkeleton />}
 
       {loadState === "error" && (
         <p className="py-10 text-center text-sm text-decrease">
@@ -286,17 +291,9 @@ function TimelinePageContent() {
   )
 }
 
-function TimelineLoadingMessage() {
-  return (
-    <p className="py-10 text-center text-sm text-neutral-400">
-      타임라인을 불러오는 중이에요...
-    </p>
-  )
-}
-
 export default function TimelinePage() {
   return (
-    <Suspense fallback={<TimelineLoadingMessage />}>
+    <Suspense fallback={<TimelineSkeleton />}>
       <TimelinePageContent />
     </Suspense>
   )

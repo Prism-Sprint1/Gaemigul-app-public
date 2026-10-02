@@ -23,7 +23,10 @@ import {
   setNewsletterOptIn,
   submitWithdrawalFeedback,
 } from "@/lib/api/auth"
-import { getGlossaryFavorites } from "@/lib/api/glossary"
+import {
+  getGlossaryFavorites,
+  toggleGlossaryFavorite,
+} from "@/lib/api/glossary"
 import { SECTION_CARD, SECTION_CARD_TITLE } from "@/lib/constant/surface"
 import { descriptionForTone, toneForGrade } from "@/lib/glossary"
 import type {
@@ -108,10 +111,6 @@ function GradeProgress({ stats }: { stats: ActivityStats }) {
         required={stats.required_distinct_terms}
         unit="개"
       />
-      <p className="leading-relaxed text-muted-foreground">
-        두 기준을 모두 채우면 불개미 대장이 승급을 제안해요. 제안을 수락해야
-        등급이 바뀌고, 활동이 줄어도 등급이 내려가지는 않아요.
-      </p>
     </div>
   )
 }
@@ -194,7 +193,7 @@ function ProfileCard({
             maxLength={NICKNAME_MAX_LENGTH}
             autoFocus
             aria-label="새 닉네임"
-            className="h-8 w-40 min-w-0 rounded-md border bg-background px-2 text-sm font-bold outline-offset-2 focus-visible:outline-point"
+            className="h-8 w-40 min-w-0 rounded-md border bg-background px-2 text-sm font-bold outline-offset-2 focus-visible:outline-point max-md:h-11 max-md:text-sm"
           />
         ) : (
           <>
@@ -247,10 +246,14 @@ function ProfileCard({
           {helper}
         </p>
       )}
-      <span className="text-sm text-muted-foreground">{user.email}</span>
-      <span className="text-xs text-muted-foreground">
-        가입일 {user.created_at}
-      </span>
+      <div className="flex items-center justify-between gap-3">
+        <span className="min-w-0 truncate text-sm text-muted-foreground">
+          {user.email}
+        </span>
+        <span className="shrink-0 text-xs text-muted-foreground">
+          가입일 {user.created_at}
+        </span>
+      </div>
     </div>
   )
 }
@@ -333,6 +336,22 @@ export default function MyPage() {
     setActivityStats(stats)
     setGradeHistory(history)
     setRetaking(false)
+  }
+
+  // 즐겨찾는 용어의 별을 누르면 즐겨찾기를 해제한다 - 목록에서 바로 빼고(낙관적), 실패하면 원래 자리에 되돌린다
+  const handleUnfavorite = async (termId: number) => {
+    const previous = favoriteTerms
+    setFavoriteTerms(
+      (current) => current?.filter((term) => term.id !== termId) ?? current
+    )
+    try {
+      const favorited = await toggleGlossaryFavorite(termId)
+      // 토글 API라 이미 해제돼 있던 용어였다면 다시 추가됐을 수 있다 - 그 경우 한 번 더 눌러 해제 상태로 맞춘다
+      if (favorited) await toggleGlossaryFavorite(termId)
+    } catch (error) {
+      console.error("[toggleGlossaryFavorite] 실패", error)
+      setFavoriteTerms(previous)
+    }
   }
 
   const handleLogout = async () => {
@@ -434,51 +453,6 @@ export default function MyPage() {
                   </span>
                 </div>
 
-                <Separator />
-
-                <div className="flex items-center justify-between rounded-lg bg-muted/50 px-4 py-3">
-                  <div className="flex flex-col gap-0.5">
-                    <span className="flex items-center gap-1.5 text-sm font-medium">
-                      <Mail size={14} className="text-point" />
-                      개미레터 수신
-                    </span>
-                    <span className="text-xs text-muted-foreground">
-                      매주 월요일, 이번주 비축 캘린더 일정을 요약해 보내드려요.
-                    </span>
-                  </div>
-                  <Switch
-                    checked={user.newsletter_opt_in}
-                    onCheckedChange={handleNewsletterToggle}
-                    disabled={newsletterUpdating}
-                  />
-                </div>
-
-                <Button
-                  variant="secondary"
-                  className="h-10 w-full justify-start"
-                  onClick={() => router.push("/change-password")}
-                >
-                  비밀번호 변경
-                </Button>
-
-                <Button
-                  variant="secondary"
-                  className="h-10 w-full"
-                  onClick={handleLogout}
-                >
-                  로그아웃
-                </Button>
-
-                <button
-                  type="button"
-                  onClick={() => setWithdrawStep("reason")}
-                  className="text-left text-xs text-muted-foreground hover:text-destructive hover:underline"
-                >
-                  회원 탈퇴
-                </button>
-              </div>
-
-              <div className="flex flex-col gap-5 lg:border-l lg:pl-6">
                 <div className="flex flex-col gap-2">
                   <h3 className="flex items-center gap-1.5 text-xs font-bold text-muted-foreground">
                     <History size={14} />
@@ -512,44 +486,113 @@ export default function MyPage() {
                     </ul>
                   )}
                 </div>
-              </div>
-            </div>
-          )}
-        </SectionCard>
 
-        <SectionCard icon={Star} title="즐겨찾는 용어">
-          {favoriteTerms === null ? (
-            <p className="text-xs text-muted-foreground">불러오는 중...</p>
-          ) : favoriteTerms.length === 0 ? (
-            <div className="flex flex-col items-start gap-2">
-              <p className="text-xs text-muted-foreground">
-                아직 즐겨찾은 용어가 없어요. 용어 사전에서 별을 눌러
-                저장해보세요!
-              </p>
-              <Link href="/glossary">
-                <Button variant="secondary" className="h-10">
-                  개미 용어 사전으로 가기
-                </Button>
-              </Link>
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-              {favoriteTerms.map((term) => (
-                <div
-                  key={term.id}
-                  className="flex flex-col gap-0.5 rounded-lg border border-border px-3 py-2"
-                >
-                  <Badge variant="outline" className="w-fit text-xs">
-                    {term.term}
-                  </Badge>
-                  <p className="text-xs leading-relaxed text-muted-foreground">
-                    {descriptionForTone(
-                      term,
-                      toneForGrade(user?.grade ?? "청년 개미")
-                    )}
-                  </p>
+                <Separator />
+
+                <div className="flex items-center justify-between rounded-lg bg-muted/50 px-4 py-3">
+                  <div className="flex flex-col gap-0.5">
+                    <span className="flex items-center gap-1.5 text-sm font-medium">
+                      <Mail size={14} className="text-point" />
+                      개미레터 수신
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      매주 월요일, 이번주 비축 캘린더 일정을 요약해 보내드려요.
+                    </span>
+                  </div>
+                  <Switch
+                    checked={user.newsletter_opt_in}
+                    onCheckedChange={handleNewsletterToggle}
+                    disabled={newsletterUpdating}
+                  />
                 </div>
-              ))}
+
+                <div className="grid grid-cols-2 gap-2">
+                  <Button
+                    variant="secondary"
+                    className="h-10 w-full"
+                    onClick={() => router.push("/change-password")}
+                  >
+                    비밀번호 변경
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    className="h-10 w-full"
+                    onClick={handleLogout}
+                  >
+                    로그아웃
+                  </Button>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setWithdrawStep("reason")}
+                  className="self-end text-xs text-muted-foreground hover:text-destructive hover:underline"
+                >
+                  회원 탈퇴
+                </button>
+              </div>
+
+              {/* 오른쪽 칸: 즐겨찾는 용어. 데스크톱에서는 왼쪽 칸 높이에 맞추고(absolute inset-0) 넘치면 안에서 세로 스크롤 */}
+              <div className="relative flex min-h-60 flex-col lg:border-l lg:pl-6">
+                <div className="flex max-h-96 flex-col gap-2 lg:absolute lg:inset-0 lg:max-h-none lg:pl-6">
+                  <h3 className="flex items-center gap-1.5 text-xs font-bold text-muted-foreground">
+                    <Star size={14} />
+                    즐겨찾는 용어
+                    {favoriteTerms && favoriteTerms.length > 0 && (
+                      <span className="font-medium text-point">
+                        {favoriteTerms.length}개
+                      </span>
+                    )}
+                  </h3>
+                  {favoriteTerms === null ? (
+                    <p className="text-xs text-muted-foreground">
+                      불러오는 중...
+                    </p>
+                  ) : favoriteTerms.length === 0 ? (
+                    <div className="flex flex-col items-start gap-2">
+                      <p className="text-xs text-muted-foreground">
+                        아직 즐겨찾은 용어가 없어요. 용어 사전에서 별을 눌러
+                        저장해보세요!
+                      </p>
+                      <Link href="/glossary">
+                        <Button variant="secondary" className="h-10">
+                          개미 용어 사전으로 가기
+                        </Button>
+                      </Link>
+                    </div>
+                  ) : (
+                    <ul className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto pr-1">
+                      {favoriteTerms.map((term) => (
+                        <li
+                          key={term.id}
+                          className="flex shrink-0 flex-col gap-0.5 rounded-lg border border-border px-3 py-2"
+                        >
+                          <div className="flex items-start justify-between gap-2">
+                            <Badge variant="outline" className="w-fit text-xs">
+                              {term.term}
+                            </Badge>
+                            <button
+                              type="button"
+                              onClick={() => handleUnfavorite(term.id)}
+                              aria-label={`${term.term} 즐겨찾기 해제`}
+                              aria-pressed
+                              className="shrink-0 cursor-pointer text-amber-500 transition-colors hover:text-muted-foreground"
+                            >
+                              <Star size={16} className="fill-amber-400" />
+                            </button>
+                          </div>
+                          <p className="text-xs leading-relaxed text-muted-foreground">
+                            {descriptionForTone(
+                              term,
+                              toneForGrade(user?.grade ?? "청년 개미")
+                            )}
+                          </p>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              </div>
             </div>
           )}
         </SectionCard>

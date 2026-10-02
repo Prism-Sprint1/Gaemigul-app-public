@@ -15,12 +15,15 @@ interface PageTitleType {
   description: string
   /** 제목 아래(구분선 위)에 붙는 페이지 전용 탭 등 */
   children?: React.ReactNode
+  /** 시황/브리핑 탭 줄 오른쪽 끝에 놓을 요소 (탭이 보이는 페이지에서만 쓰인다) */
+  tabsAside?: React.ReactNode
 }
 
 export default function PageTitle({
   title,
   description,
   children,
+  tabsAside,
 }: PageTitleType) {
   const pathname = usePathname()
   const showMarketTabs =
@@ -38,26 +41,30 @@ export default function PageTitle({
         </div>
 
         {showMarketTabs && (
-          <Tabs value={activeTab} className="shrink-0">
-            <TabsList className={SEGMENT_LIST}>
-              <TabsTrigger
-                value="timeline"
-                render={<Link href={TIMELINE_PATH} />}
-                nativeButton={false}
-                className={SEGMENT_TRIGGER}
-              >
-                시황
-              </TabsTrigger>
-              <TabsTrigger
-                value="briefing"
-                render={<Link href={BRIEFING_PATH} />}
-                nativeButton={false}
-                className={SEGMENT_TRIGGER}
-              >
-                브리핑
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
+          // 시황/브리핑 탭 오른쪽에 페이지 전용 요소(예: 날짜 선택)를 붙일 수 있다
+          <div className="flex items-center justify-between gap-3">
+            <Tabs value={activeTab} className="shrink-0">
+              <TabsList className={SEGMENT_LIST}>
+                <TabsTrigger
+                  value="timeline"
+                  render={<Link href={TIMELINE_PATH} />}
+                  nativeButton={false}
+                  className={SEGMENT_TRIGGER}
+                >
+                  시황
+                </TabsTrigger>
+                <TabsTrigger
+                  value="briefing"
+                  render={<Link href={BRIEFING_PATH} />}
+                  nativeButton={false}
+                  className={SEGMENT_TRIGGER}
+                >
+                  브리핑
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+            {tabsAside}
+          </div>
         )}
         {children}
       </div>

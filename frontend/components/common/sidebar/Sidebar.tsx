@@ -9,7 +9,10 @@ import { Separator } from "../../ui"
 import { HeaderAuthAction, ThemeToggle } from "../Header"
 import { TimelineTimer, useTimelineSchedule } from "../timeline"
 
+import { SIDEBAR_HIDDEN_PATHS } from "@/lib/constant/sidebar"
+
 import { useMobileSidebar } from "./MobileSidebarContext"
+import { SidebarMobileNav } from "./SidebarNav"
 
 export default function Sidebar() {
   const { isOpen, close } = useMobileSidebar()
@@ -63,10 +66,15 @@ export default function Sidebar() {
         ref={asideRef}
         className={cn(
           "fixed inset-y-0 right-0 z-50 w-67.5 bg-card transition-all transition-discrete duration-300",
-          "md:sticky md:top-18.75 md:z-auto md:flex md:h-[calc(100vh-75px)] md:w-auto md:min-w-67.5 md:translate-x-0 md:flex-col md:overflow-hidden",
+          // 데스크톱은 폭을 고정값(270px)으로 둬야 숨길 때 0까지 폭 전환이 된다(auto는 애니메이션 불가).
+          // 안쪽 요소는 270px를 유지시켜, 접히는 동안 내용이 찌그러지지 않고 잘려 나가게 한다
+          "md:sticky md:top-18.75 md:z-auto md:flex md:h-[calc(100vh-75px)] md:w-67.5 md:min-w-67.5 md:translate-x-0 md:flex-col md:overflow-hidden md:duration-500 md:ease-bounce md:[&>*]:min-w-67.5",
           isOpen
             ? "translate-x-0 starting:translate-x-full"
-            : "translate-x-full max-md:hidden"
+            : "translate-x-full max-md:hidden",
+          // 인증·약관 페이지: display:none으로 뚝 끊지 않고 폭을 0으로 접으며 사라진다(invisible은 전환이 끝난 뒤 적용돼 포커스도 막는다)
+          SIDEBAR_HIDDEN_PATHS.includes(pathname) &&
+            "md:invisible md:w-0 md:min-w-0 md:opacity-0"
         )}
       >
         <div className="flex flex-col gap-2 px-5 py-3 md:hidden">
@@ -100,6 +108,8 @@ export default function Sidebar() {
           </div>
         </div>
         <Separator className="w-full md:hidden" />
+        {/* 모바일 전용 메뉴 목록 - PC는 하단 플로팅 메뉴(SidebarNav)를 쓴다 */}
+        <SidebarMobileNav />
         <div className="absolute bottom-6 left-5 md:hidden">
           <ThemeToggle />
         </div>

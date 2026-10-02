@@ -102,7 +102,8 @@ function HeaderHoverMenu({
   return (
     <div className="group relative shrink-0">
       {trigger}
-      <div className="invisible absolute top-full right-0 z-40 pt-2 opacity-0 transition-opacity duration-150 group-hover:visible group-hover:opacity-100 group-has-[:focus-visible]:visible group-has-[:focus-visible]:opacity-100">
+      {/* 오른쪽 위 모서리(프로필 쪽)를 기준점으로 접혀 있다가 통통 튀며 펼쳐진다 */}
+      <div className="invisible absolute top-full right-0 z-40 origin-top-right -translate-y-1 scale-90 pt-2 opacity-0 transition-[opacity,scale,translate,visibility] duration-300 ease-bounce group-hover:visible group-hover:translate-y-0 group-hover:scale-100 group-hover:opacity-100 group-has-[:focus-visible]:visible group-has-[:focus-visible]:translate-y-0 group-has-[:focus-visible]:scale-100 group-has-[:focus-visible]:opacity-100">
         <div
           role="menu"
           className="flex w-40 flex-col rounded-lg border border-border bg-popover p-1 shadow-lg"
@@ -267,7 +268,7 @@ export default function Header() {
             <p
               id="header-index-tooltip"
               role="tooltip"
-              className="pointer-events-none invisible absolute top-full left-1/2 z-40 mt-2 flex w-max -translate-x-1/2 items-center gap-1 rounded-lg border border-border bg-popover px-2.5 py-1.5 text-[11px] text-popover-foreground opacity-0 shadow-lg transition-opacity duration-150 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100"
+              className="pointer-events-none invisible absolute top-full left-1/2 z-40 mt-2 flex w-max origin-top -translate-x-1/2 -translate-y-1 scale-90 items-center gap-1 rounded-lg border border-border bg-popover px-2.5 py-1.5 text-[11px] text-popover-foreground opacity-0 shadow-lg transition-[opacity,scale,translate,visibility] duration-300 ease-bounce group-hover:visible group-hover:translate-y-0 group-hover:scale-100 group-hover:opacity-100 group-focus-visible:visible group-focus-visible:translate-y-0 group-focus-visible:scale-100 group-focus-visible:opacity-100"
             >
               <Info size={11} className="text-muted-foreground" />
               지수 데이터는 정시 기준 15분마다 갱신됩니다.

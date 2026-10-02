@@ -1,7 +1,7 @@
 import { Star } from "lucide-react"
 import { useRef } from "react"
 
-import { Badge } from "@/components/ui"
+import { Badge, Skeleton } from "@/components/ui"
 import { useRecordTermView } from "@/hooks/use-record-term-view"
 import { INNER_CARD } from "@/lib/constant/surface"
 import { descriptionForTone, type ToneFilter } from "@/lib/glossary"
@@ -68,6 +68,24 @@ export function GlossaryTermCard({
           ))}
         </div>
       )}
+    </div>
+  )
+}
+
+/** 용어 카드와 같은 모양의 뼈대 (용어·별 / 설명 2줄 / 연관 태그) */
+export function GlossaryTermCardSkeleton() {
+  return (
+    <div className={cn(INNER_CARD, "flex flex-col gap-2")}>
+      <div className="flex items-start justify-between gap-2">
+        <Skeleton className="h-5 w-24" />
+        <Skeleton className="size-4.5 rounded-full" />
+      </div>
+      <Skeleton className="h-4 w-full" />
+      <Skeleton className="h-4 w-3/4" />
+      <div className="flex gap-1.5 pt-1">
+        <Skeleton className="h-5 w-14 rounded-full" />
+        <Skeleton className="h-5 w-12 rounded-full" />
+      </div>
     </div>
   )
 }

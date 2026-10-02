@@ -11,20 +11,23 @@ export default function Page() {
       <div className="flex flex-col gap-6">
         <PheromoneTemperatureCard />
 
-        <div className="flex flex-col gap-6 md:flex-row md:items-stretch">
-          <div className="flex md:flex-3">
+        {/* 상단 3영역: 원/달러 환율 : 소란지수 : 오늘의 한 입 = 2:1:1 (데스크톱).
+            태블릿은 환율을 한 줄로, 나머지 둘을 아래에 나란히 두고 모바일은 세로로 쌓는다 */}
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+          <div className="flex min-w-0 md:col-span-2">
             <UsdKrwTrendCard />
           </div>
-          <div className="md:flex-1.5 flex">
+          <div className="flex min-w-0">
             <PheromoneSignalCard />
+          </div>
+          <div className="flex min-w-0">
+            <TodayAntTermCard />
           </div>
         </div>
 
         <TradingActivityCard />
         <CalendarScheduleCard />
       </div>
-
-      <TodayAntTermCard />
     </div>
   )
 }

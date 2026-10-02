@@ -23,7 +23,7 @@ export default function FeaturedStockGrid({ stocks }: FeaturedStockGridProps) {
             >
               <div className="flex items-center justify-between gap-2">
                 <span className="text-sm font-semibold text-card-foreground">{stock.name}</span>
-                <Badge className="bg-neutral-100 text-[10px] text-neutral-500">
+                <Badge className="bg-neutral-100 text-[10px] text-neutral-500 dark:font-semibold dark:text-neutral-700">
                   {stock.badge}
                 </Badge>
               </div>

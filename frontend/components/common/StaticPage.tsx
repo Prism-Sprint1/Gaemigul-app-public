@@ -44,7 +44,7 @@ export default function StaticPage({
     LEGAL_TABS.find((tab) => tab.href === pathname)?.value ?? "privacy-policy"
 
   return (
-    <div className="flex w-full flex-col gap-6">
+    <div className="mx-auto flex w-full max-w-220 flex-col gap-6">
       <PageTitle title={title} description={`최종 업데이트 ${updatedAt}`}>
         {/* 좁은 화면에서는 탭이 가로로 스크롤된다 */}
         <Tabs value={activeTab} className="max-w-full min-w-0">
@@ -72,7 +72,7 @@ export default function StaticPage({
             {intro}
           </p>
         )}
-        <div className="flex max-w-220 flex-col gap-10 text-sm leading-relaxed text-foreground">
+        <div className="flex flex-col gap-10 text-sm leading-relaxed text-foreground">
           {children}
         </div>
       </div>

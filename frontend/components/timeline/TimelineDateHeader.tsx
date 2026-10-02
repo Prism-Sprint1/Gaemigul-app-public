@@ -56,7 +56,10 @@ export default function TimelineDateHeader({
   // 조회한 달(month key)과 그 달에 실제 데이터가 있는 날짜 집합. month가 viewMonth와
   // 다르면 아직 그 달을 못 불러온 것 - 이 상태에선 데이터 유무로 막지 않고 날짜 범위만으로
   // 판단해, 달을 넘길 때 전부 비활성으로 깜빡이는 걸 막는다
-  const [loadedMonth, setLoadedMonth] = useState<{ key: string; dates: Set<string> } | null>(null)
+  const [loadedMonth, setLoadedMonth] = useState<{
+    key: string
+    dates: Set<string>
+  } | null>(null)
   const viewMonthKey = format(viewMonth, "yyyy-MM")
 
   useEffect(() => {
@@ -64,7 +67,8 @@ export default function TimelineDateHeader({
 
     getTimelineAvailableDates(viewMonth.getFullYear(), viewMonth.getMonth() + 1)
       .then((dates) => {
-        if (!cancelled) setLoadedMonth({ key: viewMonthKey, dates: new Set(dates) })
+        if (!cancelled)
+          setLoadedMonth({ key: viewMonthKey, dates: new Set(dates) })
       })
       .catch(() => {
         if (!cancelled) setLoadedMonth({ key: viewMonthKey, dates: new Set() })
@@ -75,7 +79,8 @@ export default function TimelineDateHeader({
     }
   }, [viewMonth, viewMonthKey])
 
-  const availableDates = loadedMonth?.key === viewMonthKey ? loadedMonth.dates : null
+  const availableDates =
+    loadedMonth?.key === viewMonthKey ? loadedMonth.dates : null
 
   const days = getMonthGrid(viewMonth)
   const isToday = (date: Date) => isSameDay(date, new Date())
@@ -98,8 +103,8 @@ export default function TimelineDateHeader({
         if (next) setViewMonth(startOfMonth(selectedDate))
       }}
     >
-      <Popover.Trigger className="flex cursor-pointer items-center gap-1 border-b border-border pb-3 text-left">
-        <strong className="text-base font-bold">
+      <Popover.Trigger className="flex shrink-0 cursor-pointer items-center gap-1 rounded-full px-2 py-1 text-left transition-colors hover:bg-muted">
+        <strong className="text-base font-bold max-md:text-sm">
           {format(selectedDate, "M월 d일", { locale: ko })}
         </strong>
         <ChevronDown
@@ -112,8 +117,10 @@ export default function TimelineDateHeader({
       </Popover.Trigger>
 
       <Popover.Portal>
-        <Popover.Positioner sideOffset={8} align="start">
-          <Popover.Popup className="w-70 rounded-xl border border-border bg-popover p-4 shadow-lg outline-none">
+        {/* 모바일에서는 고정 헤더·섹션 탭(sticky) 위에 뜨도록 z-30 */}
+        <Popover.Positioner sideOffset={8} align="end" className="max-md:z-30">
+          {/* Base UI가 열고 닫힐 때 붙이는 data-starting/ending-style로 통통 튀는 등장·퇴장 효과를 준다 */}
+          <Popover.Popup className="w-70 origin-(--transform-origin) rounded-xl border border-border bg-popover p-4 shadow-lg transition-[opacity,scale] duration-300 ease-bounce outline-none data-ending-style:scale-90 data-ending-style:opacity-0 data-starting-style:scale-90 data-starting-style:opacity-0">
             <div className="flex items-center justify-between">
               <button
                 type="button"
@@ -164,7 +171,8 @@ export default function TimelineDateHeader({
                       disabled
                         ? "cursor-not-allowed text-muted-foreground/40"
                         : "cursor-pointer hover:bg-muted",
-                      isSelected && "bg-point font-semibold text-white hover:bg-point",
+                      isSelected &&
+                        "bg-point font-semibold text-white hover:bg-point",
                       !isSelected && isToday && "font-semibold text-point",
                       inMonth &&
                         !disabled &&

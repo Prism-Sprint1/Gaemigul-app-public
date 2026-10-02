@@ -1,8 +1,7 @@
 "use client"
 
-import { ArrowUpRight, Newspaper } from "lucide-react"
+import { Newspaper } from "lucide-react"
 import { useHeatmapNews } from "@/hooks/use-heatmap-news"
-import { formatTimestamp } from "@/lib/heatmap-format"
 import type {
   HeatmapMarket,
   HeatmapPeriod,
@@ -26,23 +25,21 @@ export default function HeatmapNewsSection({
       aria-labelledby="heatmap-news-title"
       className="rounded-xl border border-heatmap-border bg-heatmap-panel p-4 shadow-sm sm:p-5"
     >
-      <div className="mb-5 flex flex-wrap items-start justify-between gap-3 border-b border-heatmap-border pb-4">
+      <div className="mb-5 flex flex-wrap items-start justify-between gap-3 border-b border-heatmap-border pb-4 max-md:mb-4 max-md:pb-3">
         <div>
           <div className="mb-2 flex items-center gap-2 text-xs font-medium text-neutral-500 dark:text-neutral-400">
-            <Newspaper className="size-4" aria-hidden="true" /> 관련 경제뉴스
+            <Newspaper
+              className="size-4 max-md:text-point"
+              aria-hidden="true"
+            />{" "}
+            관련 경제뉴스
           </div>
           <h2
             id="heatmap-news-title"
-            className="text-lg font-bold tracking-tight text-neutral-900 dark:text-neutral-100"
+            className="text-lg font-bold tracking-tight text-neutral-900 max-md:text-base dark:text-neutral-100"
           >
             상승률 1위 섹터 뉴스
           </h2>
-          <p className="mt-1.5 text-xs leading-5 text-neutral-500 dark:text-neutral-400">
-            {topSectorName
-              ? `${topSectorName} 관련 최신 기사`
-              : "상승률 1위 섹터의 최신 기사"}{" "}
-            · 발행 시각순 최대 4건
-          </p>
         </div>
         {topSectorName && (
           <span className="rounded-full border border-heatmap-border bg-heatmap-canvas px-3 py-1.5 text-xs font-semibold text-neutral-600 dark:text-neutral-400">
@@ -60,46 +57,21 @@ export default function HeatmapNewsSection({
       )}
       {items.length ? (
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          {items.map((item, index) => (
+          {items.map((item) => (
             <a
               key={item.url}
               href={item.url}
               target="_blank"
               rel="noopener noreferrer"
               aria-label={`${item.title} (새 탭)`}
-              className="group flex min-w-0 flex-col rounded-xl border border-heatmap-border bg-heatmap-panel p-4 transition-colors hover:border-neutral-300 hover:bg-heatmap-canvas focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-900 dark:hover:border-neutral-600 dark:focus-visible:outline-neutral-300 sm:min-h-56"
+              className="flex min-w-0 flex-col justify-between gap-3 rounded-lg border border-border bg-card p-4 transition-shadow duration-200 hover:shadow-md"
             >
-              <div className="mb-4 flex items-center justify-between gap-2">
-                <span className="truncate text-xs font-semibold text-neutral-600 dark:text-neutral-400">
-                  {item.source || "언론사 미제공"}
-                </span>
-                <span
-                  aria-hidden="true"
-                  className="text-xs text-neutral-400 tabular-nums dark:text-neutral-500"
-                >
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-              </div>
-              <h3 className="line-clamp-4 text-[15px] leading-6 font-semibold tracking-tight break-keep text-neutral-900 dark:text-neutral-100">
+              <p className="line-clamp-2 text-xs leading-relaxed text-card-foreground">
                 {item.title}
-              </h3>
-              {item.summary && (
-                <p className="mt-2 line-clamp-2 text-xs leading-5 text-neutral-500 dark:text-neutral-400">
-                  {item.summary}
-                </p>
-              )}
-              <div className="mt-auto flex items-center justify-between gap-2 pt-5">
-                <time
-                  dateTime={item.published_at ?? undefined}
-                  className="text-[11px] text-neutral-500 tabular-nums dark:text-neutral-400"
-                >
-                  {formatTimestamp(item.published_at)}
-                </time>
-                <ArrowUpRight
-                  className="size-4 shrink-0 text-neutral-400 transition-colors group-hover:text-neutral-900 dark:text-neutral-500 dark:group-hover:text-neutral-100"
-                  aria-hidden="true"
-                />
-              </div>
+              </p>
+              <span className="truncate text-[11px] font-medium text-neutral-400">
+                {item.source || "언론사 미제공"}
+              </span>
             </a>
           ))}
         </div>
@@ -137,16 +109,11 @@ export default function HeatmapNewsSection({
           </p>
         </div>
       )}
-      <div className="mt-4 flex flex-wrap justify-between gap-2 text-[11px] leading-5 text-neutral-500 dark:text-neutral-400">
-        <p>Google 뉴스 RSS · 기사 선택 시 원문 링크를 새 탭에서 엽니다.</p>
-        <p>
-          {data?.updated_at
-            ? `수집 ${formatTimestamp(data.updated_at)} · 한국시간`
-            : "발행 시각은 한국시간 기준"}
-        </p>
-      </div>
       {items.length > 0 && data?.message && !data.is_stale && (
-        <p role="status" className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
+        <p
+          role="status"
+          className="mt-1 text-xs text-neutral-500 dark:text-neutral-400"
+        >
           {data.message}
         </p>
       )}
