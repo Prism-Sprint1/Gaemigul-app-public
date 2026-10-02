@@ -30,7 +30,7 @@ export default function LLMSummarySection({
     <div className="flex flex-col gap-3">
       <div className="flex items-start justify-between gap-3">
         <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-1.5 text-lg font-bold text-foreground">
+          <div className="flex gap-1.5 text-lg font-bold text-foreground">
             <span aria-hidden>⚡</span>
             {summary.title}
           </div>
@@ -49,8 +49,10 @@ export default function LLMSummarySection({
               accentBarClassName[point.accent]
             )}
           >
-            <div className="flex items-center justify-between gap-2">
-              <span className="text-sm font-semibold text-card-foreground">{point.title}</span>
+            <div className="flex items-start justify-between gap-2">
+              <span className="text-sm font-semibold text-card-foreground">
+                {point.title}
+              </span>
               <Badge
                 className={cn(
                   "text-[10px]",

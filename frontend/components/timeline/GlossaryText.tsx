@@ -71,10 +71,13 @@ function GlossaryTerm({
       className="relative inline-block cursor-help rounded bg-point/10 px-0.5 text-point"
     >
       {term}
+      {/* 용어 아래쪽(말풍선 꼬리 쪽)을 기준점으로 작게 접혀 있다가, ease-bounce로 통통 튀며 커져 올라온다 */}
       <span
         className={cn(
-          "pointer-events-none absolute bottom-full left-1/2 z-10 mb-1.5 w-56 max-w-[calc(100vw-2rem)] -translate-x-1/2 rounded-lg border border-border bg-popover p-2.5 text-[11px] leading-relaxed font-normal text-popover-foreground opacity-0 shadow-lg transition-opacity duration-150",
-          visible && "opacity-100"
+          "pointer-events-none absolute bottom-full left-1/2 z-10 mb-1.5 w-56 max-w-[calc(100vw-2rem)] origin-bottom -translate-x-1/2 rounded-lg border border-border bg-popover p-2.5 text-[11px] leading-relaxed font-normal text-popover-foreground shadow-lg transition-[opacity,scale,translate] duration-300 ease-bounce",
+          visible
+            ? "translate-y-0 scale-100 opacity-100"
+            : "translate-y-1 scale-75 opacity-0"
         )}
       >
         {description}

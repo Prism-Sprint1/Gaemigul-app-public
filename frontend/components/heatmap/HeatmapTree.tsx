@@ -1,15 +1,7 @@
 "use client"
 
 import { useEffect, useId, useMemo, useRef, useState } from "react"
-import {
-  ArrowLeft,
-  ChevronRight,
-  Expand,
-  LayoutGrid,
-  List,
-  Search,
-  X,
-} from "lucide-react"
+import { ArrowLeft, ChevronRight, Expand, Search, X } from "lucide-react"
 import {
   formatChange,
   formatKoreanAmount,
@@ -17,11 +9,22 @@ import {
   layoutMarketCapTreemap,
   selectHeatmapSectors,
 } from "@/lib/heatmap-layout"
-import type { HeatmapSector, HeatmapStock } from "@/lib/types/HeatmapType"
+import type {
+  HeatmapSector,
+  HeatmapStock,
+  HeatmapView,
+} from "@/lib/types/HeatmapType"
 import HeatmapLegend from "./HeatmapLegend"
 import HeatmapStockDetail from "./HeatmapStockDetail"
 
-export default function HeatmapTree({ sectors }: { sectors: HeatmapSector[] }) {
+export default function HeatmapTree({
+  sectors,
+  view,
+}: {
+  sectors: HeatmapSector[]
+  /** 지도/목록 전환 탭은 기간 탭 옆(HeatmapFilters)에 있어서 상태를 부모가 가진다 */
+  view: HeatmapView
+}) {
   const containerRef = useRef<HTMLDivElement>(null)
   const detailId = useId()
   const searchId = useId()
@@ -30,7 +33,6 @@ export default function HeatmapTree({ sectors }: { sectors: HeatmapSector[] }) {
   const [sectorCode, setSectorCode] = useState<string | null>(null)
   const [activeCode, setActiveCode] = useState<string | null>(null)
   const [search, setSearch] = useState("")
-  const [view, setView] = useState<"map" | "list">("map")
   const displayedSectors = useMemo(
     () => selectHeatmapSectors(sectors),
     [sectors]
@@ -168,50 +170,11 @@ export default function HeatmapTree({ sectors }: { sectors: HeatmapSector[] }) {
 
   return (
     <div className="min-w-0">
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs">
-          <span className="text-neutral-500 dark:text-neutral-400">표시 종목</span>
-          <span className="font-medium text-red-700">
-            상승 <b className="tabular-nums">{breadth.up}</b>
-          </span>
-          <span className="font-medium text-blue-700">
-            하락 <b className="tabular-nums">{breadth.down}</b>
-          </span>
-          <span className="text-neutral-500 dark:text-neutral-400">
-            보합 <b className="tabular-nums">{breadth.flat}</b>
-          </span>
-          {breadth.missing > 0 && (
-            <span className="text-neutral-500 dark:text-neutral-400">미제공 {breadth.missing}</span>
-          )}
-        </div>
-        <div
-          role="group"
-          aria-label="보기 방식"
-          className="flex gap-1 rounded-full bg-neutral-100 p-1 dark:bg-neutral-800"
-        >
-          {(
-            [
-              { value: "map", label: "지도", Icon: LayoutGrid },
-              { value: "list", label: "목록", Icon: List },
-            ] as const
-          ).map(({ value, label, Icon }) => (
-            <button
-              key={value}
-              type="button"
-              aria-pressed={view === value}
-              onClick={() => setView(value)}
-              className={`flex cursor-pointer items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-semibold outline-offset-2 focus-visible:outline-heatmap-accent ${view === value ? "bg-point text-white" : "text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100"}`}
-            >
-              <Icon className="size-3.5" aria-hidden="true" />
-              {label}
-            </button>
-          ))}
-        </div>
-      </div>
-      <div className="mb-3 flex flex-wrap gap-2">
-        <div className="relative min-w-40 flex-1">
+      {/* 모바일: 검색창 : 섹터 선택 = 8:2 */}
+      <div className="mb-3 flex flex-wrap gap-2 max-md:grid max-md:grid-cols-[4fr_2fr]">
+        <div className="relative min-w-40 flex-1 max-md:min-w-0">
           <Search
-            className="pointer-events-none absolute top-3 left-3 size-4 text-neutral-400 dark:text-neutral-300"
+            className="pointer-events-none absolute top-3 left-3 size-4 text-neutral-400 max-md:top-1/2 max-md:-translate-y-1/2 dark:text-neutral-300"
             aria-hidden="true"
           />
           <label className="sr-only" htmlFor={searchId}>
@@ -226,14 +189,14 @@ export default function HeatmapTree({ sectors }: { sectors: HeatmapSector[] }) {
             }}
             placeholder="기업명 또는 종목코드 검색"
             autoComplete="off"
-            className="h-10 w-full rounded-lg border border-heatmap-border bg-heatmap-panel pr-9 pl-9 text-xs outline-offset-2 placeholder:text-neutral-400 focus-visible:outline-heatmap-accent dark:placeholder:text-neutral-500"
+            className="h-10 w-full rounded-lg border border-heatmap-border bg-heatmap-panel pr-4 pl-9 text-xs outline-offset-2 placeholder:text-neutral-400 focus-visible:outline-heatmap-accent max-md:h-11 max-md:text-sm dark:placeholder:text-neutral-500"
           />
           {search && (
             <button
               type="button"
               onClick={() => setSearch("")}
               aria-label="검색어 지우기"
-              className="absolute top-1 right-1 flex size-8 cursor-pointer items-center justify-center rounded text-neutral-500 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800"
+              className="absolute top-1 right-1 flex size-8 cursor-pointer items-center justify-center rounded text-neutral-500 hover:bg-neutral-100 max-md:top-1/2 max-md:-translate-y-1/2 dark:text-neutral-400 dark:hover:bg-neutral-800"
             >
               <X className="size-4" />
             </button>
@@ -246,7 +209,7 @@ export default function HeatmapTree({ sectors }: { sectors: HeatmapSector[] }) {
           id={sectorId}
           value={currentSector?.code ?? ""}
           onChange={(event) => selectSector(event.target.value || null)}
-          className="h-10 max-w-full min-w-32 rounded-lg border border-heatmap-border bg-heatmap-panel px-3 text-xs text-neutral-700 outline-offset-2 focus-visible:outline-heatmap-accent dark:text-neutral-300"
+          className="h-10 max-w-full min-w-32 rounded-lg border border-heatmap-border bg-heatmap-panel px-3 text-xs text-neutral-700 outline-offset-2 focus-visible:outline-heatmap-accent max-md:h-11 max-md:w-full max-md:min-w-0 max-md:px-1.5 max-md:text-sm dark:text-neutral-300"
         >
           <option value="">전체 섹터</option>
           {displayedSectors.map((sector) => (
@@ -382,9 +345,6 @@ export default function HeatmapTree({ sectors }: { sectors: HeatmapSector[] }) {
               })}
             </div>
           </div>
-          <div className="mt-2 flex justify-end">
-            <HeatmapLegend />
-          </div>
         </>
       ) : (
         <div className="mt-2 max-h-[700px] overflow-auto rounded-xl border border-heatmap-border">
@@ -457,6 +417,29 @@ export default function HeatmapTree({ sectors }: { sectors: HeatmapSector[] }) {
           {displayedSectors.length}개 섹터를 확인할 수 있습니다.
         </p>
       )}
+      {/* 하단: 표시 종목 수(왼쪽) - 등락 색 범례(오른쪽, 지도 보기에서만) */}
+      <div className="mt-2 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs">
+          <span className="text-neutral-500 dark:text-neutral-400">
+            표시 종목
+          </span>
+          <span className="font-medium text-red-700">
+            상승 <b className="tabular-nums">{breadth.up}</b>
+          </span>
+          <span className="font-medium text-blue-700">
+            하락 <b className="tabular-nums">{breadth.down}</b>
+          </span>
+          <span className="text-neutral-500 dark:text-neutral-400">
+            보합 <b className="tabular-nums">{breadth.flat}</b>
+          </span>
+          {breadth.missing > 0 && (
+            <span className="text-neutral-500 dark:text-neutral-400">
+              미제공 {breadth.missing}
+            </span>
+          )}
+        </div>
+        {view === "map" && <HeatmapLegend />}
+      </div>
     </div>
   )
 }

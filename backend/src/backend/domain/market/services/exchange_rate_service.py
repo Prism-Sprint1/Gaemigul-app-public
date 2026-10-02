@@ -28,7 +28,8 @@ _KST = ZoneInfo("Asia/Seoul")
 _MARKET_DIV = "X"
 _SYMBOL = "FX@KRW"
 
-# 차트 한 장의 점 개수. 바꾸면 세 기간 모두 점 수와 is_complete 기준이 바뀐다
+# 5일·1개월 차트 한 장의 점 개수. 바꾸면 두 기간의 점 수와 is_complete 기준이 바뀐다
+# ("오늘"은 개수 제한 없이 오늘 쌓인 30분 칸을 전부 보낸다 - refresh 참고)
 _POINT_COUNT = 8
 
 # 스냅샷 보관 일수. 5일 차트에 필요한 범위보다 여유를 둔다 (장애·휴일 대비). 줄이면 5일 차트가 비어 보일 수 있다
@@ -75,6 +76,7 @@ def _payload(
     updated_at: datetime,
     *,
     is_complete: bool | None = None,
+    requested_point_count: int = _POINT_COUNT,
 ) -> dict:
     return {
         "period": period,
@@ -86,7 +88,7 @@ def _payload(
             }
             for timestamp, value in points
         ],
-        "requested_point_count": _POINT_COUNT,
+        "requested_point_count": requested_point_count,
         "is_complete": len(points) == _POINT_COUNT if is_complete is None else is_complete,
         "updated_at": updated_at,
     }
@@ -172,15 +174,22 @@ async def refresh() -> None:
     today_all = await _snapshot_points(today_start)
     five_day_start = sampled_at - timedelta(days=5)
     five_day_all = await _snapshot_points(five_day_start)
-    today = today_all[-_POINT_COUNT:]
+    # 오늘 = 오늘(자정부터) 쌓인 30분 칸 전부. 개수를 자르지 않아 하루 흐름이 30분 간격으로 다 보인다
+    today = today_all
     five_day = _evenly_spaced(five_day_all)
     month = await asyncio.to_thread(_monthly_points, now_kst, current)
     updated_at = datetime.now(UTC)
 
     new_cache = {
-        # 오늘 = 오늘 스냅샷 중 최근 _POINT_COUNT개 (30분마다 한 칸씩 밀린다)
-        "today": _payload("today", today, updated_at),
-        # 5일은 점이 8개 모여도, 첫 관측값이 범위 시작 30분 안에 있어야(실제로 5일치가 쌓여야) 완성으로 본다
+        # 오늘 = 오늘 스냅샷 전부. 정해진 개수가 없으므로 받은 만큼이 곧 전부(점이 하나라도 있으면 완성)
+        "today": _payload(
+            "today",
+            today,
+            updated_at,
+            is_complete=bool(today),
+            requested_point_count=len(today),
+        ),
+        # 5일은 점이 _POINT_COUNT개 모여도, 첫 관측값이 범위 시작 30분 안에 있어야(실제로 5일치가 쌓여야) 완성으로 본다
         "5d": _payload(
             "5d",
             five_day,

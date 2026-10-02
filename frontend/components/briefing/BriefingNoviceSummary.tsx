@@ -19,8 +19,9 @@ export default function BriefingNoviceSummary({
       id="article-04"
       className={cn(INNER_CARD, "flex scroll-mt-24 flex-col gap-4")}
     >
-      <div className="flex items-center gap-2">
-        <span className="text-baisc flex size-9 items-center justify-center rounded-md bg-point2 font-bold text-white">
+      {/* 모바일: 제목이 두 줄이 돼도 번호가 위에 붙고(items-start), 번호 칸은 줄어들지 않는 정사각형 */}
+      <div className="flex items-center gap-2 max-md:items-start">
+        <span className="text-baisc flex size-9 items-center justify-center rounded-md bg-point2 font-bold text-white max-md:shrink-0">
           04
         </span>
         <h2 className="text-basic flex flex-col font-bold text-card-foreground">

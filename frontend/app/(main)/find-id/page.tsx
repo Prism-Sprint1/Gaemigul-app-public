@@ -66,6 +66,16 @@ export default function FindIdPage() {
           >
             {submitting ? "전송 중..." : "아이디 전송"}
           </Button>
+
+          {/* 로그인 화면의 하단 링크(아이디 찾기·비밀번호 찾기·회원가입)와 같은 스타일 */}
+          <div className="flex justify-center text-xs text-muted-foreground">
+            <Link
+              href="/login"
+              className="hover:text-foreground hover:underline"
+            >
+              로그인 하러 가기
+            </Link>
+          </div>
         </form>
       )}
     </AuthCard>

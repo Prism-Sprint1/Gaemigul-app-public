@@ -13,8 +13,12 @@ import {
 } from "react"
 
 import { LoginRequiredDialog, PageTitle, useAuth } from "@/components/common"
+import { Skeleton } from "@/components/ui"
 import { GlossaryCategoryTabs } from "@/components/glossary/GlossaryCategoryTabs"
-import { GlossaryTermCard } from "@/components/glossary/GlossaryTermCard"
+import {
+  GlossaryTermCard,
+  GlossaryTermCardSkeleton,
+} from "@/components/glossary/GlossaryTermCard"
 import { GlossaryToneTabs } from "@/components/glossary/GlossaryToneTabs"
 import {
   getGlossaryFavorites,
@@ -152,7 +156,12 @@ function GlossaryPageContent() {
           description="난이도에 맞는 톤으로 투자 용어를 익혀보세요."
         />
 
-        <section className={cn(SECTION_CARD, "flex h-max min-w-0 flex-1 flex-col gap-4")}>
+        <section
+          className={cn(
+            SECTION_CARD,
+            "flex h-max min-w-0 flex-1 flex-col gap-4"
+          )}
+        >
           {/* 검색창은 맨 위에 전체 너비로 크게 두고, 스크롤해도 헤더 바로 아래에 붙어 있게 한다.
               카드 좌우 여백까지 배경으로 덮어서 아래로 지나가는 카드가 비쳐 보이지 않게 한다 */}
           <div
@@ -176,7 +185,7 @@ function GlossaryPageContent() {
                 }}
                 placeholder="궁금한 용어를 검색해 보세요 (예: PER, 공매도)"
                 autoComplete="off"
-                className="h-12 w-full rounded-xl border bg-background pr-12 pl-12 text-base outline-offset-2 placeholder:text-muted-foreground focus-visible:outline-point"
+                className="h-12 w-full rounded-xl border bg-background pr-4 pl-12 text-base outline-offset-2 placeholder:text-muted-foreground focus-visible:outline-point max-md:h-11 max-md:text-sm"
               />
               {query && (
                 <button
@@ -201,9 +210,22 @@ function GlossaryPageContent() {
           <GlossaryCategoryTabs value={category} onChange={setCategory} />
 
           {terms === null && !loadError ? (
-            <p className="py-16 text-center text-sm text-muted-foreground">
-              용어 사전을 불러오는 중이에요...
-            </p>
+            // 그룹 제목 + 용어 카드 그리드와 같은 모양의 뼈대
+            <div
+              role="status"
+              aria-label="용어 사전 불러오는 중"
+              className="flex flex-col gap-3"
+            >
+              <div className="flex flex-col gap-1.5 border-b pb-2">
+                <Skeleton className="h-5 w-32" />
+                <Skeleton className="h-3.5 w-64 max-w-full" />
+              </div>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                {Array.from({ length: 9 }, (_, index) => (
+                  <GlossaryTermCardSkeleton key={index} />
+                ))}
+              </div>
+            </div>
           ) : loadError && (terms ?? []).length === 0 ? (
             <p className="py-16 text-center text-sm text-muted-foreground">
               용어 사전을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.

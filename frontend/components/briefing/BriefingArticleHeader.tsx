@@ -19,24 +19,31 @@ export default function BriefingArticleHeader({
         </span>
         <span className="flex gap-1">
           서비스:
-          <span className="font-semibold text-black dark:text-neutral-200">개미굴 (Anthill)</span>
+          <span className="font-semibold text-black dark:text-neutral-200">
+            개미굴 (Anthill)
+          </span>
         </span>
       </div>
       <h1 className="text-xl leading-snug font-extrabold sm:text-3xl">
         {content.title}
       </h1>
       <Separator />
-      <p className="flex items-center gap-4 text-xs text-neutral-400">
+      {/* 모바일: 발행 시각 / 분석을 세로로 쌓고 가운데 구분자(|)는 숨긴다 */}
+      <p className="flex items-center gap-4 text-xs text-neutral-400 max-md:flex-col max-md:items-start max-md:gap-1">
         <span>
           발행 시각:{" "}
           <strong className="font-medium text-black dark:text-neutral-200">
             {content.publishedAt}
           </strong>
         </span>
-        |
+        <span aria-hidden="true" className="max-md:hidden">
+          |
+        </span>
         <span>
           분석:{" "}
-          <strong className="font-medium text-black dark:text-neutral-200">{content.analyst}</strong>
+          <strong className="font-medium text-black dark:text-neutral-200">
+            {content.analyst}
+          </strong>
         </span>
       </p>
       <Separator />
