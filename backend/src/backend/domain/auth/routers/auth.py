@@ -155,13 +155,20 @@ async def verify_password(
 @router.post("/change-password", response_model=MessageResponse)
 async def change_password(
     data: ChangePasswordRequest,
+    response: Response,
     current_user: AuthUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> MessageResponse:
     try:
+        # 비밀번호를 바꾸면서 이 유저의 세션을 모두 지운다(다른 기기·탈취된 세션 로그아웃)
         await auth_service.change_password(db, current_user, data)
     except auth_service.AuthError as error:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=error.message) from error
+
+    # 지금 이 기기는 로그인을 유지하도록 새 세션을 발급해 쿠키를 바꿔 준다
+    token = await session_service.create_session(db, current_user)
+    await db.commit()
+    session_service.set_session_cookie(response, token)
     return MessageResponse(message="비밀번호가 변경되었습니다.")
 
 

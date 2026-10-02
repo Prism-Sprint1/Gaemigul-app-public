@@ -10,7 +10,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.domain.auth.models.auth import AuthGradeSurvey, AuthUser, GradePromotionSuggestion
 from backend.domain.auth.schemas.auth import ChangePasswordRequest, GradeSurveyRequest, LoginRequest, SignupRequest
-from backend.domain.auth.services import email_service, email_templates, grade_service, password_service, quiz_service
+from backend.domain.auth.services import (
+    email_service,
+    email_templates,
+    grade_service,
+    password_service,
+    quiz_service,
+    session_service,
+)
 
 
 _KST = ZoneInfo("Asia/Seoul")
@@ -98,6 +105,8 @@ async def reset_password(session: AsyncSession, username: str, email: str) -> No
     temp_password = password_service.generate_temp_password()
     user.password_hash = password_service.hash_password(temp_password)
     user.must_change_password = True
+    # 이미 로그인돼 있던 기기(탈취된 세션 포함)는 모두 로그아웃시킨다 - 비밀번호를 바꾼 의미가 없어지지 않게
+    await session_service.delete_all_sessions_for_user(session, user.id)
     await session.commit()
 
     html_body = email_templates.render_account_email_html(
@@ -174,6 +183,8 @@ async def change_password(session: AsyncSession, user: AuthUser, data: ChangePas
 
     user.password_hash = password_service.hash_password(data.new_password)
     user.must_change_password = False
+    # 다른 기기의 세션(탈취된 세션 포함)을 모두 지운다. 지금 쓰는 기기는 라우터가 새 세션을 발급해 로그인을 유지한다
+    await session_service.delete_all_sessions_for_user(session, user.id)
     await session.commit()
 
 
