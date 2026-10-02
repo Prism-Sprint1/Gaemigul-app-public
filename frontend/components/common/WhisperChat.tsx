@@ -10,7 +10,9 @@ import { isSameDay } from "date-fns"
 import { Button, Separator, Skeleton } from "@/components/ui"
 import { getPromotionSuggestion, respondToPromotionSuggestion } from "@/lib/api/auth"
 import { getCalendarEvents } from "@/lib/api/calendar"
+import { trackEvent } from "@/lib/analytics"
 import { getHeatmap } from "@/lib/api/heatmap"
+import { isAfterMarketClose } from "@/lib/heatmap-format"
 import { getTimelineDay } from "@/lib/api/timeline"
 import { cn } from "@/lib/utils"
 import { toNewsItem, type NewsItem } from "@/app/(main)/calendar/news-data"
@@ -118,13 +120,19 @@ function slotToGroup(
 function useTodayTimeline() {
   const [slots, setSlots] = useState<ApiTimelineSlot[] | null>(null)
   const [loadError, setLoadError] = useState(false)
+  // 가장 최근 요청 번호 - 언마운트 후 도착한 응답이나, 늦게 도착한 이전 응답이
+  // 최신 데이터를 덮어쓰지 않도록 번호가 다르면 버린다
+  const requestIdRef = useRef(0)
 
   const fetchTimeline = useCallback(async () => {
+    const requestId = ++requestIdRef.current
     try {
       const data = await getTimelineDay()
+      if (requestId !== requestIdRef.current) return
       setSlots(data)
       setLoadError(false)
     } catch (error) {
+      if (requestId !== requestIdRef.current) return
       console.error("[getTimelineDay] 실패", error)
       setLoadError(true)
     }
@@ -133,42 +141,53 @@ function useTodayTimeline() {
   useEffect(() => {
     fetchTimeline()
     const timer = setInterval(fetchTimeline, 60_000)
-    return () => clearInterval(timer)
+    return () => {
+      requestIdRef.current += 1
+      clearInterval(timer)
+    }
   }, [fetchTimeline])
 
   return { slots, loadError }
 }
 
-/** 코스피 "단물 섹터"(1위 업종) - 타임라인과 같은 주기로 다시 불러온다. 시황 타임라인이 갱신될
- * 때 같이 최신 값을 반영하도록, 그리고 장 마감(15:30) 이후로는 더 이상 새 슬롯이 안 나와
- * 자연히 마지막 값에서 멈추도록 하기 위함이다 */
-function useTodayHeatmapTopSector() {
+/** 코스피 "단물 섹터"(1위 업종). 말풍선 개수가 흔들리지 않도록 첫 진입 시 한 번은 항상 불러오고,
+ * 이후 60초 주기 갱신은 챗이 열려 있을 때만 한다(닫혀 있을 땐 화면에 안 보이므로 모든 페이지에서
+ * 계속 폴링할 이유가 없다). 열 때 바로 한 번 갱신해 최신 값을 보여주고, 장 마감(15:30) 이후로는
+ * 값이 더 바뀌지 않으므로 주기 갱신을 하지 않는다 */
+function useTodayHeatmapTopSector(isOpen: boolean) {
   const [topSector, setTopSector] = useState<HeatmapResponse["top_sector"] | null>(null)
+  // 진행 중인 요청 하나만 들고 있다가, 다음 요청이나 언마운트 때 취소한다
+  const controllerRef = useRef<AbortController | null>(null)
 
-  const fetchTopSector = useCallback((signal: AbortSignal) => {
-    getHeatmap("kospi", "day", signal)
+  const fetchTopSector = useCallback(() => {
+    controllerRef.current?.abort()
+    const controller = new AbortController()
+    controllerRef.current = controller
+    getHeatmap("kospi", "day", controller.signal)
       .then((data) => {
-        if (!signal.aborted) setTopSector(data.top_sector)
+        if (!controller.signal.aborted) setTopSector(data.top_sector)
       })
       .catch((error) => {
-        if (!signal.aborted) console.error("[getHeatmap] 실패", error)
+        if (!controller.signal.aborted) console.error("[getHeatmap] 실패", error)
       })
   }, [])
 
+  // 첫 진입 시 1회
   useEffect(() => {
-    const controller = new AbortController()
-    fetchTopSector(controller.signal)
-
-    const timer = setInterval(() => {
-      const tickController = new AbortController()
-      fetchTopSector(tickController.signal)
-    }, 60_000)
-
-    return () => {
-      controller.abort()
-      clearInterval(timer)
-    }
+    fetchTopSector()
+    return () => controllerRef.current?.abort()
   }, [fetchTopSector])
+
+  // 챗이 열려 있는 동안만: 열 때 즉시 1회 + 60초마다
+  useEffect(() => {
+    if (!isOpen) return
+    const refresh = () => {
+      if (!isAfterMarketClose()) fetchTopSector()
+    }
+    refresh()
+    const timer = setInterval(refresh, 60_000)
+    return () => clearInterval(timer)
+  }, [isOpen, fetchTopSector])
 
   return topSector
 }
@@ -317,22 +336,38 @@ const PROMOTION_POLL_INTERVAL_MS = 60_000
  * 안 읽음 배지(useUnreadWhisperCount)와 개수를 합치지 않고 독립적으로 다룬다 */
 function usePromotionSuggestion(enabled: boolean) {
   const [suggestion, setSuggestion] = useState<PromotionSuggestion | null>(null)
+  // 가장 최근 요청 번호 - 응답이 왔을 때 이 값과 다르면(로그아웃·언마운트·더 최근 요청) 버린다.
+  // 로그아웃 직전에 보낸 요청의 응답이 뒤늦게 도착해 승급 카드가 다시 뜨는 걸 막는다
+  const requestIdRef = useRef(0)
 
   const fetchSuggestion = useCallback(() => {
+    const requestId = ++requestIdRef.current
     if (!enabled) {
       setSuggestion(null)
       return
     }
     getPromotionSuggestion()
-      .then(setSuggestion)
-      .catch((error) => console.error("[getPromotionSuggestion] 실패", error))
+      .then((data) => {
+        if (requestId === requestIdRef.current) setSuggestion(data)
+      })
+      .catch((error) => {
+        if (requestId === requestIdRef.current) {
+          console.error("[getPromotionSuggestion] 실패", error)
+        }
+      })
   }, [enabled])
 
   useEffect(() => {
     fetchSuggestion()
-    const timer = setInterval(fetchSuggestion, PROMOTION_POLL_INTERVAL_MS)
-    return () => clearInterval(timer)
-  }, [fetchSuggestion])
+    // 비로그인 상태에서는 조회할 게 없으므로 주기 조회 타이머를 걸지 않는다
+    const timer = enabled
+      ? setInterval(fetchSuggestion, PROMOTION_POLL_INTERVAL_MS)
+      : undefined
+    return () => {
+      requestIdRef.current += 1
+      clearInterval(timer)
+    }
+  }, [enabled, fetchSuggestion])
 
   return { suggestion, refetch: fetchSuggestion }
 }
@@ -513,7 +548,7 @@ export default function WhisperChat() {
   }
 
   const { slots, loadError } = useTodayTimeline()
-  const topSector = useTodayHeatmapTopSector()
+  const topSector = useTodayHeatmapTopSector(isOpen)
   const { events: calendarEvents, revealed: calendarRevealed } = useTodayCalendarBriefing()
   const { status: authStatus, refresh: refreshAuth } = useAuth()
   const { suggestion, refetch: refetchSuggestion } = usePromotionSuggestion(authStatus === "authenticated")
@@ -701,7 +736,10 @@ export default function WhisperChat() {
           모바일(sm 미만)에서는 50px, 그 이상에서는 56px. */}
       <button
         type="button"
-        onClick={() => setIsOpen((prev) => !prev)}
+        onClick={() => {
+          if (!isOpen) trackEvent("whisper_chat_open")
+          setIsOpen(!isOpen)
+        }}
         aria-label={isOpen ? "대장 챗 닫기" : "대장 챗 열기"}
         className="cursor-pointer fixed right-3 bottom-20 z-50 flex size-[50px] items-center justify-center rounded-full bg-point text-white shadow-lg transition-transform active:scale-95 sm:size-14"
       >

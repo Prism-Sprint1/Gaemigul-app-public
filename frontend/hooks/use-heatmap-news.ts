@@ -54,7 +54,10 @@ export function useHeatmapNews(
       clearTimeout(timeout)
       controller.abort()
     }
-  }, [market, period, sectorCode, key, snapshot])
+    // snapshot 객체 자체는 의존성에 넣지 않는다 - 폴링·새로고침마다 내용이 같아도 새 객체가 와서,
+    // 넣으면 매번 진행 중인 뉴스 요청을 취소하고 다시 보낸다. 바뀜 판단은 key(시장·기간·1위 섹터·
+    // 갱신 시각)로 충분하다
+  }, [market, period, sectorCode, key])
 
   const current = state?.key === key ? state : null
   return {

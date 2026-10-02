@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import Image from "next/image"
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { useTheme } from "next-themes"
 import { Badge, Button, Skeleton } from "@/components/ui"
 
@@ -22,7 +22,14 @@ import {
   UserPlus,
 } from "lucide-react"
 
-import { useIndicatorSchedule } from "@/hooks/use-indicator-schedule"
+import {
+  useIndicatorCountdown,
+  useIndicatorSchedule,
+} from "@/hooks/use-indicator-schedule"
+import {
+  getTimelineIndicators,
+  type MarketIndicatorItem,
+} from "@/lib/api/indicator"
 import { useAuth } from "./auth/AuthContext"
 import { useMobileSidebar } from "./sidebar"
 
@@ -218,9 +225,31 @@ function HeaderProfileMenu() {
   )
 }
 
+/** 다음 지수 갱신까지 남은 시간. 매초 바뀌므로 이 텍스트만 따로 리렌더링되게 분리했다
+ * (헤더 전체와 지수 티커가 매초 다시 그려지지 않도록) */
+function IndicatorCountdown() {
+  return <>{useIndicatorCountdown()}</>
+}
+
 export default function Header() {
   const { toggle } = useMobileSidebar()
-  const { remaining } = useIndicatorSchedule()
+  const [indicators, setIndicators] = useState<MarketIndicatorItem[]>([])
+
+  // 지수 티커는 데스크톱/모바일용으로 두 번 그려지지만 데이터는 여기서 한 번만 불러온다.
+  const fetchIndicators = useCallback(() => {
+    getTimelineIndicators()
+      .then((data) => setIndicators(data.items))
+      .catch((error: unknown) => {
+        console.error("[getTimelineIndicators] 실패", error)
+      })
+  }, [])
+
+  // 최초 진입 시 1회, 이후 정시 기준 15분 경계마다 다시 불러온다
+  useEffect(() => {
+    fetchIndicators()
+  }, [fetchIndicators])
+
+  useIndicatorSchedule(fetchIndicators)
   const headerRef = useRef<HTMLElement>(null)
   const { resolvedTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
@@ -263,7 +292,9 @@ export default function Header() {
           >
             <strong className="-mb-1.25 flex items-center gap-0 text-[14px] text-point">
               <RotateCcwClock width={13.5} />
-              <span className="min-w-10 text-right">{remaining}</span>
+              <span className="min-w-10 text-right">
+                <IndicatorCountdown />
+              </span>
             </strong>
             <p
               id="header-index-tooltip"
@@ -275,7 +306,7 @@ export default function Header() {
             </p>
           </div>
         </div>
-        <Marquee></Marquee>
+        <Marquee items={indicators} />
         <div className="flex shrink-0 items-center gap-2 px-5">
           <HeaderProfileMenu />
         </div>
@@ -289,11 +320,13 @@ export default function Header() {
         <div className="flex items-center gap-3">
           {/* <strong className="flex items-center gap-1 text-[16px] text-point">
             <Badge className="bg-point text-[12px] text-white">TIMER</Badge>
-            {remaining}
+            <IndicatorCountdown />
           </strong> */}
           <strong className="flex items-center gap-0 text-[16px] text-point">
             <RotateCcwClock width={16} />
-            <span className="min-w-10 text-right">{remaining}</span>
+            <span className="min-w-10 text-right">
+              <IndicatorCountdown />
+            </span>
           </strong>
           <button
             type="button"
@@ -308,7 +341,7 @@ export default function Header() {
 
       {/* 모바일: 헤더 아래 지수 데이터 티커 */}
       <div className="w-full md:hidden">
-        <Marquee></Marquee>
+        <Marquee items={indicators} />
       </div>
     </header>
   )

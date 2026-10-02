@@ -1,7 +1,11 @@
 import type { Metadata } from "next"
 import "./globals.css"
 import localFont from "next/font/local"
+import Script from "next/script"
+import { Suspense } from "react"
+import GoogleAnalytics from "@/components/common/GoogleAnalytics"
 import { ThemeProvider } from "@/components/theme-provider"
+import { GA_MEASUREMENT_ID } from "@/lib/analytics"
 import { cn } from "@/lib/utils"
 
 import SidebarNav from "@/components/common/sidebar/SidebarNav"
@@ -46,25 +50,20 @@ export default function RootLayout({
         "font-sans"
       )}
     >
-      <head>
-        {/* Google tag (gtag.js) */}
-        <script
-          async
-          src="https://www.googletagmanager.com/gtag/js?id=G-6VZETDPYRJ"
-        />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-
-              gtag('config', 'G-6VZETDPYRJ');
-            `,
-          }}
-        />
-      </head>
       <body className="overflow-x-clip">
+        {/* Google Analytics(GA4) - 측정 ID가 없으면(로컬 등) 아예 렌더링하지 않는다.
+            초기화(config)는 lib/analytics.ts에서, 페이지뷰는 GoogleAnalytics 컴포넌트에서 보낸다 */}
+        {GA_MEASUREMENT_ID && (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(GA_MEASUREMENT_ID)}`}
+              strategy="afterInteractive"
+            />
+            <Suspense fallback={null}>
+              <GoogleAnalytics />
+            </Suspense>
+          </>
+        )}
         <ThemeProvider>
           <AuthProvider>
             <MobileSidebarProvider>

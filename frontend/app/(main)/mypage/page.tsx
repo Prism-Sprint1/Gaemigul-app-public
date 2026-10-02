@@ -14,6 +14,7 @@ import {
   WithdrawReasonDialog,
 } from "@/components/common"
 import { Badge, Button, Separator, Switch } from "@/components/ui"
+import { trackEvent } from "@/lib/analytics"
 import {
   changeNickname,
   extractErrorMessage,
@@ -391,6 +392,7 @@ export default function MyPage() {
     try {
       const updated = await setNewsletterOptIn(optIn)
       setUser(updated)
+      if (optIn) trackEvent("newsletter_subscribe", { source: "mypage" })
     } catch (toggleError) {
       console.error("[setNewsletterOptIn] 실패", toggleError)
     } finally {
