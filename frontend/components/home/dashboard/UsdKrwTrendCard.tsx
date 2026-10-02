@@ -41,11 +41,57 @@ const RANGE_TO_PERIOD: Record<UsdKrwRange, ExchangeRatePeriod> = {
   month: "1m",
 }
 
-function formatAxisLabel(timestamp: string, range: UsdKrwRange) {
-  const date = new Date(timestamp)
+const HOUR_MS = 60 * 60 * 1000
+const DAY_MS = 24 * HOUR_MS
+
+function formatAxisLabel(time: number, range: UsdKrwRange) {
+  const date = new Date(time)
   if (range === "day") return format(date, "HH:mm")
   if (range === "week5") return format(date, "M/d")
   return format(date, "M월")
+}
+
+/** 툴팁은 눈금보다 자세히 - 하루 "HH:mm", 5일 "M/d HH:mm", 월별 "M/d" */
+function formatTooltipLabel(time: number, range: UsdKrwRange) {
+  const date = new Date(time)
+  if (range === "day") return format(date, "HH:mm")
+  if (range === "week5") return format(date, "M/d HH:mm")
+  return format(date, "M/d")
+}
+
+/** x축 눈금 - 실제 시간 축 위에 일정한 간격으로 둔다 (점 순서가 아니라 시각 기준이라 간격이 고르다)
+ * - 하루: 정시 기준 1/2/3/4시간 중 눈금이 7개 이하가 되는 가장 촘촘한 간격
+ * - 5일: 매일 0시
+ * - 월별: 매달 1일 (범위 안에 하나뿐이면 범위 시작점도 눈금으로 둔다) */
+function buildAxisTicks(start: number, end: number, range: UsdKrwRange) {
+  const ticks: number[] = []
+  if (range === "day") {
+    const step =
+      [1, 2, 3, 4].find((hours) => (end - start) / (hours * HOUR_MS) <= 6) ?? 4
+    const first = new Date(start)
+    first.setMinutes(0, 0, 0)
+    if (first.getTime() < start) first.setHours(first.getHours() + 1)
+    first.setHours(Math.ceil(first.getHours() / step) * step)
+    for (let t = first.getTime(); t <= end; t += step * HOUR_MS) ticks.push(t)
+    return ticks
+  }
+  if (range === "week5") {
+    const first = new Date(start)
+    first.setHours(0, 0, 0, 0)
+    if (first.getTime() < start) first.setDate(first.getDate() + 1)
+    for (let t = first.getTime(); t <= end; t += DAY_MS) ticks.push(t)
+    return ticks
+  }
+  const cursor = new Date(start)
+  cursor.setDate(1)
+  cursor.setHours(0, 0, 0, 0)
+  if (cursor.getTime() < start) cursor.setMonth(cursor.getMonth() + 1)
+  while (cursor.getTime() <= end) {
+    ticks.push(cursor.getTime())
+    cursor.setMonth(cursor.getMonth() + 1)
+  }
+  if (ticks.length < 2) ticks.unshift(start)
+  return ticks
 }
 
 export default function UsdKrwTrendCard() {
@@ -78,6 +124,11 @@ export default function UsdKrwTrendCard() {
 
   const current = dataByRange[range]
   const points = current?.points ?? []
+  // 시간 축에 놓으려고 시각을 숫자(ms)로 바꾼 차트용 데이터
+  const chartData = points.map((point) => ({
+    time: new Date(point.timestamp).getTime(),
+    value: point.value,
+  }))
   const values = points.map((point) => point.value)
   const latest = values.at(-1)
   const previous = values.at(-2)
@@ -88,9 +139,14 @@ export default function UsdKrwTrendCard() {
       ? (change / previous) * 100
       : 0
   const isUp = change >= 0
+  const axisTicks =
+    chartData.length > 1
+      ? buildAxisTicks(chartData[0].time, chartData.at(-1)!.time, range)
+      : undefined
+  // 위아래 여백을 값 범위의 5%로만 둬서(예전 20%) 작은 등락도 그래프 높이를 꽉 채워 굴곡이 크게 보이게 한다
   const domainPadding =
     values.length > 0
-      ? (Math.max(...values) - Math.min(...values)) * 0.2 || 1
+      ? (Math.max(...values) - Math.min(...values)) * 0.05 || 1
       : 1
 
   return (
@@ -121,7 +177,7 @@ export default function UsdKrwTrendCard() {
       {loading && !current ? (
         <div className="flex flex-col gap-4">
           <Skeleton className="h-8 w-40" />
-          <Skeleton className="h-24 w-full" />
+          <Skeleton className="h-32 w-full" />
         </div>
       ) : loadError && !current ? (
         <p className="py-8 text-center text-sm text-neutral-400">
@@ -150,12 +206,13 @@ export default function UsdKrwTrendCard() {
 
           <ChartContainer
             config={chartConfig}
-            className="aspect-auto h-24 w-full"
+            className="aspect-auto h-32 w-full"
           >
             <AreaChart
               accessibilityLayer={false}
-              data={points}
-              margin={{ top: 8, left: 0, right: 0, bottom: 0 }}
+              data={chartData}
+              // 양 끝 눈금 라벨이 잘리지 않도록 좌우 여백을 둔다
+              margin={{ top: 8, left: 16, right: 16, bottom: 0 }}
             >
               <defs>
                 <linearGradient id="fill-usd-krw" x1="0" y1="0" x2="0" y2="1">
@@ -173,11 +230,15 @@ export default function UsdKrwTrendCard() {
               </defs>
               <CartesianGrid vertical={false} strokeDasharray="3 3" />
               <XAxis
-                dataKey="timestamp"
+                dataKey="time"
+                type="number"
+                scale="time"
+                domain={["dataMin", "dataMax"]}
                 tickLine={false}
                 axisLine={false}
-                interval={range === "day" ? 2 : 0}
-                tickFormatter={(value: string) => formatAxisLabel(value, range)}
+                ticks={axisTicks}
+                interval={0}
+                tickFormatter={(value: number) => formatAxisLabel(value, range)}
                 tick={{ fontSize: 11, fill: "var(--color-muted-foreground)" }}
               />
               <YAxis
@@ -192,8 +253,11 @@ export default function UsdKrwTrendCard() {
                 content={
                   <ChartTooltipContent
                     indicator="line"
-                    labelFormatter={(value) =>
-                      formatAxisLabel(value as string, range)
+                    labelFormatter={(_, payload) =>
+                      formatTooltipLabel(
+                        Number(payload?.[0]?.payload?.time),
+                        range
+                      )
                     }
                   />
                 }

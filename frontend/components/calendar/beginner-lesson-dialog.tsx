@@ -33,8 +33,9 @@ export function BeginnerLessonDialog({
   return (
     <Dialog.Root open={open} onOpenChange={(next) => !next && onClose()}>
       <Dialog.Portal>
-        <Dialog.Backdrop className="fixed inset-0 z-50 bg-black/40" />
-        <Dialog.Popup className="fixed top-1/2 left-1/2 z-50 flex max-h-[85vh] w-[calc(100vw-2rem)] max-w-90 -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-xl border bg-card shadow-lg sm:max-w-160">
+        {/* 뒷배경은 투명도만, 모달은 살짝 작게 시작해 통통 튀며 커진다 (Base UI의 data-starting/ending-style 사용) */}
+        <Dialog.Backdrop className="fixed inset-0 z-50 bg-black/40 transition-opacity duration-300 data-ending-style:opacity-0 data-starting-style:opacity-0" />
+        <Dialog.Popup className="fixed top-1/2 left-1/2 z-50 flex max-h-[85vh] w-[calc(100vw-2rem)] max-w-90 -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-xl border bg-card shadow-lg transition-[opacity,scale] duration-300 ease-bounce data-ending-style:scale-90 data-ending-style:opacity-0 data-starting-style:scale-90 data-starting-style:opacity-0 sm:max-w-160">
           {open && data && (
             <LessonBody lesson={data.lesson} matchedEvent={data.matchedEvent} />
           )}

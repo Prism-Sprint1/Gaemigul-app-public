@@ -29,27 +29,32 @@ export default function BeginnerSummarySection({
         {summary.points.map((point, index) => (
           <div
             key={point.id}
-            className="relative flex flex-col gap-2 rounded-lg border border-border bg-card p-4 before:absolute before:inset-x-0 before:top-0 before:h-1 before:rounded-t-lg before:bg-decrease before:content-['']"
+            className="relative flex flex-col justify-between gap-3 rounded-lg border border-border bg-card p-4 before:absolute before:inset-x-0 before:top-0 before:h-1 before:rounded-t-lg before:bg-decrease before:content-['']"
           >
-            <div className="flex items-center gap-2">
-              <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-decrease/10 text-[10px] font-bold text-decrease">
-                {String(index + 1).padStart(2, "0")}
-              </span>
-              <span className="text-sm font-semibold text-card-foreground">{point.title}</span>
-            </div>
-            <p className="text-xs leading-relaxed text-neutral-500 dark:text-neutral-400">
-              <GlossaryText text={point.description} glossary={glossary} />
-            </p>
-            <Separator />
-            <div className="flex flex-wrap gap-1.5">
-              {point.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="rounded-full border border-neutral-200 bg-neutral-50 px-2 py-0.5 text-[10px] text-neutral-500"
-                >
-                  #{tag}
+            {/* 위: 타이틀+설명 / 아래: 구분선+태그 - 카드 높이가 달라도 태그 줄이 바닥에 맞춰진다 */}
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-2">
+                <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-decrease/10 text-[10px] font-bold text-decrease">
+                  {String(index + 1).padStart(2, "0")}
                 </span>
-              ))}
+                <span className="text-sm font-semibold text-card-foreground">{point.title}</span>
+              </div>
+              <p className="text-xs leading-relaxed text-neutral-500 dark:text-neutral-400">
+                <GlossaryText text={point.description} glossary={glossary} />
+              </p>
+            </div>
+            <div className="flex flex-col gap-2">
+              <Separator />
+              <div className="flex flex-wrap gap-1.5">
+                {point.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="rounded-full border border-neutral-200 bg-neutral-50 px-2 py-0.5 text-[10px] text-neutral-500 dark:font-semibold dark:text-neutral-700"
+                  >
+                    #{tag}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
         ))}

@@ -21,6 +21,6 @@ export const EMPTY_STATE_BOX =
 export const SEGMENT_LIST =
   "h-auto w-max gap-1 rounded-full bg-neutral-100 p-1 dark:bg-neutral-800"
 
-/** Tabs(TabsTrigger)용 - data-active로 선택 상태를 표시한다 */
+/** Tabs(TabsTrigger)용 - data-active로 선택 상태를 표시한다. 모바일은 글자 12px */
 export const SEGMENT_TRIGGER =
-  "rounded-full px-4 py-1.5 text-neutral-500 data-active:bg-point data-active:text-white data-active:shadow-none dark:text-neutral-400"
+  "rounded-full px-4 py-1.5 text-neutral-500 data-active:bg-point data-active:text-white data-active:shadow-none max-md:text-xs dark:text-neutral-400"

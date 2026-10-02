@@ -13,7 +13,7 @@ export function AuthTextField({ label, error, id, ...inputProps }: AuthTextField
       <input
         id={id}
         {...inputProps}
-        className="h-10 w-full rounded-lg border bg-background px-3 text-sm outline-offset-2 placeholder:text-muted-foreground focus-visible:outline-point"
+        className="h-10 w-full rounded-lg border bg-background px-3 text-sm outline-offset-2 placeholder:text-muted-foreground focus-visible:outline-point max-md:h-11 max-md:text-sm"
       />
       {error && <span className="text-xs text-red-500">{error}</span>}
     </label>

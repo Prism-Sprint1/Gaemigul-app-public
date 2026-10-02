@@ -19,6 +19,6 @@ class ExchangeRatePoint(BaseModel):
 class ExchangeRateResponse(BaseModel):
     period: ExchangeRatePeriod  # 요청한 기간
     points: list[ExchangeRatePoint]  # 시간순, 최대 requested_point_count개 (쌓인 관측값이 적으면 더 적다)
-    requested_point_count: int = 8  # 목표 점 개수
+    requested_point_count: int = 8  # 목표 점 개수 (today는 개수 제한이 없어 받은 점 수와 같다)
     is_complete: bool  # 목표 범위가 실제 관측값으로 다 찼는지. false면 프런트가 "수집 중" 등으로 표시
     updated_at: datetime  # 캐시 갱신 시각 (UTC)

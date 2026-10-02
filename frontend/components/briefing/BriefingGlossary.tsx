@@ -8,7 +8,7 @@ type BriefingGlossaryProps = {
 
 export default function BriefingGlossary({ terms }: BriefingGlossaryProps) {
   return (
-    <div className="flex flex-col gap-3 border-t border-neutral-100 pt-8">
+    <div className="flex flex-col gap-3 border-t border-border pt-8">
       <p className="text-basic flex items-center gap-1 font-bold text-point2">
         <span aria-hidden>📘</span>
         주린이 1분 금융 용어 사전

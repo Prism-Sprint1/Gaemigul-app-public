@@ -18,3 +18,5 @@
 
 # 로그
 logs/
+
+node_modules

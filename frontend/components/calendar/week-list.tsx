@@ -95,7 +95,9 @@ export function WeekList({
             {format(ownerMonth, "M월")} {weekNo}주차
           </h3>
           <div className="overflow-x-auto rounded-lg border">
-            <table className="w-full min-w-135 text-sm">
+            {/* 모바일: 고정 레이아웃으로 모든 주차 표의 열 폭을 같게 맞춘다(내용 길이에 따라 열마다 폭이 달라지지 않게).
+                넘치는 값은 말줄임 처리 */}
+            <table className="w-full min-w-135 text-sm max-md:table-fixed">
               <thead>
                 <tr className="border-b bg-muted/40 text-[12px] text-muted-foreground">
                   <th className="w-20 p-2 text-left font-semibold">날짜</th>

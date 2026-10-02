@@ -70,3 +70,6 @@ export interface HeatmapResponse {
   sectors: HeatmapSector[]
   related_sectors?: HeatmapRelatedSector[]
 }
+
+/** 히트맵 보기 방식 - 지도(트리맵) / 목록(표) */
+export type HeatmapView = "map" | "list"

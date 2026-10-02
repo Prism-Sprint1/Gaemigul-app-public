@@ -38,9 +38,9 @@ export default function HeatmapTopSectorBanner({
       className="relative overflow-hidden rounded-xl border border-heatmap-border bg-heatmap-panel shadow-sm"
     >
       <div className="absolute inset-y-0 left-0 w-1 bg-point" />
-      <div className="grid gap-5 p-5 sm:p-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
+      <div className="grid gap-5 p-5 sm:px-6 sm:py-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
         <div>
-          <div className="mb-3 flex flex-wrap items-center gap-2 text-xs font-medium">
+          <div className="mb-2 flex flex-wrap items-center gap-2 text-xs font-medium">
             <span className="inline-flex items-center gap-1.5 rounded-md bg-heatmap-soft px-2 py-1 text-heatmap-accent">
               <TrendingUp className="size-3.5" aria-hidden="true" /> 상승률 1위
             </span>
@@ -51,14 +51,14 @@ export default function HeatmapTopSectorBanner({
           <h2 className="text-base font-semibold tracking-tight text-neutral-800 sm:text-lg dark:text-neutral-200">
             개미가 가장 많이 몰린 단물 섹터는?
           </h2>
-          <p className="mt-1.5 text-xs leading-5 text-neutral-500 dark:text-neutral-400">
+          <p className="text-xs leading-5 text-neutral-500 dark:text-neutral-400">
             전체 대상 업종의 시가총액 가중 등락률을 비교합니다.
           </p>
         </div>
         {topSector ? (
           <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 border-t border-heatmap-border/60 pt-4 lg:min-w-64 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-6">
             <div>
-              <p className="text-xl font-bold tracking-tight text-neutral-900 sm:text-2xl dark:text-neutral-100">
+              <p className="text-xl font-bold tracking-tight text-neutral-900 md:text-2xl dark:text-neutral-100">
                 {topSector.name}
               </p>
               <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">

@@ -6,6 +6,8 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
+  /* 살짝 넘쳤다가 돌아오는 "통통 튀는" 곡선 - 사이드바 열고 닫기, 툴팁 등장 등에 공통으로 쓴다(ease-bounce) */
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
   --color-point: #ff2a2a;
   --color-point2: #b45309;
   --color-point3: #fef3c7;

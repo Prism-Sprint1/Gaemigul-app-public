@@ -147,14 +147,15 @@ export default function InfoTooltip({
         createPortal(
           // document.body에 직접 포탈로 그려서, 부모 트리에 transform/필터가 있어도
           // position:fixed가 항상 실제 브라우저 뷰포트 기준으로 동작하게 한다.
-          // 등장 효과는 transform 없이 opacity만으로 처리한다.
+          // 등장 효과: 위쪽을 기준점으로 살짝 작고 위에 있다가 ease-bounce로 통통 튀며 제자리로 내려온다.
+          // (패널 자신의 scale/translate는 자기 위치 계산(offsetWidth 등)에 영향을 주지 않는다)
           <div
             ref={panelRef}
             className={cn(
-              "fixed z-10 w-72 max-w-[calc(100vw-2rem)] overflow-y-auto rounded-lg border border-border bg-popover p-3 text-[12px] leading-relaxed text-muted-foreground shadow-lg transition-opacity duration-150",
+              "fixed z-10 w-72 max-w-[calc(100vw-2rem)] origin-top overflow-y-auto rounded-lg border border-border bg-popover p-3 text-[12px] leading-relaxed text-muted-foreground shadow-lg transition-[opacity,scale,translate] duration-300 ease-bounce",
               visible
-                ? "pointer-events-auto opacity-100"
-                : "pointer-events-none opacity-0",
+                ? "pointer-events-auto translate-y-0 scale-100 opacity-100"
+                : "pointer-events-none -translate-y-1 scale-90 opacity-0",
               panelClassName
             )}
             style={{

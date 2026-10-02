@@ -8,6 +8,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { GA_MEASUREMENT_ID } from "@/lib/analytics"
 import { cn } from "@/lib/utils"
 
+import SidebarNav from "@/components/common/sidebar/SidebarNav"
 import {
   AuthProvider,
   Footer,
@@ -73,6 +74,7 @@ export default function RootLayout({
                 <main className="w-full min-w-0">{children}</main>
               </div>
               <Footer />
+              <SidebarNav />
             </MobileSidebarProvider>
           </AuthProvider>
         </ThemeProvider>
