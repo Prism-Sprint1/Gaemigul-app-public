@@ -15,8 +15,16 @@ def hash_password(password: str) -> str:
     return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
 
 
+# bcrypt 해시가 받을 수 있는 최대 길이(바이트). 넘으면 bcrypt 5.x가 예외를 던진다
+_BCRYPT_MAX_BYTES = 72
+
+
 def verify_password(password: str, password_hash: str) -> bool:
-    return bcrypt.checkpw(password.encode("utf-8"), password_hash.encode("utf-8"))
+    encoded = password.encode("utf-8")
+    # 가입·변경 때 72바이트 이하만 받으므로 그보다 긴 입력은 절대 일치할 수 없다 - 예외(500) 대신 불일치로 돌려준다
+    if len(encoded) > _BCRYPT_MAX_BYTES:
+        return False
+    return bcrypt.checkpw(encoded, password_hash.encode("utf-8"))
 
 
 # 비밀번호 찾기(3-5)에서 발급하는 임시 비밀번호. 영문+숫자를 항상 섞어 넣어 password_service의

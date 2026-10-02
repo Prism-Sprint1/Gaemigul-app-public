@@ -14,6 +14,15 @@ WITHDRAWAL_REASON_OPTIONS = ("서비스를 잘 안 쓰게 돼서", "원하는 �
 
 _PASSWORD_MIN_LENGTH = 8
 
+# bcrypt는 72바이트까지만 처리한다(bcrypt 5.x는 넘으면 예외 -> 500). 새 비밀번호는 이 길이 안으로만 받는다
+# (한글은 글자당 3바이트라 약 24자, 영문·숫자는 72자)
+PASSWORD_MAX_BYTES = 72
+
+# 아이디·탈퇴 사유 최대 길이 - DB 컬럼(auth_user.username String(50), withdrawal_feedback.custom_text String(500))과
+# 같아야 한다. 넘는 값이 DB까지 가면 저장 오류로 500이 난다
+USERNAME_MAX_LENGTH = 50
+WITHDRAWAL_CUSTOM_TEXT_MAX_LENGTH = 500
+
 # 닉네임 최대 길이. 프런트 회원가입·마이페이지의 NICKNAME_MAX_LENGTH와 같은 값이어야 한다
 NICKNAME_MAX_LENGTH = 8
 
@@ -32,9 +41,21 @@ def _validate_nickname(value: str) -> str:
 def _validate_password_strength(value: str) -> str:
     if len(value) < _PASSWORD_MIN_LENGTH:
         raise ValueError(f"비밀번호는 최소 {_PASSWORD_MIN_LENGTH}자 이상이어야 합니다.")
+    if len(value.encode("utf-8")) > PASSWORD_MAX_BYTES:
+        raise ValueError("비밀번호가 너무 깁니다. 영문·숫자 기준 72자 이하로 입력해주세요.")
     if not re.search(r"[A-Za-z]", value) or not re.search(r"\d", value):
         raise ValueError("비밀번호는 영문과 숫자를 모두 포함해야 합니다.")
     return value
+
+
+# 아이디 규칙: 앞뒤 공백 제거 후 1~USERNAME_MAX_LENGTH자 (형식 규칙은 따로 두지 않는다)
+def _validate_username(value: str) -> str:
+    username = value.strip()
+    if not username:
+        raise ValueError("아이디를 입력해주세요.")
+    if len(username) > USERNAME_MAX_LENGTH:
+        raise ValueError(f"아이디는 최대 {USERNAME_MAX_LENGTH}자까지 가능합니다.")
+    return username
 
 
 class SignupRequest(BaseModel):
@@ -59,6 +80,11 @@ class SignupRequest(BaseModel):
     @classmethod
     def _check_nickname(cls, value: str) -> str:
         return _validate_nickname(value)
+
+    @field_validator("username")
+    @classmethod
+    def _check_username(cls, value: str) -> str:
+        return _validate_username(value)
 
     @model_validator(mode="after")
     def _check_password_match(self) -> "SignupRequest":
@@ -156,6 +182,8 @@ class WithdrawalFeedbackRequest(BaseModel):
             raise ValueError("올바르지 않은 탈퇴 사유입니다.")
         if self.reason == "기타" and not (self.custom_text and self.custom_text.strip()):
             raise ValueError("기타를 선택하셨다면 사유를 입력해주세요.")
+        if self.custom_text and len(self.custom_text) > WITHDRAWAL_CUSTOM_TEXT_MAX_LENGTH:
+            raise ValueError(f"사유는 최대 {WITHDRAWAL_CUSTOM_TEXT_MAX_LENGTH}자까지 입력할 수 있습니다.")
         return self
 
 
