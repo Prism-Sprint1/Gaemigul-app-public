@@ -40,6 +40,9 @@ class Settings(BaseSettings):
     # 비워 두면 그 POST들은 503으로 막힌다 (배포 주소가 공개돼도 아무나 못 부르게)
     admin_api_key: str | None = None
 
+    # 요청 횟수 제한(로그인 실패·메일 요청) 사용 여부 - 비상시에만 .env에 RATE_LIMIT_ENABLED=false로 끈다
+    rate_limit_enabled: bool = True
+
     # API 문서(/docs, /redoc, /openapi.json) 공개 여부. 기본은 꺼 둔다 - 배포 서버에서 관리용 API 목록까지
     # 그대로 보이지 않게. 로컬 개발에서만 .env에 API_DOCS_ENABLED=true로 켠다
     api_docs_enabled: bool = False
