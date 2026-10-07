@@ -326,7 +326,14 @@ def _register_calendar_jobs() -> None:
         _scheduler.add_job(func, trigger, id=job_id, next_run_time=datetime.now(_KST))
 
 
-app = FastAPI(lifespan=lifespan)
+# API 문서는 API_DOCS_ENABLED=true일 때만 연다 (기본 꺼짐 - 배포 서버에서 엔드포인트 목록이 공개되지 않게)
+_docs_enabled = get_settings().api_docs_enabled
+app = FastAPI(
+    lifespan=lifespan,
+    docs_url="/docs" if _docs_enabled else None,
+    redoc_url="/redoc" if _docs_enabled else None,
+    openapi_url="/openapi.json" if _docs_enabled else None,
+)
 
 app.add_middleware(
     CORSMiddleware,

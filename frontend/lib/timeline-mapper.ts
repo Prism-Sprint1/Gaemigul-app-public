@@ -9,6 +9,7 @@ import type {
   SummaryAccent,
   TimelineContent,
 } from "@/lib/types/TimelineType"
+import { safeHttpUrl } from "@/lib/safe-url"
 
 const ACCENTS: SummaryAccent[] = ["red", "orange", "green"]
 
@@ -93,7 +94,8 @@ function mapNews(slot: ApiTimelineSlot): NewsItem[] {
     id: `${slot.slot_key}-news-${item.seq}`,
     content: item.title,
     source: "NAVER",
-    url: item.url || "#",
+    // 외부 뉴스 주소는 http/https만 쓴다 - 아니면 이동하지 않는 "#"로 둔다
+    url: safeHttpUrl(item.url) ?? "#",
   }))
 }
 

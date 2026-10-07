@@ -128,7 +128,12 @@ class AppIntegrationTests(unittest.IsolatedAsyncioTestCase):
     def test_all_domain_routes_are_exposed_and_root_serves(self):
         with TestClient(main.app) as client:
             self.assertEqual(client.get("/").json(), {"message": "hello world"})
-            paths = client.get("/openapi.json").json()["paths"]
+            # API 문서는 기본으로 꺼져 있다(API_DOCS_ENABLED) - 배포 서버에서 엔드포인트 목록이 공개되지 않게
+            if main.app.openapi_url is None:
+                self.assertEqual(client.get("/openapi.json").status_code, 404)
+                self.assertEqual(client.get("/docs").status_code, 404)
+        # 공개 URL과 무관하게 앱에 등록된 경로 목록은 app.openapi()로 확인한다
+        paths = main.app.openapi()["paths"]
         self.assertIn("/heatmap", paths)
         self.assertIn("/calendar/events", paths)
         self.assertIn("/timeline/indicators", paths)

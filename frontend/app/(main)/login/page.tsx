@@ -9,6 +9,7 @@ import { AuthCard } from "@/components/auth/AuthCard"
 import { AuthTextField } from "@/components/auth/AuthTextField"
 import { useAuth } from "@/components/common"
 import { Button } from "@/components/ui"
+import { useAttemptLimit } from "@/hooks/use-attempt-limit"
 import { extractErrorMessage } from "@/lib/api/auth"
 
 export default function LoginPage() {
@@ -18,15 +19,20 @@ export default function LoginPage() {
   const [password, setPassword] = useState("")
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  // 연속 5번 실패하면 30초 동안 로그인 버튼을 잠근다(화면용 제한 - 훅 설명 참고)
+  const limit = useAttemptLimit("login", { maxFailures: 5, lockSeconds: 30 })
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault()
+    if (limit.locked) return
     setError(null)
     setSubmitting(true)
     try {
       const user = await login({ username, password })
+      limit.reset()
       router.push(user.must_change_password ? "/change-password" : "/")
     } catch (submitError) {
+      limit.registerFailure()
       setError(extractErrorMessage(submitError, "로그인에 실패했습니다."))
     } finally {
       setSubmitting(false)
@@ -59,13 +65,23 @@ export default function LoginPage() {
         />
 
         {error && <p className="text-sm text-red-500">{error}</p>}
+        {limit.locked && (
+          <p role="status" className="text-sm text-red-500">
+            로그인에 여러 번 실패했어요. {limit.remainingSeconds}초 뒤에 다시
+            시도해 주세요.
+          </p>
+        )}
 
         <Button
           type="submit"
-          disabled={submitting}
+          disabled={submitting || limit.locked}
           className="mt-2 h-10 w-full"
         >
-          {submitting ? "로그인 중..." : "로그인"}
+          {submitting
+            ? "로그인 중..."
+            : limit.locked
+              ? `${limit.remainingSeconds}초 뒤 다시 시도`
+              : "로그인"}
         </Button>
 
         <div className="flex justify-center gap-3 text-xs text-muted-foreground">
