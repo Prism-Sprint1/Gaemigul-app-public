@@ -73,7 +73,11 @@ async def signup(session: AsyncSession, data: SignupRequest) -> AuthUser:
 async def login(session: AsyncSession, data: LoginRequest) -> AuthUser:
     user = await _get_by_username(session, data.username)
     # 아이디가 없는 경우와 비밀번호가 틀린 경우를 같은 메시지로 응답한다(계정 존재 여부 노출 방지)
-    if user is None or not password_service.verify_password(data.password, user.password_hash):
+    # 응답 시간도 같게 맞춘다 - 없는 아이디도 bcrypt 비교를 한 번 하게 해서 빠른 응답으로 존재 여부가 드러나지 않게
+    if user is None:
+        password_service.spend_verify_time(data.password)
+        raise AuthError("아이디 또는 비밀번호가 올바르지 않습니다.")
+    if not password_service.verify_password(data.password, user.password_hash):
         raise AuthError("아이디 또는 비밀번호가 올바르지 않습니다.")
     return user
 

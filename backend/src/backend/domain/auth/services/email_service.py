@@ -18,6 +18,14 @@ from backend.core.config import get_settings
 logger = logging.getLogger(__name__)
 
 
+# 로그에는 받는 사람 이메일을 가려서 남긴다 ("ant@example.com" -> "a***@example.com") - 로그가 유출돼도 개인정보가 드러나지 않게
+def mask_email(address: str) -> str:
+    local, sep, domain = address.partition("@")
+    if not sep:
+        return "***"
+    return f"{local[:1]}***@{domain}"
+
+
 # html_body를 같이 주면 text/plain + text/html 멀티파트로 보낸다(HTML을 못 그리는 클라이언트는
 # body의 일반 텍스트로 자동 대체됨). html_body가 없으면 기존처럼 텍스트 메일만 보낸다.
 def send_email(to: str, subject: str, body: str, html_body: str | None = None) -> bool:
@@ -25,7 +33,7 @@ def send_email(to: str, subject: str, body: str, html_body: str | None = None) -
 
     if not (settings.smtp_host and settings.smtp_user and settings.smtp_password):
         # 아이디·임시 비밀번호가 포함될 수 있으므로 메일 본문은 로그에 남기지 않는다.
-        logger.info("[이메일 발송 스텁] SMTP 설정 없음 - to=%s subject=%s", to, subject)
+        logger.info("[이메일 발송 스텁] SMTP 설정 없음 - to=%s subject=%s", mask_email(to), subject)
         return False
 
     if html_body:
@@ -44,8 +52,8 @@ def send_email(to: str, subject: str, body: str, html_body: str | None = None) -
             server.login(settings.smtp_user, settings.smtp_password)
             server.sendmail(settings.smtp_user, [to], message.as_string())
     except Exception as error:
-        logger.error("[이메일 발송 실패] to=%s subject=%s - %s: %s", to, subject, type(error).__name__, error)
+        logger.error("[이메일 발송 실패] to=%s subject=%s - %s: %s", mask_email(to), subject, type(error).__name__, error)
         return False
 
-    logger.info("[이메일 발송 완료] to=%s subject=%s", to, subject)
+    logger.info("[이메일 발송 완료] to=%s subject=%s", mask_email(to), subject)
     return True
