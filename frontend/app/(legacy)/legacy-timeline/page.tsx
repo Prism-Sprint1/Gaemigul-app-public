@@ -1,7 +1,11 @@
+import { notFound } from "next/navigation"
 import { timelineItems } from "@/lib/constant/timeline"
 import { PageTitle, IndexCard } from "@/components/common"
 
 export default function timeline() {
+  // 어디에서도 연결되지 않은 옛 화면(고정 더미 값 포함)이라 운영(production)에서는 열리지 않게 한다
+  if (process.env.NODE_ENV === "production") notFound()
+
   return (
     <div className="flex flex-col gap-6 px-4 py-6 md:p-6">
       <PageTitle
