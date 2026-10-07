@@ -164,6 +164,9 @@ export async function setNewsletterOptIn(optIn: boolean): Promise<CurrentUser> {
 
 /** 백엔드 에러 응답(detail)에서 사람이 읽을 메시지를 뽑아낸다. FastAPI 검증 에러(422)는
  * detail이 배열 형태라 그 경우엔 첫 항목의 msg를 쓴다 */
+// 백엔드(pydantic) 검증 오류 메시지는 "Value error, 비밀번호가 …"처럼 영문 접두어가 붙어서 온다 - 화면에는 뒷부분만 보여준다
+const VALIDATION_PREFIX = /^Value error,\s*/
+
 export function extractErrorMessage(error: unknown, fallback: string): string {
   if (!axios.isAxiosError(error)) return fallback
 
@@ -174,7 +177,7 @@ export function extractErrorMessage(error: unknown, fallback: string): string {
     detail.length > 0 &&
     typeof detail[0]?.msg === "string"
   ) {
-    return detail[0].msg
+    return detail[0].msg.replace(VALIDATION_PREFIX, "")
   }
   return fallback
 }
