@@ -161,6 +161,7 @@ export default function SignupPage() {
                 href="/privacy-policy"
                 className="underline hover:text-point"
                 target="_blank"
+                rel="noopener noreferrer"
               >
                 개인정보 처리방침
               </Link>
@@ -179,6 +180,7 @@ export default function SignupPage() {
                 href="/newsletter-consent"
                 className="underline hover:text-point"
                 target="_blank"
+                rel="noopener noreferrer"
               >
                 개미레터(뉴스레터) 수신
               </Link>

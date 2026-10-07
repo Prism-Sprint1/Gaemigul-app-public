@@ -4,6 +4,7 @@ import type {
   HeatmapPeriod,
   HeatmapResponse,
 } from "@/lib/types/HeatmapType"
+import { safeHttpUrl } from "@/lib/safe-url"
 
 const API_BASE_URL = (
   process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000"
@@ -59,16 +60,7 @@ export async function getHeatmapNews(
   return {
     ...data,
     items: data.items
-      .filter((item) => {
-        try {
-          const url = new URL(item.url)
-          return (
-            ["https:", "http:"].includes(url.protocol) && Boolean(item.title)
-          )
-        } catch {
-          return false
-        }
-      })
+      .filter((item) => safeHttpUrl(item.url) !== null && Boolean(item.title))
       .slice(0, 4),
   }
 }
