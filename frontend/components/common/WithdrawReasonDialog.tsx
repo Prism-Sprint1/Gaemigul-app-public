@@ -51,6 +51,8 @@ export function WithdrawReasonDialog({
           {reason === OTHER_REASON && (
             <input
               value={customText}
+              // 서버 제한(WITHDRAWAL_CUSTOM_TEXT_MAX_LENGTH)과 같은 500자
+              maxLength={500}
               onChange={(event) => setCustomText(event.target.value)}
               placeholder="어떤 점이 아쉬우셨는지 알려주세요"
               className="h-10 rounded-lg border bg-background px-3 text-sm outline-offset-2 placeholder:text-muted-foreground focus-visible:outline-point max-md:h-11 max-md:text-sm"

@@ -1,9 +1,10 @@
 # auth.py
 # 인증 도메인 API. 실제 처리는 services에 있고 여기서는 연결 + 쿠키 발급만 한다.
 
-from fastapi import APIRouter, Cookie, Depends, HTTPException, Response, status
+from fastapi import APIRouter, Cookie, Depends, HTTPException, Request, Response, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from backend.core import rate_limit
 from backend.core.config import get_settings
 from backend.core.database import get_db
 from backend.domain.auth.dependencies import get_current_user
@@ -77,11 +78,18 @@ async def signup(data: SignupRequest, response: Response, db: AsyncSession = Dep
 
 
 @router.post("/login", response_model=CurrentUserResponse)
-async def login(data: LoginRequest, response: Response, db: AsyncSession = Depends(get_db)) -> CurrentUserResponse:
+async def login(
+    data: LoginRequest, request: Request, response: Response, db: AsyncSession = Depends(get_db)
+) -> CurrentUserResponse:
+    ip = rate_limit.client_ip(request)
+    # 이 아이디나 이 IP에서 실패가 너무 많으면 비밀번호를 확인하기 전에 429로 막는다(무작위 대입 방지)
+    rate_limit.enforce_login_allowed(data.username, ip)
     try:
         user = await auth_service.login(db, data)
     except auth_service.AuthError as error:
+        rate_limit.record_login_failure(data.username, ip)
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=error.message) from error
+    rate_limit.record_login_success(data.username)
 
     token = await session_service.create_session(db, user)
     await db.commit()
@@ -129,13 +137,19 @@ async def me(current_user: AuthUser = Depends(get_current_user)) -> CurrentUserR
 
 
 @router.post("/find-id", response_model=MessageResponse)
-async def find_id(data: FindIdRequest, db: AsyncSession = Depends(get_db)) -> MessageResponse:
+async def find_id(data: FindIdRequest, request: Request, db: AsyncSession = Depends(get_db)) -> MessageResponse:
+    # 메일이 나가는 요청이라 같은 이메일·같은 IP·전체 발송량을 제한한다(메일 폭탄·발송 한도 소진 방지)
+    rate_limit.enforce_mail_request([data.email], rate_limit.client_ip(request))
     await auth_service.find_id(db, data.email)
     return MessageResponse(message=_FIND_ID_MESSAGE)
 
 
 @router.post("/reset-password", response_model=MessageResponse)
-async def reset_password(data: ResetPasswordRequest, db: AsyncSession = Depends(get_db)) -> MessageResponse:
+async def reset_password(
+    data: ResetPasswordRequest, request: Request, db: AsyncSession = Depends(get_db)
+) -> MessageResponse:
+    # 같은 이메일·같은 아이디(남의 계정에 임시 비밀번호를 반복 발급해 로그인을 못 하게 하는 걸 포함)·같은 IP·전체 발송량 제한
+    rate_limit.enforce_mail_request([data.email, f"username:{data.username}"], rate_limit.client_ip(request))
     await auth_service.reset_password(db, data.username, data.email)
     return MessageResponse(message=_RESET_PASSWORD_MESSAGE)
 
@@ -155,13 +169,20 @@ async def verify_password(
 @router.post("/change-password", response_model=MessageResponse)
 async def change_password(
     data: ChangePasswordRequest,
+    response: Response,
     current_user: AuthUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> MessageResponse:
     try:
+        # 비밀번호를 바꾸면서 이 유저의 세션을 모두 지운다(다른 기기·탈취된 세션 로그아웃)
         await auth_service.change_password(db, current_user, data)
     except auth_service.AuthError as error:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=error.message) from error
+
+    # 지금 이 기기는 로그인을 유지하도록 새 세션을 발급해 쿠키를 바꿔 준다
+    token = await session_service.create_session(db, current_user)
+    await db.commit()
+    session_service.set_session_cookie(response, token)
     return MessageResponse(message="비밀번호가 변경되었습니다.")
 
 
