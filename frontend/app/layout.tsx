@@ -6,7 +6,12 @@ import { Suspense } from "react"
 import GoogleAnalytics from "@/components/common/GoogleAnalytics"
 import { ThemeProvider } from "@/components/theme-provider"
 import { GA_MEASUREMENT_ID } from "@/lib/analytics"
-import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site"
+import {
+  GOOGLE_SITE_VERIFICATION,
+  SITE_DESCRIPTION,
+  SITE_NAME,
+  SITE_URL,
+} from "@/lib/site"
 import { cn } from "@/lib/utils"
 
 import SidebarNav from "@/components/common/sidebar/SidebarNav"
@@ -48,10 +53,8 @@ export const metadata: Metadata = {
     description: SITE_DESCRIPTION,
     images: ["/og.png"],
   },
-  // 구글 서치 콘솔 'HTML 태그' 소유권 확인용 - 값은 환경변수로만 넣는다(없으면 태그를 넣지 않는다)
-  verification: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
-    ? { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION }
-    : undefined,
+  // 구글 서치 콘솔 'HTML 태그' 소유권 확인용
+  verification: { google: GOOGLE_SITE_VERIFICATION },
 }
 
 export default function RootLayout({
