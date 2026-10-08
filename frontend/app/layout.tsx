@@ -8,6 +8,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { GA_MEASUREMENT_ID } from "@/lib/analytics"
 import {
   GOOGLE_SITE_VERIFICATION,
+  NAVER_SITE_VERIFICATION,
   SITE_DESCRIPTION,
   SITE_NAME,
   SITE_URL,
@@ -53,8 +54,11 @@ export const metadata: Metadata = {
     description: SITE_DESCRIPTION,
     images: ["/og.png"],
   },
-  // 구글 서치 콘솔 'HTML 태그' 소유권 확인용
-  verification: { google: GOOGLE_SITE_VERIFICATION },
+  // 구글 서치 콘솔·네이버 서치 어드바이저 'HTML 태그' 소유권 확인용
+  verification: {
+    google: GOOGLE_SITE_VERIFICATION,
+    other: { "naver-site-verification": NAVER_SITE_VERIFICATION },
+  },
 }
 
 export default function RootLayout({
