@@ -1,6 +1,7 @@
 import Image from "next/image"
 import Link from "next/link"
 
+import FeedbackLink from "@/components/common/FeedbackLink"
 import Logo from "@/public/images/dark-logo.svg"
 
 const FOOTER_LINKS = [
@@ -24,6 +25,12 @@ export default function Footer() {
             {link.label}
           </Link>
         ))}
+        <FeedbackLink
+          location="footer"
+          className="hover:text-white hover:underline"
+        >
+          피드백 보내기
+        </FeedbackLink>
       </nav>
       <p className="text-neutral-400">© 2026 Anthill. All rights reserved.</p>
     </footer>
