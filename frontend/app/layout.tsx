@@ -6,6 +6,7 @@ import { Suspense } from "react"
 import GoogleAnalytics from "@/components/common/GoogleAnalytics"
 import { ThemeProvider } from "@/components/theme-provider"
 import { GA_MEASUREMENT_ID } from "@/lib/analytics"
+import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site"
 import { cn } from "@/lib/utils"
 
 import SidebarNav from "@/components/common/sidebar/SidebarNav"
@@ -25,12 +26,32 @@ const pretendard = localFont({
 })
 
 export const metadata: Metadata = {
-  title: "개미굴 | Gaemigul",
-  description:
-    "국내외 시세·뉴스·일정을 한 화면에서 확인하는 금융 뉴스 요약 및 시황 AI 인사이트 대시보드",
+  metadataBase: new URL(SITE_URL),
+  title: SITE_NAME,
+  description: SITE_DESCRIPTION,
   icons: {
     icon: "/favicon.svg",
   },
+  // 링크 공유(카카오톡·슬랙·SNS) 미리보기 - 이미지는 public/og.png(1200x630)
+  openGraph: {
+    type: "website",
+    locale: "ko_KR",
+    siteName: "개미굴",
+    title: SITE_NAME,
+    description: SITE_DESCRIPTION,
+    url: "/",
+    images: [{ url: "/og.png", width: 1200, height: 630, alt: "개미굴 Gaemigul" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: SITE_NAME,
+    description: SITE_DESCRIPTION,
+    images: ["/og.png"],
+  },
+  // 구글 서치 콘솔 'HTML 태그' 소유권 확인용 - 값은 환경변수로만 넣는다(없으면 태그를 넣지 않는다)
+  verification: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
+    ? { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION }
+    : undefined,
 }
 
 export default function RootLayout({
