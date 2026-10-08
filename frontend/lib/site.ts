@@ -16,3 +16,6 @@ export const GOOGLE_SITE_VERIFICATION =
 export const NAVER_SITE_VERIFICATION =
   process.env.NEXT_PUBLIC_NAVER_SITE_VERIFICATION?.trim() ||
   "94ca2df4b611db1a4706e4e0829775afb53960c3"
+
+/** 피드백 구글폼 주소 */
+export const FEEDBACK_FORM_URL = "https://forms.gle/8meYJL8mXp8WpZoJA"
