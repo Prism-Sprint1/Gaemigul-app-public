@@ -3,6 +3,8 @@
 // 기존 캘린더 컴포넌트는 사용/수정하지 않는다. 목적은 CPI/PPI 실제 데이터가 정상적으로
 // 내려오는지 눈으로 확인하는 것뿐이라 UI는 최소한으로만 구성한다.
 
+import { notFound } from "next/navigation";
+
 type CalendarEvent = {
   id: string;
   publishedAt: string;
@@ -25,10 +27,13 @@ type PageProps = {
 };
 
 export default async function CalendarApiTestPage({ searchParams }: PageProps) {
+  // 개발용 테스트 화면이라 운영(production)에서는 열리지 않게 한다
+  if (process.env.NODE_ENV === "production") notFound();
+
   const params = await searchParams;
-  // 기본값: 실제 CPI/PPI 데이터가 저장돼 있는 2026년 8월
-  const year = params.year ?? "2026";
-  const month = params.month ?? "8";
+  // 기본값: 실제 CPI/PPI 데이터가 저장돼 있는 2026년 8월. 숫자 형식이 아닌 값은 주소에 섞이지 않게 기본값으로 대체한다
+  const year = /^\d{4}$/.test(params.year ?? "") ? params.year! : "2026";
+  const month = /^(0?[1-9]|1[0-2])$/.test(params.month ?? "") ? params.month! : "8";
 
   const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
   const requestUrl = `${baseUrl}/calendar/events?year=${year}&month=${month}`;
