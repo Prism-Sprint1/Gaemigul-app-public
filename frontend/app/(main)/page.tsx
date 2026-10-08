@@ -1,3 +1,4 @@
+import FeedbackBanner from "@/components/home/FeedbackBanner"
 import PheromoneTemperatureCard from "@/components/home/PheromoneTemperatureCard"
 import TodayAntTermCard from "@/components/home/TodayAntTermCard"
 import CalendarScheduleCard from "@/components/home/dashboard/CalendarScheduleCard"
@@ -27,6 +28,7 @@ export default function Page() {
 
         <TradingActivityCard />
         <CalendarScheduleCard />
+        <FeedbackBanner />
       </div>
     </div>
   )
