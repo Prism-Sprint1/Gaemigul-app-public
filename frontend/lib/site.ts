@@ -11,3 +11,8 @@ export const SITE_DESCRIPTION =
 export const GOOGLE_SITE_VERIFICATION =
   process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION?.trim() ||
   "2Lx5uqhuLfgnfd3QVcyooh8YN-2MoikLR7oi3QyAI6I"
+
+/** 네이버 서치 어드바이저 소유권 확인(HTML 태그) 값 - 공개되는 값이라 비밀이 아니다. 바꿀 때는 NEXT_PUBLIC_NAVER_SITE_VERIFICATION을 쓴다 */
+export const NAVER_SITE_VERIFICATION =
+  process.env.NEXT_PUBLIC_NAVER_SITE_VERIFICATION?.trim() ||
+  "94ca2df4b611db1a4706e4e0829775afb53960c3"
