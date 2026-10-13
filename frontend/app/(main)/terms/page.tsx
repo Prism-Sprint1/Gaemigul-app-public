@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import Link from "next/link"
 
 import {
@@ -11,6 +12,12 @@ import {
 
 // 이용약관. 제N조 순서를 유지하고, 핵심 조항은 맨 위 요약 카드로 한 번 더 보여준다.
 // AI·데이터 관련 조항의 자세한 내용은 /data-sources에 있다 - 둘이 어긋나지 않게 같이 고친다
+
+export const metadata: Metadata = {
+  title: "이용약관",
+  description: "개미굴 서비스 이용약관",
+  alternates: { canonical: "/terms" },
+}
 
 export default function TermsPage() {
   return (

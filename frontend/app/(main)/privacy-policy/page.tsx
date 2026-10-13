@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import {
   ContactEmail,
   LegalCards,
@@ -104,6 +105,12 @@ const PROCESSOR_ROWS = [
   ["Vercel", "웹사이트 화면 제공(호스팅)", "접속 IP 주소 등 접속 기록"],
   ["Oracle Cloud", "서비스 서버 운영", "서버 로그"],
 ]
+
+export const metadata: Metadata = {
+  title: "개인정보처리방침",
+  description: "개미굴 개인정보처리방침",
+  alternates: { canonical: "/privacy-policy" },
+}
 
 export default function PrivacyPolicyPage() {
   return (

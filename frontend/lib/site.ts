@@ -19,3 +19,14 @@ export const NAVER_SITE_VERIFICATION =
 
 /** 피드백 구글폼 주소 */
 export const FEEDBACK_FORM_URL = "https://forms.gle/8meYJL8mXp8WpZoJA"
+
+/** 검색엔진에 알리는 사이트 정보(JSON-LD) */
+export const SITE_JSON_LD = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "개미굴",
+  alternateName: "Gaemigul",
+  url: SITE_URL,
+  description: SITE_DESCRIPTION,
+  inLanguage: "ko-KR",
+}

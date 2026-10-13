@@ -9,6 +9,8 @@ import UsdKrwTrendCard from "@/components/home/dashboard/UsdKrwTrendCard"
 export default function Page() {
   return (
     <div className="flex w-full flex-col gap-5">
+      {/* 화면에는 보이지 않지만 검색엔진·스크린리더가 페이지 주제를 알 수 있게 하는 제목 */}
+      <h1 className="sr-only">개미굴 - 금융 뉴스 요약 및 시황 AI 인사이트 대시보드</h1>
       <div className="flex flex-col gap-6">
         <PheromoneTemperatureCard />
 
