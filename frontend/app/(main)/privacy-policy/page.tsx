@@ -1,4 +1,4 @@
-import type { Metadata } from "next"
+import { pageMetadata } from "@/lib/site"
 import {
   ContactEmail,
   LegalCards,
@@ -106,11 +106,11 @@ const PROCESSOR_ROWS = [
   ["Oracle Cloud", "서비스 서버 운영", "서버 로그"],
 ]
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   title: "개인정보처리방침",
   description: "개미굴 개인정보처리방침",
-  alternates: { canonical: "/privacy-policy" },
-}
+  path: "/privacy-policy",
+})
 
 export default function PrivacyPolicyPage() {
   return (

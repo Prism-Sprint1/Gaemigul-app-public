@@ -1,4 +1,4 @@
-import type { Metadata } from "next"
+import { pageMetadata } from "@/lib/site"
 import Link from "next/link"
 
 import {
@@ -266,11 +266,11 @@ const COMMITMENTS = [
   },
 ]
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   title: "데이터 출처·방법론",
   description: "개미굴이 사용하는 시세·뉴스·경제 지표 데이터의 출처와 요약·분석 방법론",
-  alternates: { canonical: "/data-sources" },
-}
+  path: "/data-sources",
+})
 
 export default function DataSourcesPage() {
   return (

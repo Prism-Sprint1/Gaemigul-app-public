@@ -1,3 +1,5 @@
+import type { Metadata } from "next"
+
 /** 사이트 대표 주소 - OG 이미지·sitemap의 절대 주소 기준. 배포 주소가 바뀌면 NEXT_PUBLIC_SITE_URL로 덮어쓴다 */
 export const SITE_URL = (
   process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://gaemigul-app.vercel.app"
@@ -29,4 +31,47 @@ export const SITE_JSON_LD = {
   url: SITE_URL,
   description: SITE_DESCRIPTION,
   inLanguage: "ko-KR",
+}
+
+type PageMetadataInput = {
+  /** 화면 이름 - 브라우저 탭에는 "화면 이름 | 개미굴"로 나온다 */
+  title: string
+  description: string
+  /** 화면 경로(예: "/heatmap") - canonical·공유 주소 */
+  path: string
+  /** 로그인 전용 화면처럼 검색에 나오면 안 되는 화면 */
+  noindex?: boolean
+}
+
+/** 화면별 메타데이터 - 제목·설명·canonical·공유 미리보기(Open Graph)·검색 노출 여부를 한 번에 만든다.
+ * Open Graph는 루트 값이 통째로 상속되지 않고 화면별 값이 있어야 해서 여기서 같이 지정한다 */
+export function pageMetadata({
+  title,
+  description,
+  path,
+  noindex,
+}: PageMetadataInput): Metadata {
+  return {
+    title,
+    description,
+    alternates: { canonical: path },
+    openGraph: {
+      type: "website",
+      locale: "ko_KR",
+      siteName: "개미굴",
+      title: `${title} | 개미굴`,
+      description,
+      url: path,
+      images: [
+        { url: "/og.png", width: 1200, height: 630, alt: "개미굴 Gaemigul" },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${title} | 개미굴`,
+      description,
+      images: ["/og.png"],
+    },
+    ...(noindex ? { robots: { index: false, follow: false } } : {}),
+  }
 }
