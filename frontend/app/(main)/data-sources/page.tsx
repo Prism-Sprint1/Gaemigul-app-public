@@ -1,3 +1,4 @@
+import { pageMetadata } from "@/lib/site"
 import Link from "next/link"
 
 import {
@@ -264,6 +265,12 @@ const COMMITMENTS = [
     body: "초보자 눈높이의 설명은 조건과 예외를 줄여서 씁니다. 정확한 정의와 제도는 거래소·금융당국 등 공식 자료로 확인해주세요.",
   },
 ]
+
+export const metadata = pageMetadata({
+  title: "데이터 출처·방법론",
+  description: "개미굴이 사용하는 시세·뉴스·경제 지표 데이터의 출처와 요약·분석 방법론",
+  path: "/data-sources",
+})
 
 export default function DataSourcesPage() {
   return (

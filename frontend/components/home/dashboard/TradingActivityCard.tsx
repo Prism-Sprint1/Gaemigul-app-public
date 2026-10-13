@@ -177,7 +177,7 @@ export default function TradingActivityCard() {
 
           <div className="flex min-w-0 flex-col gap-2 border-t border-neutral-100 pt-4 md:border-t-0 md:border-l md:pt-0 md:pl-6 dark:border-neutral-800">
             <div className="flex items-center justify-between gap-2">
-              <h4 className="text-sm font-bold text-foreground">투자자별 매매동향</h4>
+              <h3 className="text-sm font-bold text-foreground">투자자별 매매동향</h3>
               <span className="text-[11px] text-neutral-400">
                 {basisLabel}
               </span>
