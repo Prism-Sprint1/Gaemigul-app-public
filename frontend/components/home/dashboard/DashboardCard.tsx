@@ -25,10 +25,10 @@ export default function DashboardCard({
       )}
     >
       <div className="flex items-center justify-between gap-2">
-        <h3 className={SECTION_CARD_TITLE}>
+        <h2 className={SECTION_CARD_TITLE}>
           {icon}
           {title}
-        </h3>
+        </h2>
         {action}
       </div>
       {children}

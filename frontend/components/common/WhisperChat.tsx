@@ -387,7 +387,7 @@ function PromotionSuggestionCard({
     <div className="flex gap-2">
       <div className="w-9 shrink-0">
         <div className="relative size-9 overflow-hidden rounded-full">
-          <Image src="/images/profile.png" alt="불개미 대장" fill className="object-cover" />
+          <Image src="/images/profile.webp" alt="불개미 대장" fill className="object-cover" />
         </div>
       </div>
       <div className="flex min-w-0 flex-1 flex-col gap-1">
@@ -474,7 +474,7 @@ function MessageBubble({
         {showHeader && (
           <div className="relative size-9 overflow-hidden rounded-full">
             <Image
-              src="/images/profile.png"
+              src="/images/profile.webp"
               alt="불개미 대장"
               fill
               className="object-cover"
@@ -645,7 +645,7 @@ export default function WhisperChat() {
           <div className="flex w-full items-center gap-2">
             <div className="relative size-9 shrink-0">
               <Image
-                src="/images/profile.png"
+                src="/images/profile.webp"
                 alt="불개미 대장"
                 fill
                 className="rounded-full object-cover"

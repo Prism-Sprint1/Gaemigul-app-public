@@ -11,6 +11,7 @@ import {
   NAVER_SITE_VERIFICATION,
   SITE_DESCRIPTION,
   SITE_NAME,
+  SITE_JSON_LD,
   SITE_URL,
 } from "@/lib/site"
 import { cn } from "@/lib/utils"
@@ -33,8 +34,11 @@ const pretendard = localFont({
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: SITE_NAME,
+  // 하위 화면은 "화면 이름 | 개미굴" 형태로 나온다
+  title: { default: SITE_NAME, template: "%s | 개미굴" },
   description: SITE_DESCRIPTION,
+  // 각 화면의 대표 주소(검색엔진에 중복 주소를 알리지 않기 위함). 화면별로 덮어쓴다
+  alternates: { canonical: "/" },
   icons: {
     icon: "/favicon.svg",
   },
@@ -79,6 +83,11 @@ export default function RootLayout({
       )}
     >
       <body className="overflow-x-clip">
+        {/* 검색 결과용 구조화 데이터(사이트 정보) */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(SITE_JSON_LD) }}
+        />
         {/* Google Analytics(GA4) - 측정 ID가 없으면(로컬 등) 아예 렌더링하지 않는다.
             초기화(config)는 lib/analytics.ts에서, 페이지뷰는 GoogleAnalytics 컴포넌트에서 보낸다 */}
         {GA_MEASUREMENT_ID && (

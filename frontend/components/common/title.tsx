@@ -33,9 +33,9 @@ export default function PageTitle({
   return (
     <div className="text-l flex flex-col gap-3">
       <div className="flex flex-col gap-2">
-        <div className="truncate text-lg leading-none font-bold sm:text-xl lg:text-2xl">
+        <h1 className="truncate text-lg leading-none font-bold sm:text-xl lg:text-2xl">
           {title}
-        </div>
+        </h1>
         <div className="text-muted-foreground">
           <p className="truncate text-[10px] sm:text-xs">{description}</p>
         </div>

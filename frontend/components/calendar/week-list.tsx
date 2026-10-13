@@ -91,9 +91,9 @@ export function WeekList({
     <div className="space-y-6">
       {weeks.map(({ month: ownerMonth, weekNo, days }) => (
         <div key={`${+ownerMonth}-${weekNo}`}>
-          <h3 className="mb-2 text-[14px] font-bold text-primary">
+          <h2 className="mb-2 text-[14px] font-bold text-primary">
             {format(ownerMonth, "M월")} {weekNo}주차
-          </h3>
+          </h2>
           <div className="overflow-x-auto rounded-lg border">
             {/* 모바일: 고정 레이아웃으로 모든 주차 표의 열 폭을 같게 맞춘다(내용 길이에 따라 열마다 폭이 달라지지 않게).
                 넘치는 값은 말줄임 처리 */}
