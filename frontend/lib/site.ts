@@ -5,7 +5,7 @@ export const SITE_URL = (
   process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://gaemigul-app.vercel.app"
 ).replace(/\/+$/, "")
 
-export const SITE_NAME = "개미굴 | Gaemigul"
+export const SITE_NAME = "개미굴 | 국내외 시세·뉴스·경제 일정을 한 화면에서. 개미 투자자를 위한 시황 AI 요약 서비스"
 export const SITE_DESCRIPTION =
   "국내외 시세·뉴스·일정을 한 화면에서 확인하는 금융 뉴스 요약 및 시황 AI 인사이트 대시보드"
 
